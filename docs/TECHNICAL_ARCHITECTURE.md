@@ -1,6 +1,6 @@
 # Technical Architecture
 
-Status: implemented local release v0.3.0. Planned capabilities are marked explicitly.
+Status: implemented local release v0.4.0. Planned capabilities are marked explicitly.
 
 ## 1. System boundary
 
@@ -10,7 +10,9 @@ Rivulet LocalOps currently runs as one local FastAPI process with three logical 
 2. governance: versioned policy pack, deterministic Gate, decision/review ledger and replay;
 3. operations: health, ledger-integrity verification and provider kill switch.
 
-SQLite is the current local event store. There is no web frontend, authenticated identity provider, external business connector, PostgreSQL service or cloud deployment in this release.
+SQLite is the current local event store. D1/D2 public snapshots and the D6 synthetic event export feed a reproducible
+SQLite/CSV analytics mart. There is no web frontend, authenticated identity provider, external business connector,
+PostgreSQL service, Power BI report or cloud deployment in this release.
 
 ```mermaid
 flowchart TB
@@ -21,7 +23,8 @@ flowchart TB
         G[DeterministicPolicyGate]
         E[SQLiteEventLedger]
         R[Review and replay API]
-        O[Operations API]
+    O[Operations API]
+    M[Analytics mart builder]
     end
 
     J[Versioned JSON policy] --> G
@@ -33,6 +36,9 @@ flowchart TB
     E --> R
     O --> E
     O --> T
+    E --> M
+    H --> M
+    X[Townsville aggregate CSV] --> M
 ```
 
 ## 2. Submission sequence
@@ -140,7 +146,7 @@ Two deterministic separation controls apply:
 - the accountable owner cannot review the same decision;
 - a Gate-rejected or Gate-escalated decision cannot be directly accepted—reviewers must override or escalate with an explicit reason.
 
-These are application controls, not identity assurance. The IDs are not authenticated in v0.3.0.
+These are application controls, not identity assurance. The IDs are not authenticated in v0.4.0.
 
 ## 7. Replay
 
@@ -167,20 +173,36 @@ When disabled:
 
 The current kill switch is logically separated under `/ops/v1`, but it is not physically out-of-band because it shares the application process and SQLite file.
 
-## 9. Technology status
+## 9. Analytics contracts and mart
+
+D1 City of Hobart assets, D2 Townsville monthly request aggregates and D6 fixed-seed synthetic ledger events each
+have a machine-readable source manifest. The manifest pins publisher, URLs, licence, retrieval time, hash, row/event
+count, grain, schema, encoding/CRS, truth class and limitations.
+
+The build creates 14 tables. Primary facts are one D2 publisher row, one synthetic decision, one decision × Gate rule,
+one synthetic review, one synthetic manual fallback and one source-quality check. D2 categories use a code-plus-label
+variant key because historical codes do not map consistently to one label. A source-row key preserves the one
+case-normalized business-key collision rather than silently merging its counts.
+
+`real_public_reference` and `synthetic_operational` are separate fact-level truth classes. The build fails on manifest
+hash drift, blocking source checks, primary/FK failures, count reconciliation errors, non-contiguous D6 sequence or
+truth-class mixing. See the [data dictionary](../analytics/DATA_DICTIONARY.md) and
+[metric dictionary](../analytics/metric_dictionary.csv).
+
+## 10. Technology status
 
 | Area | Current | Planned, not implemented |
 |---|---|---|
 | Application | Python 3.12, FastAPI, Pydantic | Web review experience |
 | Decision engine | Deterministic rules provider | Bounded model-provider comparison |
 | Operational store | SQLite append-only events | PostgreSQL, migrations and retention controls |
-| Data | Hobart public GeoJSON + synthetic requests | Additional public dimensions and analytics mart |
-| Analytics | JSON/SQLite evidence | Power BI semantic model and refresh |
+| Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL | Additional sources only when a report field requires them |
+| Analytics | Reproducible 14-table SQLite/CSV mart, quality checks and metric dictionary | Power BI semantic model and refresh |
 | Identity | Validated asserted IDs | Authentication, RBAC and service identities |
 | Security | Gate, hash chain, separation checks, kill switch, negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
 | Delivery | Lockfile, verification script, GitHub Actions workflow | Protected environments and cloud deployment |
 
-## 10. Primary limitations
+## 11. Primary limitations
 
 - The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
 - Self-authored regression cases do not establish real-world accuracy.
@@ -188,3 +210,4 @@ The current kill switch is logically separated under `/ops/v1`, but it is not ph
 - Asserted identity fields do not prevent impersonation.
 - No connector means no action is executed and no downstream receipt exists.
 - No real council has validated the policy, workflow or operational fit.
+- D2 is Townsville aggregate context, not Hobart operational demand; D6 metrics are designed fixtures, not measured performance.

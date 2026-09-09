@@ -3,7 +3,7 @@
 | Evidence field | Value |
 |---|---|
 | Date | 2026-09-09 |
-| Release | v0.3.1 |
+| Release | v0.4.0 |
 | Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `ubuntu-latest`, installed from `requirements-dev.lock` |
 
 This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
@@ -72,11 +72,31 @@ runner covering query, append-only override, replay, kill switch, manual fallbac
 The rerun passed all review checks and successfully cleaned up both disposable databases. See
 [`evidence/F08/2026-09-09`](../evidence/F08/2026-09-09/README.md).
 
+## Sprint 2.5A — Contracted sources and analytics mart
+
+Goal: turn the governed ledger and public reference data into a repeatable, truth-labelled analytical model.
+
+| Acceptance item | Result |
+|---|---|
+| D1/D2/D6 source manifests and SHA-256 verification | Pass |
+| D2 dated official raw snapshot and explicit Windows-1252 decoding | Pass |
+| Completeness/uniqueness/validity/consistency/integrity/timeliness/volume/shape profile | 15 pass, 4 warn, 0 fail |
+| Normalized D2 key collision preserved rather than silently merged | Pass; pinned by test |
+| Fixed-seed D6 generated through provider → Gate → ledger | 316 events; stable hash; integrity pass |
+| Star-schema mart | 14 non-empty tables |
+| Source/event/count/FK/truth-class reconciliations | 8 of 8 pass |
+| KPI numerator/denominator/grain/filter/null/truth caveats | Defined; no invented targets |
+| Full local verification | 25 tests passed; 12-case regression unchanged |
+
+See [`evidence/F06/2026-09-09`](../evidence/F06/2026-09-09/README.md) and
+[`evidence/F09/2026-09-09`](../evidence/F09/2026-09-09/README.md). The D6 Gate mix and review timing are deliberately
+generated regression fixtures. They are not real workload, effectiveness, service-level or productivity evidence.
+
 ## Hosted CI evidence
 
-The same locked install, 18-test suite and 12-case regression check completed successfully in GitHub Actions for both the
-`main` push and the `v0.3.0` tag push on 2026-09-09. The workflow runs on a disposable hosted runner; it does not deploy
-the API or prove production operations.
+Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The v0.4.0 hosted run is recorded only
+after the tag workflow completes. A hosted workflow runs on a disposable runner; it does not deploy the API or prove
+production operations.
 
 ## Reproduction
 
@@ -89,7 +109,7 @@ py -3.12 -m venv .venv
 Observed release output:
 
 ```text
-18 passed
+25 passed
 {
   "cases": 12,
   "category_accuracy": 1.0,
@@ -105,6 +125,7 @@ The word “accuracy” in the evaluator's JSON field is retained for compatibil
 | Data | Truth status | Public claim |
 |---|---|---|
 | Hobart litter-bin asset snapshot | Real public reference data | Feature count, retrieval timestamp, endpoint and CRS are recorded in metadata |
+| Townsville request-for-service snapshot | Real public aggregate reference data | Monthly aggregate context only; not Hobart demand or individual requests |
 | Request and review events | Synthetic demonstration data | Never described as resident or council operational history |
 | Gate policy | Synthetic demonstration policy | Never described as official or council-approved policy |
 | Priority targets | Demonstration rules | Never described as observed service performance |
@@ -122,6 +143,7 @@ The word “accuracy” in the evaluator's JSON field is retained for compatibil
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
 | The system is deployed to Azure or an enterprise Windows environment | No | Later planned profiles |
+| Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
 
 ## Known verification warning
 

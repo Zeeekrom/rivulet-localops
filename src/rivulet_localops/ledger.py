@@ -1,6 +1,7 @@
 import hashlib
 import json
 import sqlite3
+from collections.abc import Callable
 from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
@@ -57,8 +58,15 @@ def _sha256(value: str) -> str:
 class SQLiteEventLedger:
     """Append-only demonstration ledger with a global SHA-256 hash chain."""
 
-    def __init__(self, path: Path):
+    def __init__(
+        self,
+        path: Path,
+        id_factory: Callable[[], str] | None = None,
+        clock: Callable[[], datetime] | None = None,
+    ):
         self.path = path
+        self._id_factory = id_factory or (lambda: str(uuid4()))
+        self._clock = clock or (lambda: datetime.now(UTC))
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with closing(self._connect()) as connection:
             connection.executescript(SCHEMA)
@@ -172,8 +180,8 @@ class SQLiteEventLedger:
 
             sequence = len(existing) + 1
             previous_hash = existing[-1]["event_hash"] if existing else None
-            event_id = str(uuid4())
-            occurred_at = datetime.now(UTC).isoformat()
+            event_id = self._id_factory()
+            occurred_at = self._clock().isoformat()
             material = self._hash_material(
                 sequence=sequence,
                 event_id=event_id,
@@ -215,7 +223,7 @@ class SQLiteEventLedger:
             connection.close()
 
     def record_decision(self, submission: DecisionSubmissionRequest, gate_decision: GateDecision) -> DecisionRecord:
-        decision_id = str(uuid4())
+        decision_id = self._id_factory()
         request_payload = submission.request.model_dump(mode="json")
         payload = {
             "schema_version": "1.0",
@@ -257,7 +265,7 @@ class SQLiteEventLedger:
             event_type="decision.manual_fallback",
             actor_id="system:rivulet-api",
             correlation_id=submission.correlation_id,
-            entity_id=str(uuid4()),
+            entity_id=self._id_factory(),
             payload={
                 "schema_version": "1.0",
                 "provider_id": provider_id,
@@ -392,7 +400,7 @@ class SQLiteEventLedger:
         self._append(
             event_type="provider.control_changed",
             actor_id=control.operator_id,
-            correlation_id=str(uuid4()),
+            correlation_id=self._id_factory(),
             entity_id=f"provider:{provider_id}",
             payload={
                 "schema_version": "1.0",

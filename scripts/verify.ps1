@@ -9,6 +9,15 @@ if (-not (Test-Path -LiteralPath $python)) {
 
 Push-Location $projectRoot
 try {
+    & $python scripts\profile_sources.py
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+    & $python scripts\generate_synthetic_ledger.py
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+    & $python scripts\build_analytics_mart.py
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
     & $python -m pytest -q
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

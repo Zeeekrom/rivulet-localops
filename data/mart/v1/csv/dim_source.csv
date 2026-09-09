@@ -1,0 +1,4 @@
+source_key,title,publisher,data_truth_class,record_count,snapshot_utc,license_name,landing_page
+D1,City of Hobart ASSETS Litter Bins public feature layer,City of Hobart,real_public_reference,727,2026-08-30T04:37:56.738962+00:00,Creative Commons Attribution 4.0 International,https://www.arcgis.com/home/item.html?id=285f4104635744b1a1b952c3934f2165
+D2,Townsville City Council Customer Request Management – Request for Service,Townsville City Council,real_public_reference,24197,2026-09-09T13:07:23.611497+00:00,Creative Commons Attribution 4.0 International,https://data.gov.au/data/dataset/townsville-city-council-customer-request-management-request-for-service
+D6,Rivulet fixed-seed synthetic operational ledger,Rivulet LocalOps portfolio project,synthetic_operational,316,2026-09-09T00:00:00+00:00,MIT (project-generated synthetic data),https://github.com/Zeeekrom/rivulet-localops/tree/main/data/generated/ledger_v1

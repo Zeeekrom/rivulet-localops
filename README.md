@@ -2,9 +2,9 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.3.1-2F855A)
+![Release](https://img.shields.io/badge/release-v0.4.0-2F855A)
 
-Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review and a provider kill switch in one reproducible workflow.
+Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review, a provider kill switch and a truth-labelled analytics mart in one reproducible workflow.
 
 This is an independent technical prototype. It is not an official City of Hobart, Tasmanian Government or council service. It contains no real resident requests and performs no real council-system writes.
 
@@ -32,7 +32,7 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.3.1
+## Current release: v0.4.0
 
 | Capability | Implemented evidence |
 |---|---|
@@ -46,6 +46,11 @@ flowchart LR
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
 | Verification | 18 automated tests plus a 12-case deterministic regression set, reproduced by GitHub Actions |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
+| Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
+| Data quality | 19 automated source checks: 15 pass, 4 documented warnings, 0 fail and 0 blocking |
+| Synthetic analytics fixture | D6 deterministically reproduces 316 hash-chained events: 180 decisions, 120 reviews, 8 manual fallbacks and 8 provider-control changes |
+| Analytics mart | 14 non-empty dimension/fact tables as versioned CSV plus a reproducible local SQLite build; 8 reconciliation checks pass |
+| Metric governance | Numerators, denominators, grain, filters, null handling, truth class and caveats are defined; no unsupported target is invented |
 
 The current diagnosis engine is deliberately rules-based. It is a transparent control baseline for later model comparison and is not presented as generative AI.
 
@@ -56,6 +61,7 @@ The current diagnosis engine is deliberately rules-based. It is a transparent co
 - SQLite event storage using the Python standard library
 - SHA-256 canonical event hashing
 - GeoJSON and public ArcGIS asset data
+- Contracted public CSV data, deterministic JSONL events and a star-schema analytics mart
 - pytest and FastAPI TestClient
 - pip-tools lockfile
 - GitHub Actions verification
@@ -115,9 +121,11 @@ Send it to `POST /api/v1/submit`. The response includes the original Gate result
 
 Expected release evidence:
 
-- `18 passed`
+- source profile: 19 checks, 0 fail, 0 blocking
+- deterministic D6: 316 events with stable SHA-256 and a valid hash chain
+- analytics mart: 14 tables and 8 successful reconciliations
+- `25 passed`
 - 12 deterministic regression cases with zero category/priority differences
-- successful GitHub Actions verification for the `main` and `v0.3.0` pushes on 2026-09-09
 - the Sprint 2 review runner completes on Windows without retaining the disposable SQLite files
 
 Run the end-to-end review story separately with:
@@ -128,6 +136,8 @@ Run the end-to-end review story separately with:
 
 The machine-readable review result and its claim boundary are in
 [`evidence/F08/2026-09-09`](evidence/F08/2026-09-09/README.md).
+Source-quality and analytics evidence are in
+[`F06`](evidence/F06/2026-09-09/README.md) and [`F09`](evidence/F09/2026-09-09/README.md).
 
 The 12-case result is a regression check on self-authored, uncomplicated cases. It is not model-accuracy or real-world effectiveness evidence.
 
@@ -138,7 +148,9 @@ The 12-case result is a regression check on self-authored, uncomplicated cases. 
 - The hash chain detects in-place modification, reordering and gaps. It is not an external signature, WORM store or production audit guarantee.
 - The operations endpoint is logically separate but runs in the same application process; it is not yet an out-of-band control plane.
 - No endpoint writes to a real business system.
+- Townsville data is monthly aggregate reference context, not Hobart demand or individual requests.
+- Every D6 decision, review, actor, time and operational metric is fixed-seed synthetic data. Its rates exercise calculations and are not council performance or model-accuracy evidence.
 
 ## Next verified slice
 
-The next planned slice is a small analytics model using real public reference dimensions and explicitly synthetic operational facts, followed by a Power BI provenance and decision-control view. Authentication/RBAC, adversarial evaluation, Windows enterprise lab integration and Azure deployment remain later stages and are not represented as completed.
+The next planned slice is a two-page Power BI view for source provenance/quality and Gate/decision assurance, refreshed from the versioned mart and reconciled to reference metrics. Authentication/RBAC, adversarial evaluation, Windows enterprise lab integration and Azure deployment remain later stages and are not represented as completed.

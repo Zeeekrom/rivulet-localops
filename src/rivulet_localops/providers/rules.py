@@ -1,4 +1,5 @@
 import re
+from collections.abc import Callable
 from uuid import uuid4
 
 from rivulet_localops.assets import AssetRepository
@@ -86,9 +87,15 @@ def _priority(text: str, category_code: str) -> tuple[PriorityResult, bool]:
 
 
 class RulesTriageProvider:
-    def __init__(self, assets: AssetRepository, asset_match_radius_metres: float = 500):
+    def __init__(
+        self,
+        assets: AssetRepository,
+        asset_match_radius_metres: float = 500,
+        id_factory: Callable[[], str] | None = None,
+    ):
         self.assets = assets
         self.asset_match_radius_metres = asset_match_radius_metres
+        self._id_factory = id_factory or (lambda: str(uuid4()))
 
     def diagnose(self, request: DiagnoseRequest) -> DiagnoseResponse:
         text = _normalise(request.text)
@@ -127,7 +134,7 @@ class RulesTriageProvider:
 
         review_required = emergency or ambiguous or (category.code == "waste_litter" and request.coordinates is not None and asset_match is None)
         return DiagnoseResponse(
-            diagnosis_id=str(uuid4()),
+            diagnosis_id=self._id_factory(),
             category=category,
             priority=priority,
             asset_match=asset_match,

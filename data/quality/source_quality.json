@@ -1,0 +1,245 @@
+{
+  "profile_version": "1.0",
+  "profiled_at_utc": "2026-09-09T13:07:23.611497+00:00",
+  "status": "pass_with_warnings",
+  "source_summaries": {
+    "D1": {
+      "record_count": 727,
+      "unique_asset_keys": 727,
+      "missing_descriptions": 2,
+      "crs": "EPSG:4326"
+    },
+    "D2": {
+      "record_count": 24197,
+      "encoding": "Windows-1252",
+      "date_min": "2018-07-01",
+      "date_max": "2026-07-01",
+      "freshness_lag_days_from_period_end": 40,
+      "distinct_group_codes": 98,
+      "distinct_category_codes": 418,
+      "published_request_count_total": 1213852,
+      "exact_duplicate_rows": 0,
+      "natural_grain_duplicate_rows": 1,
+      "group_codes_with_multiple_labels": 2,
+      "category_codes_with_multiple_labels": 35
+    }
+  },
+  "check_counts": {
+    "total": 19,
+    "pass": 15,
+    "warn": 4,
+    "fail": 0,
+    "blocking": 0
+  },
+  "checks": [
+    {
+      "check_id": "d1-snapshot-hash",
+      "source_id": "D1",
+      "dimension": "integrity",
+      "status": "pass",
+      "severity": "critical",
+      "rows_evaluated": 1,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Raw snapshot exists and its SHA-256 matches the source manifest."
+    },
+    {
+      "check_id": "d1-record-count",
+      "source_id": "D1",
+      "dimension": "volume",
+      "status": "pass",
+      "severity": "high",
+      "rows_evaluated": 1,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Observed 727 features; manifest declares 727."
+    },
+    {
+      "check_id": "d1-business-key-complete",
+      "source_id": "D1",
+      "dimension": "completeness",
+      "status": "pass",
+      "severity": "critical",
+      "rows_evaluated": 727,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Every feature has GlobalID, OBJECTID or feature id for an asset business key."
+    },
+    {
+      "check_id": "d1-business-key-unique",
+      "source_id": "D1",
+      "dimension": "uniqueness",
+      "status": "pass",
+      "severity": "critical",
+      "rows_evaluated": 727,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Preferred GlobalID/fallback OBJECTID asset keys are unique after case normalization."
+    },
+    {
+      "check_id": "d1-geometry-valid",
+      "source_id": "D1",
+      "dimension": "validity",
+      "status": "pass",
+      "severity": "critical",
+      "rows_evaluated": 727,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Every feature is a Point with valid EPSG:4326 longitude and latitude ranges."
+    },
+    {
+      "check_id": "d1-description-present",
+      "source_id": "D1",
+      "dimension": "completeness",
+      "status": "warn",
+      "severity": "low",
+      "rows_evaluated": 727,
+      "failed_rows": 2,
+      "failure_rate": 0.002751031636863824,
+      "detail": "Description is optional context; missing values are retained as null."
+    },
+    {
+      "check_id": "d2-snapshot-hash",
+      "source_id": "D2",
+      "dimension": "integrity",
+      "status": "pass",
+      "severity": "critical",
+      "rows_evaluated": 1,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Raw snapshot exists and its SHA-256 matches the source manifest."
+    },
+    {
+      "check_id": "d2-column-shape",
+      "source_id": "D2",
+      "dimension": "shape",
+      "status": "pass",
+      "severity": "critical",
+      "rows_evaluated": 1,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Observed columns match the 8 manifest fields in order."
+    },
+    {
+      "check_id": "d2-record-count",
+      "source_id": "D2",
+      "dimension": "volume",
+      "status": "pass",
+      "severity": "high",
+      "rows_evaluated": 1,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Observed 24197 rows; manifest declares 24197."
+    },
+    {
+      "check_id": "d2-required-completeness",
+      "source_id": "D2",
+      "dimension": "completeness",
+      "status": "pass",
+      "severity": "high",
+      "rows_evaluated": 24197,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "All eight source fields are non-blank per aggregate row."
+    },
+    {
+      "check_id": "d2-type-validity",
+      "source_id": "D2",
+      "dimension": "validity",
+      "status": "pass",
+      "severity": "critical",
+      "rows_evaluated": 24197,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Date parses as DD/MM/YYYY and Year, Month and Request Count parse as integers."
+    },
+    {
+      "check_id": "d2-period-consistency",
+      "source_id": "D2",
+      "dimension": "consistency",
+      "status": "pass",
+      "severity": "high",
+      "rows_evaluated": 24197,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Date is the first day of the Year/Month supplied on the same row."
+    },
+    {
+      "check_id": "d2-count-nonnegative",
+      "source_id": "D2",
+      "dimension": "validity",
+      "status": "pass",
+      "severity": "critical",
+      "rows_evaluated": 24197,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Published aggregate request counts are non-negative integers."
+    },
+    {
+      "check_id": "d2-exact-row-unique",
+      "source_id": "D2",
+      "dimension": "uniqueness",
+      "status": "pass",
+      "severity": "high",
+      "rows_evaluated": 24197,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "No duplicate full source rows after trimming whitespace."
+    },
+    {
+      "check_id": "d2-normalized-key-collision",
+      "source_id": "D2",
+      "dimension": "uniqueness",
+      "status": "warn",
+      "severity": "medium",
+      "rows_evaluated": 24197,
+      "failed_rows": 1,
+      "failure_rate": 4.132743728561392e-05,
+      "detail": "Counts publisher rows that collide on case-normalized Group Code + Category Code + Date. Rows remain separate and are never silently merged; downstream facts use a deterministic full-row key and retain the raw codes."
+    },
+    {
+      "check_id": "d2-no-future-period",
+      "source_id": "D2",
+      "dimension": "timeliness",
+      "status": "pass",
+      "severity": "high",
+      "rows_evaluated": 24197,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "No source period is later than the retrieval date."
+    },
+    {
+      "check_id": "d2-monthly-freshness",
+      "source_id": "D2",
+      "dimension": "timeliness",
+      "status": "pass",
+      "severity": "medium",
+      "rows_evaluated": 1,
+      "failed_rows": 0,
+      "failure_rate": 0.0,
+      "detail": "Latest period ends 2026-07-31; retrieval lag is 40 days (warn above 62)."
+    },
+    {
+      "check_id": "d2-group-label-stability",
+      "source_id": "D2",
+      "dimension": "consistency",
+      "status": "warn",
+      "severity": "low",
+      "rows_evaluated": 98,
+      "failed_rows": 2,
+      "failure_rate": 0.02040816326530612,
+      "detail": "Counts normalized group codes that map to more than one description across history."
+    },
+    {
+      "check_id": "d2-category-label-stability",
+      "source_id": "D2",
+      "dimension": "consistency",
+      "status": "warn",
+      "severity": "low",
+      "rows_evaluated": 418,
+      "failed_rows": 35,
+      "failure_rate": 0.08373205741626795,
+      "detail": "Counts normalized category codes that map to more than one description across history."
+    }
+  ]
+}

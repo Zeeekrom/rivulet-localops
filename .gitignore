@@ -20,3 +20,5 @@ build/
 *.p12
 private-evidence/
 data/runtime/
+data/generated/**/*.sqlite3
+data/mart/**/*.sqlite3

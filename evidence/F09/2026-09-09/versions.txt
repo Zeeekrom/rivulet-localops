@@ -1,0 +1,10 @@
+Captured: 2026-09-09 Australia/Hobart
+Rivulet LocalOps 0.4.0
+Analytics mart 1.0.0
+Synthetic ledger generator 1.0.0
+Python 3.12.9
+Pydantic 2.13.5
+FastAPI 0.141.1
+git 2.50.1.windows.1
+D6 JSONL SHA-256: 796e8bd0542402da475bd878e2956a4fc157884c34b2d4ac3bb572b81ddcbf2c
+Mart build report SHA-256: d93c6f93e456aa1813cbd9fe017ddd2b82b7200671ac30a89f84879b35f4db85

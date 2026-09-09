@@ -1,0 +1,5 @@
+.venv\Scripts\python.exe scripts\generate_synthetic_ledger.py
+.venv\Scripts\python.exe scripts\generate_synthetic_ledger.py
+.venv\Scripts\python.exe scripts\build_analytics_mart.py
+.venv\Scripts\python.exe -m pytest tests\test_analytics_mart.py -q
+.\scripts\verify.ps1

@@ -1,0 +1,4 @@
+category_key,category_label,taxonomy,data_truth_class
+general_enquiry,General enquiry,rivulet_demo_v1,synthetic_operational
+roads_footpaths,Roads and footpaths,rivulet_demo_v1,synthetic_operational
+waste_litter,Waste and litter,rivulet_demo_v1,synthetic_operational

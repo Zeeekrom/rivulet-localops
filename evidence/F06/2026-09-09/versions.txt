@@ -1,0 +1,7 @@
+Captured: 2026-09-09 Australia/Hobart
+Python 3.12.9
+Pydantic 2.13.5
+FastAPI 0.141.1
+git 2.50.1.windows.1
+D1 SHA-256: 080077ea2ad44e1a9cc72bb8a6e3f8494b04fb3707c51731a6e31045c0664c7c
+D2 SHA-256: a9d24c95f71ba926433d2be474af1e6072cbac7e517010329ef3a404d96ab346

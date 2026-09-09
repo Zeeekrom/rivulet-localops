@@ -1,0 +1,14 @@
+# Initial ingestion (first run exposed non-UTF-8 source encoding)
+.venv\Scripts\python.exe scripts\fetch_townsville_rfs.py
+
+# Re-run after explicit Windows-1252 fallback was implemented
+.venv\Scripts\python.exe scripts\fetch_townsville_rfs.py
+
+# Initial profile exited 1 because the normalized natural-key assumption found one collision
+.venv\Scripts\python.exe scripts\profile_sources.py
+
+# Re-run after preserving publisher row grain and making the collision a documented warning
+.venv\Scripts\python.exe scripts\profile_sources.py
+
+# Contract and profile regression tests
+.venv\Scripts\python.exe -m pytest tests\test_data_contracts.py -q

@@ -1,0 +1,20 @@
+quality_check_key,source_key,profiled_at_utc,quality_dimension,status,severity,rows_evaluated,failed_rows,failure_rate,detail
+d1-snapshot-hash,D1,2026-09-09T13:07:23.611497+00:00,integrity,pass,critical,1,0,0.0,Raw snapshot exists and its SHA-256 matches the source manifest.
+d1-record-count,D1,2026-09-09T13:07:23.611497+00:00,volume,pass,high,1,0,0.0,Observed 727 features; manifest declares 727.
+d1-business-key-complete,D1,2026-09-09T13:07:23.611497+00:00,completeness,pass,critical,727,0,0.0,"Every feature has GlobalID, OBJECTID or feature id for an asset business key."
+d1-business-key-unique,D1,2026-09-09T13:07:23.611497+00:00,uniqueness,pass,critical,727,0,0.0,Preferred GlobalID/fallback OBJECTID asset keys are unique after case normalization.
+d1-geometry-valid,D1,2026-09-09T13:07:23.611497+00:00,validity,pass,critical,727,0,0.0,Every feature is a Point with valid EPSG:4326 longitude and latitude ranges.
+d1-description-present,D1,2026-09-09T13:07:23.611497+00:00,completeness,warn,low,727,2,0.002751031636863824,Description is optional context; missing values are retained as null.
+d2-snapshot-hash,D2,2026-09-09T13:07:23.611497+00:00,integrity,pass,critical,1,0,0.0,Raw snapshot exists and its SHA-256 matches the source manifest.
+d2-column-shape,D2,2026-09-09T13:07:23.611497+00:00,shape,pass,critical,1,0,0.0,Observed columns match the 8 manifest fields in order.
+d2-record-count,D2,2026-09-09T13:07:23.611497+00:00,volume,pass,high,1,0,0.0,Observed 24197 rows; manifest declares 24197.
+d2-required-completeness,D2,2026-09-09T13:07:23.611497+00:00,completeness,pass,high,24197,0,0.0,All eight source fields are non-blank per aggregate row.
+d2-type-validity,D2,2026-09-09T13:07:23.611497+00:00,validity,pass,critical,24197,0,0.0,"Date parses as DD/MM/YYYY and Year, Month and Request Count parse as integers."
+d2-period-consistency,D2,2026-09-09T13:07:23.611497+00:00,consistency,pass,high,24197,0,0.0,Date is the first day of the Year/Month supplied on the same row.
+d2-count-nonnegative,D2,2026-09-09T13:07:23.611497+00:00,validity,pass,critical,24197,0,0.0,Published aggregate request counts are non-negative integers.
+d2-exact-row-unique,D2,2026-09-09T13:07:23.611497+00:00,uniqueness,pass,high,24197,0,0.0,No duplicate full source rows after trimming whitespace.
+d2-normalized-key-collision,D2,2026-09-09T13:07:23.611497+00:00,uniqueness,warn,medium,24197,1,4.132743728561392e-05,Counts publisher rows that collide on case-normalized Group Code + Category Code + Date. Rows remain separate and are never silently merged; downstream facts use a deterministic full-row key and retain the raw codes.
+d2-no-future-period,D2,2026-09-09T13:07:23.611497+00:00,timeliness,pass,high,24197,0,0.0,No source period is later than the retrieval date.
+d2-monthly-freshness,D2,2026-09-09T13:07:23.611497+00:00,timeliness,pass,medium,1,0,0.0,Latest period ends 2026-07-31; retrieval lag is 40 days (warn above 62).
+d2-group-label-stability,D2,2026-09-09T13:07:23.611497+00:00,consistency,warn,low,98,2,0.02040816326530612,Counts normalized group codes that map to more than one description across history.
+d2-category-label-stability,D2,2026-09-09T13:07:23.611497+00:00,consistency,warn,low,418,35,0.08373205741626795,Counts normalized category codes that map to more than one description across history.

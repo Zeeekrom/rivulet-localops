@@ -1,0 +1,45 @@
+{
+  "mart_version": "1.0.0",
+  "status": "pass",
+  "table_rows": {
+    "dim_source": 3,
+    "dim_asset": 727,
+    "dim_townsville_category_variant": 524,
+    "dim_environment": 1,
+    "fact_reference_request_volume": 24197,
+    "fact_quality_check": 19,
+    "dim_category": 3,
+    "dim_policy": 1,
+    "dim_provider": 1,
+    "fact_decision": 180,
+    "fact_gate_rule": 1260,
+    "fact_review": 120,
+    "fact_manual_fallback": 8,
+    "dim_date": 270
+  },
+  "reconciliations": {
+    "d1_asset_rows_match_manifest": true,
+    "d2_fact_rows_match_manifest": true,
+    "d2_request_count_matches_profile": true,
+    "d6_event_rows_match_manifest": true,
+    "ledger_sequence_is_contiguous": true,
+    "quality_gate_has_no_blocking_failures": true,
+    "foreign_keys_valid": true,
+    "truth_classes_are_separated": true
+  },
+  "metrics": {
+    "metric_context": "Fixed-seed synthetic operational regression dataset; not council performance evidence.",
+    "data_truth_class": "synthetic_operational",
+    "submission_attempt_count": 188,
+    "decision_count": 180,
+    "gate_pass_rate": 0.4,
+    "gate_reject_rate": 0.2,
+    "gate_escalate_rate": 0.4,
+    "review_rate": 0.6666666666666666,
+    "override_rate_of_reviewed": 0.20833333333333334,
+    "manual_fallback_rate": 0.0425531914893617,
+    "median_review_lag_minutes": 450.0,
+    "asset_match_rate_of_eligible": 0.8571428571428571
+  },
+  "claim_boundary": "D1/D2 are real public reference data. D6 and every decision/review/control metric are fixed-seed synthetic operational data and cannot support claims about real council performance or model accuracy."
+}

@@ -1,0 +1,87 @@
+{
+  "manifest_version": "1.0",
+  "source_id": "D6",
+  "title": "Rivulet fixed-seed synthetic operational ledger",
+  "publisher": "Rivulet LocalOps portfolio project",
+  "landing_page": "https://github.com/Zeeekrom/rivulet-localops/tree/main/data/generated/ledger_v1",
+  "download_url": "https://github.com/Zeeekrom/rivulet-localops/raw/main/data/generated/ledger_v1/ledger_events.jsonl",
+  "license_name": "MIT (project-generated synthetic data)",
+  "license_url": "https://opensource.org/license/mit",
+  "retrieved_at_utc": "2026-09-09T00:00:00Z",
+  "source_last_modified_utc": "2026-09-09T00:00:00Z",
+  "raw_relative_path": "data/generated/ledger_v1/ledger_events.jsonl",
+  "content_sha256": "796e8bd0542402da475bd878e2956a4fc157884c34b2d4ac3bb572b81ddcbf2c",
+  "record_count": 316,
+  "grain": "One append-only synthetic ledger event per JSONL row, ordered by ledger sequence.",
+  "data_truth_class": "synthetic_operational",
+  "schema_version": "rivulet-ledger-event-v1",
+  "encoding": "UTF-8",
+  "crs": null,
+  "fields": [
+    {
+      "name": "sequence",
+      "data_type": "integer",
+      "nullable": false,
+      "description": "Global event order."
+    },
+    {
+      "name": "event_id",
+      "data_type": "uuid",
+      "nullable": false,
+      "description": "Deterministic event identifier."
+    },
+    {
+      "name": "event_type",
+      "data_type": "text",
+      "nullable": false,
+      "description": "Ledger event type."
+    },
+    {
+      "name": "occurred_at",
+      "data_type": "datetime",
+      "nullable": false,
+      "description": "Synthetic UTC event time."
+    },
+    {
+      "name": "actor_id",
+      "data_type": "text",
+      "nullable": false,
+      "description": "Synthetic actor identifier."
+    },
+    {
+      "name": "correlation_id",
+      "data_type": "text",
+      "nullable": false,
+      "description": "Synthetic request correlation identifier."
+    },
+    {
+      "name": "entity_id",
+      "data_type": "text",
+      "nullable": false,
+      "description": "Decision or provider entity identifier."
+    },
+    {
+      "name": "payload",
+      "data_type": "json",
+      "nullable": false,
+      "description": "Versioned event payload."
+    },
+    {
+      "name": "previous_event_hash",
+      "data_type": "sha256",
+      "nullable": true,
+      "description": "Previous hash-chain link."
+    },
+    {
+      "name": "event_hash",
+      "data_type": "sha256",
+      "nullable": false,
+      "description": "Current event hash."
+    }
+  ],
+  "limitations": [
+    "Every request, person identifier, timestamp and operational outcome is synthetic and fixed-seed.",
+    "The dataset demonstrates data modelling, controls and reconciliation; it is not evidence of council volume, SLA performance, workforce productivity or model accuracy.",
+    "The generator intentionally creates pass, reject, escalate, override and manual-fallback paths for coverage rather than natural prevalence."
+  ]
+}

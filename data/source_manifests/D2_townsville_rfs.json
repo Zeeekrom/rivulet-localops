@@ -1,0 +1,76 @@
+{
+  "manifest_version": "1.0",
+  "source_id": "D2",
+  "title": "Townsville City Council Customer Request Management – Request for Service",
+  "publisher": "Townsville City Council",
+  "landing_page": "https://data.gov.au/data/dataset/townsville-city-council-customer-request-management-request-for-service",
+  "download_url": "https://data.gov.au/data/dataset/ec957baf-a033-4143-add2-5d43ca8103fb/resource/b44988c1-b09d-42be-b3a5-ce668f876c83/download/crm-request-for-service.csv",
+  "license_name": "Creative Commons Attribution 4.0 International",
+  "license_url": "https://creativecommons.org/licenses/by/4.0",
+  "retrieved_at_utc": "2026-09-09T13:07:23.611497Z",
+  "source_last_modified_utc": "2026-08-07T03:24:19.305181Z",
+  "raw_relative_path": "data/raw/townsville_rfs/2026-09-09/crm-request-for-service.csv",
+  "content_sha256": "a9d24c95f71ba926433d2be474af1e6072cbac7e517010329ef3a404d96ab346",
+  "record_count": 24197,
+  "grain": "One publisher-supplied monthly aggregate row. Case-normalized Group Code + Category Code + Date is not guaranteed unique; downstream facts use a deterministic full-row key.",
+  "data_truth_class": "real_public_reference",
+  "schema_version": "townsville-rfs-csv-v1",
+  "encoding": "Windows-1252",
+  "crs": null,
+  "fields": [
+    {
+      "name": "Group Code",
+      "data_type": "text",
+      "nullable": false,
+      "description": "Townsville service group code."
+    },
+    {
+      "name": "Group Description",
+      "data_type": "text",
+      "nullable": false,
+      "description": "Townsville service group label."
+    },
+    {
+      "name": "Category Code",
+      "data_type": "text",
+      "nullable": false,
+      "description": "Townsville request category code."
+    },
+    {
+      "name": "Category Description",
+      "data_type": "text",
+      "nullable": false,
+      "description": "Townsville request category label."
+    },
+    {
+      "name": "Year",
+      "data_type": "integer",
+      "nullable": false,
+      "description": "Calendar year supplied by the publisher."
+    },
+    {
+      "name": "Month",
+      "data_type": "integer",
+      "nullable": false,
+      "description": "Calendar month number supplied by the publisher."
+    },
+    {
+      "name": "Date",
+      "data_type": "date",
+      "nullable": false,
+      "description": "First day of the aggregate month in DD/MM/YYYY form."
+    },
+    {
+      "name": "Request Count",
+      "data_type": "integer",
+      "nullable": false,
+      "description": "Published aggregate request count."
+    }
+  ],
+  "limitations": [
+    "This is aggregate Townsville data, not individual request or Hobart operational data.",
+    "Group and category taxonomies belong to Townsville and are not silently mapped to Rivulet categories.",
+    "The 2026-09-09 snapshot contains one collision after category-code case normalization and historical code-to-label drift. Raw rows, codes and descriptions must be preserved; category code alone is not a safe dimension key.",
+    "The publisher may revise historical rows; every refresh requires a new dated snapshot and hash."
+  ]
+}

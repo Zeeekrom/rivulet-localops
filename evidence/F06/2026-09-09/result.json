@@ -1,0 +1,29 @@
+{
+  "status": "pass_with_warnings",
+  "check_counts": {
+    "total": 19,
+    "pass": 15,
+    "warn": 4,
+    "fail": 0,
+    "blocking": 0
+  },
+  "D1": {
+    "record_count": 727,
+    "unique_asset_keys": 727,
+    "missing_descriptions": 2,
+    "crs": "EPSG:4326"
+  },
+  "D2": {
+    "record_count": 24197,
+    "encoding": "Windows-1252",
+    "date_min": "2018-07-01",
+    "date_max": "2026-07-01",
+    "freshness_lag_days_from_period_end": 40,
+    "published_request_count_total": 1213852,
+    "exact_duplicate_rows": 0,
+    "normalized_key_collision_rows": 1,
+    "group_codes_with_multiple_labels": 2,
+    "category_codes_with_multiple_labels": 35
+  },
+  "tests": "4 passed"
+}

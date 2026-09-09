@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -14,8 +15,15 @@ from .policy import PolicyPack
 class DeterministicPolicyGate:
     """Evaluate a proposed draft action without writing to an external system."""
 
-    def __init__(self, policy: PolicyPack):
+    def __init__(
+        self,
+        policy: PolicyPack,
+        id_factory: Callable[[], str] | None = None,
+        clock: Callable[[], datetime] | None = None,
+    ):
         self.policy = policy
+        self._id_factory = id_factory or (lambda: str(uuid4()))
+        self._clock = clock or (lambda: datetime.now(UTC))
 
     def evaluate(self, submission: DecisionSubmissionRequest, diagnosis: DiagnoseResponse) -> GateDecision:
         category = diagnosis.category.code
@@ -160,8 +168,8 @@ class DeterministicPolicyGate:
             status = "pass"
 
         return GateDecision(
-            gate_event_id=str(uuid4()),
-            evaluated_at=datetime.now(UTC),
+            gate_event_id=self._id_factory(),
+            evaluated_at=self._clock(),
             status=status,
             can_execute=status == "pass",
             proposed_action=submission.proposed_action,
