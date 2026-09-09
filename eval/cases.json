@@ -1,0 +1,14 @@
+[
+  {"text": "The public bin is overflowing beside Elizabeth Street", "category": "waste_litter", "priority": "P2"},
+  {"text": "Our recycling collection was missed this morning", "category": "waste_litter", "priority": "P3"},
+  {"text": "There is a large pothole blocking part of the road", "category": "roads_footpaths", "priority": "P2"},
+  {"text": "The footpath kerb is cracked outside the shops", "category": "roads_footpaths", "priority": "P3"},
+  {"text": "A blocked drain is causing water over the road", "category": "stormwater_drainage", "priority": "P3"},
+  {"text": "A fallen tree is across the park entrance", "category": "parks_trees", "priority": "P2"},
+  {"text": "A stray dog is wandering near the playground", "category": "animals", "priority": "P3"},
+  {"text": "A parking meter has stopped working", "category": "parking", "priority": "P3"},
+  {"text": "The lights in the community hall are broken", "category": "facilities", "priority": "P3"},
+  {"text": "Construction noise is continuing late at night", "category": "noise_nuisance", "priority": "P3"},
+  {"text": "Water is flooding inside and a person is trapped", "category": "stormwater_drainage", "priority": "P1"},
+  {"text": "Could someone explain how council rates work?", "category": "general_enquiry", "priority": "P4"}
+]

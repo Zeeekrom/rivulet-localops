@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "rivulet.synthetic.waste-litter",
+  "version": "0.1.0",
+  "title": "Waste and litter draft-action demonstration policy",
+  "status": "approved_for_demo",
+  "is_synthetic": true,
+  "authority": "human_product_owner",
+  "approved_at": "2026-09-09T00:00:00+10:00",
+  "scope_categories": [
+    "waste_litter"
+  ],
+  "permitted_actions": [
+    "create_draft_work_order"
+  ],
+  "evidence": {
+    "require_coordinates_for": [
+      "waste_litter"
+    ],
+    "require_asset_match_for": [
+      "waste_litter"
+    ],
+    "max_asset_distance_metres": 500
+  },
+  "thresholds": {
+    "minimum_category_confidence": 0.7,
+    "escalate_priorities": [
+      "P1"
+    ]
+  },
+  "source_note": "Synthetic portfolio policy approved for this technical demonstration. It is not City of Hobart, Tasmanian Government, or other council policy."
+}

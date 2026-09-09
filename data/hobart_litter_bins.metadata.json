@@ -1,0 +1,7 @@
+{
+  "source": "https://services1.arcgis.com/NHqdsnvwfSTg42I8/arcgis/rest/services/ASSETS_Litter_Bins_public/FeatureServer/0",
+  "retrieved_at_utc": "2026-08-30T04:37:56.738962+00:00",
+  "output_crs": "EPSG:4326",
+  "feature_count": 727,
+  "purpose": "Public-asset matching in an independent educational prototype"
+}
