@@ -44,7 +44,7 @@ flowchart LR
 | Human control | Pending queue; separate owner and reviewer; append-only accept/override/escalate history |
 | Replay | Recomputes the decision and compares policy version/hash, provider version, category, priority and Gate rules |
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
-| Verification | 18 automated tests plus a 12-case deterministic regression set |
+| Verification | 18 automated tests plus a 12-case deterministic regression set, reproduced by GitHub Actions |
 
 The current diagnosis engine is deliberately rules-based. It is a transparent control baseline for later model comparison and is not presented as generative AI.
 
@@ -116,6 +116,7 @@ Expected release evidence:
 
 - `18 passed`
 - 12 deterministic regression cases with zero category/priority differences
+- successful GitHub Actions verification for the `main` and `v0.3.0` pushes on 2026-09-09
 
 The 12-case result is a regression check on self-authored, uncomplicated cases. It is not model-accuracy or real-world effectiveness evidence.
 

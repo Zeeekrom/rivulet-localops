@@ -4,9 +4,9 @@
 |---|---|
 | Date | 2026-09-09 |
 | Release | v0.3.0 |
-| Environment | Python 3.12 on a clean virtual environment installed from `requirements-dev.lock` |
+| Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `ubuntu-latest`, installed from `requirements-dev.lock` |
 
-This document records implemented and locally verified results. It does not claim real-user validation, production adoption, generative-model accuracy or cloud deployment.
+This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
 
 ## Foundation / Sprint 0
 
@@ -61,6 +61,12 @@ Goal: make every submitted automated suggestion traceable, reviewable, replayabl
 | Disabled provider routes submission to a recorded manual fallback | Pass |
 
 Sprint 2 verification brought the suite to 18 passing tests.
+
+## Hosted CI evidence
+
+The same locked install, 18-test suite and 12-case regression check completed successfully in GitHub Actions for both the
+`main` push and the `v0.3.0` tag push on 2026-09-09. The workflow runs on a disposable hosted runner; it does not deploy
+the API or prove production operations.
 
 ## Reproduction
 
