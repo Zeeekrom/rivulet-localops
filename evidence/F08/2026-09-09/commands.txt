@@ -1,0 +1,3 @@
+.\.venv\Scripts\python.exe scripts\run_sprint2_review.py
+.\scripts\verify.ps1
+git diff --check

@@ -1,0 +1,37 @@
+{
+  "experiment_id": "F08",
+  "observed_at_utc": "2026-09-09T12:54:07.5728498Z",
+  "status": "pass",
+  "review_checks": {
+    "decision_queryable": true,
+    "review_is_append_only": true,
+    "independent_override_recorded": true,
+    "replay_reproducible": true,
+    "kill_switch_disabled_provider": true,
+    "manual_fallback_recorded": true,
+    "provider_reenabled": true,
+    "main_ledger_integrity": true,
+    "tamper_detected": true,
+    "first_invalid_sequence_identified": true,
+    "new_write_failed_closed": true
+  },
+  "observed_http_status": {
+    "manual_fallback": 503,
+    "tamper_blocked_write": 503
+  },
+  "main_path_event_count": 6,
+  "automated_tests": {
+    "passed": 18,
+    "warnings": 2
+  },
+  "regression_fixture": {
+    "cases": 12,
+    "failures": 0,
+    "claim": "Regression check only; not model or production accuracy."
+  },
+  "defect_found_and_fixed": {
+    "symptom": "Windows temporary-directory cleanup failed with WinError 32.",
+    "cause": "Read-only SQLite connections used transaction context managers without explicit close.",
+    "fix": "Wrap read connections with contextlib.closing and explicitly close direct tamper-test connections."
+  }
+}

@@ -2,7 +2,7 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.3.0-2F855A)
+![Release](https://img.shields.io/badge/release-v0.3.1-2F855A)
 
 Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review and a provider kill switch in one reproducible workflow.
 
@@ -32,7 +32,7 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.3.0
+## Current release: v0.3.1
 
 | Capability | Implemented evidence |
 |---|---|
@@ -45,6 +45,7 @@ flowchart LR
 | Replay | Recomputes the decision and compares policy version/hash, provider version, category, priority and Gate rules |
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
 | Verification | 18 automated tests plus a 12-case deterministic regression set, reproduced by GitHub Actions |
+| Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 
 The current diagnosis engine is deliberately rules-based. It is a transparent control baseline for later model comparison and is not presented as generative AI.
 
@@ -117,6 +118,16 @@ Expected release evidence:
 - `18 passed`
 - 12 deterministic regression cases with zero category/priority differences
 - successful GitHub Actions verification for the `main` and `v0.3.0` pushes on 2026-09-09
+- the Sprint 2 review runner completes on Windows without retaining the disposable SQLite files
+
+Run the end-to-end review story separately with:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_sprint2_review.py
+```
+
+The machine-readable review result and its claim boundary are in
+[`evidence/F08/2026-09-09`](evidence/F08/2026-09-09/README.md).
 
 The 12-case result is a regression check on self-authored, uncomplicated cases. It is not model-accuracy or real-world effectiveness evidence.
 

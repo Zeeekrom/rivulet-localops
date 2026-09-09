@@ -1,6 +1,7 @@
 import hashlib
 import json
 import sqlite3
+from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -59,7 +60,7 @@ class SQLiteEventLedger:
     def __init__(self, path: Path):
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             connection.executescript(SCHEMA)
 
     def _connect(self) -> sqlite3.Connection:
@@ -143,12 +144,12 @@ class SQLiteEventLedger:
         )
 
     def verify_integrity(self) -> IntegrityReport:
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             rows = connection.execute("SELECT * FROM ledger_events ORDER BY sequence").fetchall()
         return self._verify_rows(rows)
 
     def event_count(self) -> int:
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             row = connection.execute("SELECT COUNT(*) AS count FROM ledger_events").fetchone()
         return int(row["count"])
 
@@ -287,7 +288,7 @@ class SQLiteEventLedger:
         )
 
     def get_decision(self, decision_id: str) -> DecisionRecord | None:
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             created = connection.execute(
                 "SELECT * FROM ledger_events WHERE entity_id = ? AND event_type = 'decision.created'",
                 (decision_id,),
@@ -326,7 +327,7 @@ class SQLiteEventLedger:
         )
 
     def list_decisions(self, *, limit: int = 50, review_state: str | None = None) -> DecisionListResponse:
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             rows = connection.execute(
                 "SELECT entity_id FROM ledger_events WHERE event_type = 'decision.created' ORDER BY sequence DESC LIMIT ?",
                 (limit,),
@@ -357,7 +358,7 @@ class SQLiteEventLedger:
 
     def get_provider_status(self, provider_id: str) -> ProviderStatus:
         entity_id = f"provider:{provider_id}"
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             row = connection.execute(
                 """
                 SELECT * FROM ledger_events

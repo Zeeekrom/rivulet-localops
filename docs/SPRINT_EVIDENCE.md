@@ -3,7 +3,7 @@
 | Evidence field | Value |
 |---|---|
 | Date | 2026-09-09 |
-| Release | v0.3.0 |
+| Release | v0.3.1 |
 | Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `ubuntu-latest`, installed from `requirements-dev.lock` |
 
 This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
@@ -61,6 +61,16 @@ Goal: make every submitted automated suggestion traceable, reviewable, replayabl
 | Disabled provider routes submission to a recorded manual fallback | Pass |
 
 Sprint 2 verification brought the suite to 18 passing tests.
+
+### Sprint 2 review finding and patch
+
+The disposable Windows review run initially failed during cleanup because several read-only SQLite connections used
+transaction context managers without being explicitly closed. Python's SQLite context manager commits or rolls back a
+transaction but does not close the connection. Release `v0.3.1` closes those connections explicitly and adds a reusable
+runner covering query, append-only override, replay, kill switch, manual fallback, tamper detection and fail-closed writes.
+
+The rerun passed all review checks and successfully cleaned up both disposable databases. See
+[`evidence/F08/2026-09-09`](../evidence/F08/2026-09-09/README.md).
 
 ## Hosted CI evidence
 

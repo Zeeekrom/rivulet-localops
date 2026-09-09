@@ -1,4 +1,5 @@
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -190,8 +191,9 @@ def test_kill_switch_forces_manual_fallback_and_persists(tmp_path: Path) -> None
 def test_tamper_is_detected_and_new_writes_fail_closed(tmp_path: Path) -> None:
     client, ledger_path = _client(tmp_path)
     _submit(client)
-    with sqlite3.connect(ledger_path) as connection:
+    with closing(sqlite3.connect(ledger_path)) as connection:
         connection.execute("UPDATE ledger_events SET payload_json = '{}' WHERE sequence = 1")
+        connection.commit()
 
     integrity = client.get("/ops/v1/ledger/integrity")
     blocked = _submit(client)
