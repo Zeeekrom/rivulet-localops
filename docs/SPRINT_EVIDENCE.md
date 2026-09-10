@@ -97,8 +97,10 @@ generated regression fixtures. They are not real workload, effectiveness, servic
 Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The first v0.4.0 hosted run failed
 because Git line-ending normalization changed D1/D2 snapshot bytes after their manifest hashes were created. v0.4.1
 marks byte-hashed upstream snapshots as non-text so fresh checkouts preserve exact bytes. The failed run remains public
-evidence and the v0.4.0 tag was not rewritten. A hosted workflow runs on a disposable runner; it does not deploy the API
-or prove production operations.
+evidence and the v0.4.0 tag was not rewritten. Public commit `901358e9e468` passed both the main workflow
+([run 34479182180](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34479182180)) and the `v0.4.1` tag workflow
+([run 34479185154](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34479185154)). A hosted workflow runs on a
+disposable runner; it does not deploy the API or prove production operations.
 
 ## Reproduction
 

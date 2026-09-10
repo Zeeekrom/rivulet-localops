@@ -27,10 +27,15 @@
   },
   "tests": "4 passed",
   "hosted_portability": {
-    "v0.4.0_run": 34358091339,
-    "result": "failed",
+    "v0.4.0_main_run": 34358091339,
+    "v0.4.0_tag_run": 34358095767,
+    "v0.4.0_result": "failed",
     "cause": "Git checkout line-ending normalization changed snapshot bytes after the manifests were created",
     "remediation_release": "v0.4.1",
-    "remediation": "Treat byte-hashed upstream snapshots as non-text in .gitattributes; retain manifest hashes"
+    "remediation": "Treat byte-hashed upstream snapshots as non-text in .gitattributes; retain manifest hashes",
+    "v0.4.1_public_commit": "901358e9e46802f15f3d0bbfbeff2b65773cc849",
+    "v0.4.1_main_run": 34479182180,
+    "v0.4.1_tag_run": 34479185154,
+    "v0.4.1_result": "success"
   }
 }

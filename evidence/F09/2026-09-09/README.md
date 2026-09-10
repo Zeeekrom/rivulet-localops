@@ -20,3 +20,9 @@ report are versioned.
 
 These values are regression fixtures created by the scenario generator. They demonstrate calculations and control-path
 coverage, not model accuracy, council workload, service quality, staffing productivity or an SLA baseline.
+
+## Review
+
+Accepted on 2026-09-10 after a full local rebuild again passed 19 source checks (15 pass, 4 warning, 0 fail), all eight
+reconciliations, 25 tests and the 12-case regression fixture. Public `v0.4.1` fresh-checkout workflows also passed. This
+acceptance confirms reproducibility of the defined mart, not operational validity of the synthetic D6 metrics.

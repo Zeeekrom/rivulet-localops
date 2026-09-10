@@ -37,4 +37,5 @@ The first public `v0.4.0` GitHub Actions run failed because Git normalized the D
 so their stored bytes no longer matched the source-manifest hashes. Local verification could not expose this because the
 existing Windows working copy retained CRLF. Release `v0.4.1` marks the two upstream snapshots as non-text in
 `.gitattributes`, preserving their exact bytes and hashes across fresh clones. The failed run remains part of the public
-history; the release tag was not moved or rewritten.
+history; the release tag was not moved or rewritten. Public commit `901358e9e468` then passed both the main and
+`v0.4.1` tag workflows: runs `34479182180` and `34479185154`.
