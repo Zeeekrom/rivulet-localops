@@ -3,7 +3,7 @@
 | Evidence field | Value |
 |---|---|
 | Date | 2026-09-09 |
-| Release | v0.4.0 |
+| Release | v0.4.1 |
 | Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `ubuntu-latest`, installed from `requirements-dev.lock` |
 
 This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
@@ -94,9 +94,11 @@ generated regression fixtures. They are not real workload, effectiveness, servic
 
 ## Hosted CI evidence
 
-Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The v0.4.0 hosted run is recorded only
-after the tag workflow completes. A hosted workflow runs on a disposable runner; it does not deploy the API or prove
-production operations.
+Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The first v0.4.0 hosted run failed
+because Git line-ending normalization changed D1/D2 snapshot bytes after their manifest hashes were created. v0.4.1
+marks byte-hashed upstream snapshots as non-text so fresh checkouts preserve exact bytes. The failed run remains public
+evidence and the v0.4.0 tag was not rewritten. A hosted workflow runs on a disposable runner; it does not deploy the API
+or prove production operations.
 
 ## Reproduction
 

@@ -25,5 +25,12 @@
     "group_codes_with_multiple_labels": 2,
     "category_codes_with_multiple_labels": 35
   },
-  "tests": "4 passed"
+  "tests": "4 passed",
+  "hosted_portability": {
+    "v0.4.0_run": 34358091339,
+    "result": "failed",
+    "cause": "Git checkout line-ending normalization changed snapshot bytes after the manifests were created",
+    "remediation_release": "v0.4.1",
+    "remediation": "Treat byte-hashed upstream snapshots as non-text in .gitattributes; retain manifest hashes"
+  }
 }

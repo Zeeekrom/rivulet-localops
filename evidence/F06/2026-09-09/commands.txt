@@ -12,3 +12,11 @@
 
 # Contract and profile regression tests
 .venv\Scripts\python.exe -m pytest tests\test_data_contracts.py -q
+
+# v0.4.0 hosted failure diagnosis and byte-preservation verification
+gh run view 34358091339 --repo Zeeekrom/rivulet-localops --log-failed
+git check-attr text eol -- data/hobart_litter_bins.geojson data/raw/townsville_rfs/2026-09-09/crm-request-for-service.csv
+git add --renormalize data/hobart_litter_bins.geojson data/raw/townsville_rfs/2026-09-09/crm-request-for-service.csv
+
+# Public release helper now re-runs Git clean filters whenever attributes change
+scripts\sync_public_repo.ps1 -Publish -CommitMessage "fix: preserve source snapshot hashes" -ReleaseTag "v0.4.1"

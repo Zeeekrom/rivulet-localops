@@ -1,6 +1,6 @@
 # Technical Architecture
 
-Status: implemented local release v0.4.0. Planned capabilities are marked explicitly.
+Status: implemented local release v0.4.1. Planned capabilities are marked explicitly.
 
 ## 1. System boundary
 
@@ -146,7 +146,7 @@ Two deterministic separation controls apply:
 - the accountable owner cannot review the same decision;
 - a Gate-rejected or Gate-escalated decision cannot be directly accepted—reviewers must override or escalate with an explicit reason.
 
-These are application controls, not identity assurance. The IDs are not authenticated in v0.4.0.
+These are application controls, not identity assurance. The IDs are not authenticated in v0.4.1.
 
 ## 7. Replay
 

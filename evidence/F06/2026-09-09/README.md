@@ -30,3 +30,11 @@ collision remains visible as a warning and is pinned by tests.
 Passing this gate means the exact snapshots conform to the declared contracts and have no blocking defects for the
 planned reference analysis. It does not prove source correctness, completeness of council operations or transferability
 from Townsville to Hobart.
+
+## Hosted portability finding
+
+The first public `v0.4.0` GitHub Actions run failed because Git normalized the D1/D2 snapshot line endings on checkout,
+so their stored bytes no longer matched the source-manifest hashes. Local verification could not expose this because the
+existing Windows working copy retained CRLF. Release `v0.4.1` marks the two upstream snapshots as non-text in
+`.gitattributes`, preserving their exact bytes and hashes across fresh clones. The failed run remains part of the public
+history; the release tag was not moved or rewritten.

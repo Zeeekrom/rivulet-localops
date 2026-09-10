@@ -2,7 +2,7 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.4.0-2F855A)
+![Release](https://img.shields.io/badge/release-v0.4.1-2F855A)
 
 Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review, a provider kill switch and a truth-labelled analytics mart in one reproducible workflow.
 
@@ -32,7 +32,7 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.4.0
+## Current release: v0.4.1
 
 | Capability | Implemented evidence |
 |---|---|

@@ -1,1 +1,5 @@
 * text=auto eol=lf
+
+# Preserve byte-exact upstream snapshots so manifest SHA-256 values survive Git checkout.
+data/hobart_litter_bins.geojson -text -diff
+data/raw/** -text -diff
