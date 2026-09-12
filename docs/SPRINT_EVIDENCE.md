@@ -160,6 +160,12 @@ CRLF/LF equivalence test. The staged-tree fresh-checkout preflight passed before
 [tag run 34673726741](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673726741). Local Desktop
 refresh/DAX/screenshots cannot run on the hosted runner and remain separately versioned F10 evidence.
 
+The v0.6.0 Sprint 3 release commit `d29260d3c3ecde57e2dfd2a7015ec56006594d48` passed both
+[main run 34688891241](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688891241) and immutable
+[tag run 34688892353](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688892353). Those hosted runs
+reproduced the 35-test suite and deterministic evaluation in fresh Windows checkouts; they are not application
+deployment or production-security evidence.
+
 ## Reproduction
 
 ```powershell

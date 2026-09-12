@@ -42,5 +42,13 @@
   ],
   "provider": "deterministic-rules 0.1.0",
   "credential_mode": "none",
+  "hosted_ci": {
+    "repository": "https://github.com/Zeeekrom/rivulet-localops",
+    "release": "v0.6.0",
+    "commit": "d29260d3c3ecde57e2dfd2a7015ec56006594d48",
+    "main_run": "https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688891241",
+    "tag_run": "https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688892353",
+    "conclusion": "success"
+  },
   "claim_boundary": "This is a local L0 control harness using the deterministic-rules baseline and synthetic requests. It does not use a generative model, authenticate callers, prove object-level authorization against a real case store, execute connectors, or establish production security."
 }

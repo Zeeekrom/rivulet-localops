@@ -38,6 +38,13 @@ addition to the review scenarios.
   only synthetic requests, and production design must use access control, minimisation and a keyed/protected scheme.
 - Prompt-injection/adversarial-model evaluation, a real model provider and connector writes remain later gates.
 
+## Hosted repository verification
+
+The same v0.6.0 release commit passed GitHub Actions in a fresh `windows-latest` checkout on both
+[main run 34688891241](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688891241) and
+[tag run 34688892353](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688892353). These runs prove
+repository build/test reproducibility only; they do not deploy the application or establish production controls.
+
 ## Evidence files
 
 - `result.json` — machine-readable review result.

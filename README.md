@@ -141,6 +141,10 @@ Expected release evidence:
 - F18: 12 of 12 capability checks; 7 invocations = 1 completed, 5 denied and 1 failed before execution
 - the Sprint 2 review runner completes on Windows without retaining the disposable SQLite files
 
+The v0.6.0 release passed GitHub Actions on both
+[main run 34688891241](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688891241) and
+[tag run 34688892353](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688892353).
+
 Run the end-to-end review story separately with:
 
 ```powershell
