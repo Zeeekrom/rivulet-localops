@@ -1,0 +1,15 @@
+# Run from rivulet-council-ops.
+.\.venv\Scripts\python.exe scripts\build_powerbi_project.py
+.\.venv\Scripts\python.exe scripts\build_powerbi_project.py --check
+.\.venv\Scripts\python.exe scripts\validate_powerbi_project.py
+npx --yes --package @microsoft/powerbi-report-authoring-cli powerbi-report-author validate "analytics\powerbi\RivuletAssurance.Report" --pretty
+.\scripts\verify.ps1
+git diff --check
+
+# Desktop/runtime verification used Microsoft's Power BI Desktop Bridge and Modeling MCP:
+# 1. Open analytics/powerbi/RivuletAssurance.pbip in Desktop.
+# 2. Connect to the RivuletAssurance local model.
+# 3. Refresh all seven Import partitions with XMLA.
+# 4. Execute one DAX ROW query containing all thirteen reference measures.
+# 5. Execute the eligible/matched asset diagnostic query.
+# 6. Capture and visually inspect both refreshed pages.

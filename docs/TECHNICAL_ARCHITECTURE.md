@@ -1,6 +1,6 @@
 # Technical Architecture
 
-Status: implemented local release v0.4.1. Planned capabilities are marked explicitly.
+Status: implemented local release v0.5.0. Planned capabilities are marked explicitly.
 
 ## 1. System boundary
 
@@ -12,7 +12,8 @@ Rivulet LocalOps currently runs as one local FastAPI process with three logical 
 
 SQLite is the current local event store. D1/D2 public snapshots and the D6 synthetic event export feed a reproducible
 SQLite/CSV analytics mart. There is no web frontend, authenticated identity provider, external business connector,
-PostgreSQL service, Power BI report or cloud deployment in this release.
+PostgreSQL service, Power BI Service/Fabric deployment or application cloud deployment in this release. A local,
+version-controlled Power BI Project reads seven mart tables through deterministic Import partitions.
 
 ```mermaid
 flowchart TB
@@ -22,10 +23,12 @@ flowchart TB
         A[AssetRepository]
         G[DeterministicPolicyGate]
         E[SQLiteEventLedger]
-        R[Review and replay API]
+    R[Review and replay API]
     O[Operations API]
     M[Analytics mart builder]
     end
+
+    P[Power BI provenance and assurance]
 
     J[Versioned JSON policy] --> G
     H[Hobart GeoJSON snapshot] --> A
@@ -39,6 +42,7 @@ flowchart TB
     E --> M
     H --> M
     X[Townsville aggregate CSV] --> M
+    M --> P
 ```
 
 ## 2. Submission sequence
@@ -146,7 +150,7 @@ Two deterministic separation controls apply:
 - the accountable owner cannot review the same decision;
 - a Gate-rejected or Gate-escalated decision cannot be directly accepted—reviewers must override or escalate with an explicit reason.
 
-These are application controls, not identity assurance. The IDs are not authenticated in v0.4.1.
+These are application controls, not identity assurance. The IDs are not authenticated in v0.5.0.
 
 ## 7. Replay
 
@@ -189,7 +193,18 @@ hash drift, blocking source checks, primary/FK failures, count reconciliation er
 truth-class mixing. See the [data dictionary](../analytics/DATA_DICTIONARY.md) and
 [metric dictionary](../analytics/metric_dictionary.csv).
 
-## 10. Technology status
+## 10. Power BI project boundary
+
+`analytics/powerbi/RivuletAssurance.pbip` opens a two-page enhanced-PBIR report backed by a TMDL Import model. The
+provenance page exposes sources, truth classes and quality outcomes; the assurance page exposes synthetic Gate,
+review, override, fallback and lag fixtures. Thirteen reference measures are reconciled against versioned mart values.
+
+The project is deterministically regenerated from seven CSV tables. Portable editor, culture and diagram metadata are
+versioned; Desktop's local settings and data cache are ignored. After Desktop writes the project, the generator restores
+the canonical form—including PBIP/PBIR schema references required by Microsoft's validator—before commit. PBIP/PBIR
+remain preview formats, and local refresh evidence is not a Power BI Service, Fabric or gateway deployment claim.
+
+## 11. Technology status
 
 | Area | Current | Planned, not implemented |
 |---|---|---|
@@ -197,12 +212,12 @@ truth-class mixing. See the [data dictionary](../analytics/DATA_DICTIONARY.md) a
 | Decision engine | Deterministic rules provider | Bounded model-provider comparison |
 | Operational store | SQLite append-only events | PostgreSQL, migrations and retention controls |
 | Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL | Additional sources only when a report field requires them |
-| Analytics | Reproducible 14-table SQLite/CSV mart, quality checks and metric dictionary | Power BI semantic model and refresh |
+| Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Validated asserted IDs | Authentication, RBAC and service identities |
 | Security | Gate, hash chain, separation checks, kill switch, negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
 | Delivery | Lockfile, verification script, GitHub Actions workflow | Protected environments and cloud deployment |
 
-## 11. Primary limitations
+## 12. Primary limitations
 
 - The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
 - Self-authored regression cases do not establish real-world accuracy.
@@ -211,3 +226,4 @@ truth-class mixing. See the [data dictionary](../analytics/DATA_DICTIONARY.md) a
 - No connector means no action is executed and no downstream receipt exists.
 - No real council has validated the policy, workflow or operational fit.
 - D2 is Townsville aggregate context, not Hobart operational demand; D6 metrics are designed fixtures, not measured performance.
+- PBIP/PBIR are preview formats; local Desktop refresh and screenshots do not establish a governed Power BI Service deployment.

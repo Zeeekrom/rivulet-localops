@@ -18,6 +18,12 @@ try {
     & $python scripts\build_analytics_mart.py
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+    & $python scripts\build_powerbi_project.py --check
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+    & $python scripts\validate_powerbi_project.py
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
     & $python -m pytest -q
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

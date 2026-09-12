@@ -1,0 +1,116 @@
+table QualityCheck
+	lineageTag: 8124dd16-2847-5e52-a285-3aeec6460ca4
+
+	measure 'Quality Check Count' = COUNTROWS(QualityCheck)
+		formatString: #,0
+		lineageTag: c835ac5f-f441-5980-ac01-99bc0c3027de
+
+	measure 'Warning Check Count' = CALCULATE([Quality Check Count], QualityCheck[status] = "warn")
+		formatString: #,0
+		lineageTag: 98a915d1-27d0-54a9-8d8d-488a7e7e4538
+
+	measure 'Failed Check Count' = COALESCE(CALCULATE([Quality Check Count], QualityCheck[status] = "fail"), 0)
+		formatString: #,0
+		lineageTag: 48d1f0c6-fa61-5f52-aa30-3b62c9d82a09
+
+	measure 'Blocking Failure Count' = COALESCE(CALCULATE([Quality Check Count], QualityCheck[status] = "fail", QualityCheck[severity] = "critical"), 0)
+		formatString: #,0
+		lineageTag: ac822739-b098-5991-afc3-428170fb760d
+
+	column quality_check_key
+		dataType: string
+		lineageTag: dff80809-84b0-5b72-bae7-2498a82ae44b
+		summarizeBy: none
+		sourceColumn: quality_check_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_key
+		dataType: string
+		lineageTag: 50834b07-8575-5759-888c-1ba900a03073
+		summarizeBy: none
+		sourceColumn: source_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column profiled_at_utc
+		dataType: string
+		lineageTag: 5698fc56-ccb0-5252-8877-c8cc503d6cc1
+		summarizeBy: none
+		sourceColumn: profiled_at_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column quality_dimension
+		dataType: string
+		lineageTag: 53be1db5-1c8e-5b2e-8027-b26895821940
+		summarizeBy: none
+		sourceColumn: quality_dimension
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: 29221e8a-fb1b-58a4-8187-5fe3cef053ca
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column severity
+		dataType: string
+		lineageTag: 39aea0ec-2c62-5818-8bb7-c84adcdd90af
+		summarizeBy: none
+		sourceColumn: severity
+
+		annotation SummarizationSetBy = Automatic
+
+	column rows_evaluated
+		dataType: int64
+		formatString: 0
+		lineageTag: 8dd417a6-5ecb-5f77-bc9c-be917d642ca2
+		summarizeBy: none
+		sourceColumn: rows_evaluated
+
+		annotation SummarizationSetBy = Automatic
+
+	column failed_rows
+		dataType: int64
+		formatString: 0
+		lineageTag: 207f046a-1e84-511a-ad02-943ac374a5db
+		summarizeBy: none
+		sourceColumn: failed_rows
+
+		annotation SummarizationSetBy = Automatic
+
+	column failure_rate
+		dataType: double
+		lineageTag: 66de4c4e-7aad-530d-97f9-5e2db6b2f2ae
+		summarizeBy: none
+		sourceColumn: failure_rate
+
+		annotation SummarizationSetBy = Automatic
+
+	column detail
+		dataType: string
+		lineageTag: 5bda66df-e04b-598c-9c46-9d2368e41886
+		summarizeBy: none
+		sourceColumn: detail
+
+		annotation SummarizationSetBy = Automatic
+
+	partition QualityCheck-35361a66-0cec-5403-a2da-167809ea780c = m
+		mode: import
+		source =
+			let
+			    Binary = Binary.FromText("cXVhbGl0eV9jaGVja19rZXksc291cmNlX2tleSxwcm9maWxlZF9hdF91dGMscXVhbGl0eV9kaW1lbnNpb24sc3RhdHVzLHNldmVyaXR5LHJvd3NfZXZhbHVhdGVkLGZhaWxlZF9yb3dzLGZhaWx1cmVfcmF0ZSxkZXRhaWwNCmQxLXNuYXBzaG90LWhhc2gsRDEsMjAyNi0wOS0wOVQxMzowNzoyMy42MTE0OTcrMDA6MDAsaW50ZWdyaXR5LHBhc3MsY3JpdGljYWwsMSwwLDAuMCxSYXcgc25hcHNob3QgZXhpc3RzIGFuZCBpdHMgU0hBLTI1NiBtYXRjaGVzIHRoZSBzb3VyY2UgbWFuaWZlc3QuDQpkMS1yZWNvcmQtY291bnQsRDEsMjAyNi0wOS0wOVQxMzowNzoyMy42MTE0OTcrMDA6MDAsdm9sdW1lLHBhc3MsaGlnaCwxLDAsMC4wLE9ic2VydmVkIDcyNyBmZWF0dXJlczsgbWFuaWZlc3QgZGVjbGFyZXMgNzI3Lg0KZDEtYnVzaW5lc3Mta2V5LWNvbXBsZXRlLEQxLDIwMjYtMDktMDlUMTM6MDc6MjMuNjExNDk3KzAwOjAwLGNvbXBsZXRlbmVzcyxwYXNzLGNyaXRpY2FsLDcyNywwLDAuMCwiRXZlcnkgZmVhdHVyZSBoYXMgR2xvYmFsSUQsIE9CSkVDVElEIG9yIGZlYXR1cmUgaWQgZm9yIGFuIGFzc2V0IGJ1c2luZXNzIGtleS4iDQpkMS1idXNpbmVzcy1rZXktdW5pcXVlLEQxLDIwMjYtMDktMDlUMTM6MDc6MjMuNjExNDk3KzAwOjAwLHVuaXF1ZW5lc3MscGFzcyxjcml0aWNhbCw3MjcsMCwwLjAsUHJlZmVycmVkIEdsb2JhbElEL2ZhbGxiYWNrIE9CSkVDVElEIGFzc2V0IGtleXMgYXJlIHVuaXF1ZSBhZnRlciBjYXNlIG5vcm1hbGl6YXRpb24uDQpkMS1nZW9tZXRyeS12YWxpZCxEMSwyMDI2LTA5LTA5VDEzOjA3OjIzLjYxMTQ5NyswMDowMCx2YWxpZGl0eSxwYXNzLGNyaXRpY2FsLDcyNywwLDAuMCxFdmVyeSBmZWF0dXJlIGlzIGEgUG9pbnQgd2l0aCB2YWxpZCBFUFNHOjQzMjYgbG9uZ2l0dWRlIGFuZCBsYXRpdHVkZSByYW5nZXMuDQpkMS1kZXNjcmlwdGlvbi1wcmVzZW50LEQxLDIwMjYtMDktMDlUMTM6MDc6MjMuNjExNDk3KzAwOjAwLGNvbXBsZXRlbmVzcyx3YXJuLGxvdyw3MjcsMiwwLjAwMjc1MTAzMTYzNjg2MzgyNCxEZXNjcmlwdGlvbiBpcyBvcHRpb25hbCBjb250ZXh0OyBtaXNzaW5nIHZhbHVlcyBhcmUgcmV0YWluZWQgYXMgbnVsbC4NCmQyLXNuYXBzaG90LWhhc2gsRDIsMjAyNi0wOS0wOVQxMzowNzoyMy42MTE0OTcrMDA6MDAsaW50ZWdyaXR5LHBhc3MsY3JpdGljYWwsMSwwLDAuMCxSYXcgc25hcHNob3QgZXhpc3RzIGFuZCBpdHMgU0hBLTI1NiBtYXRjaGVzIHRoZSBzb3VyY2UgbWFuaWZlc3QuDQpkMi1jb2x1bW4tc2hhcGUsRDIsMjAyNi0wOS0wOVQxMzowNzoyMy42MTE0OTcrMDA6MDAsc2hhcGUscGFzcyxjcml0aWNhbCwxLDAsMC4wLE9ic2VydmVkIGNvbHVtbnMgbWF0Y2ggdGhlIDggbWFuaWZlc3QgZmllbGRzIGluIG9yZGVyLg0KZDItcmVjb3JkLWNvdW50LEQyLDIwMjYtMDktMDlUMTM6MDc6MjMuNjExNDk3KzAwOjAwLHZvbHVtZSxwYXNzLGhpZ2gsMSwwLDAuMCxPYnNlcnZlZCAyNDE5NyByb3dzOyBtYW5pZmVzdCBkZWNsYXJlcyAyNDE5Ny4NCmQyLXJlcXVpcmVkLWNvbXBsZXRlbmVzcyxEMiwyMDI2LTA5LTA5VDEzOjA3OjIzLjYxMTQ5NyswMDowMCxjb21wbGV0ZW5lc3MscGFzcyxoaWdoLDI0MTk3LDAsMC4wLEFsbCBlaWdodCBzb3VyY2UgZmllbGRzIGFyZSBub24tYmxhbmsgcGVyIGFnZ3JlZ2F0ZSByb3cuDQpkMi10eXBlLXZhbGlkaXR5LEQyLDIwMjYtMDktMDlUMTM6MDc6MjMuNjExNDk3KzAwOjAwLHZhbGlkaXR5LHBhc3MsY3JpdGljYWwsMjQxOTcsMCwwLjAsIkRhdGUgcGFyc2VzIGFzIEREL01NL1lZWVkgYW5kIFllYXIsIE1vbnRoIGFuZCBSZXF1ZXN0IENvdW50IHBhcnNlIGFzIGludGVnZXJzLiINCmQyLXBlcmlvZC1jb25zaXN0ZW5jeSxEMiwyMDI2LTA5LTA5VDEzOjA3OjIzLjYxMTQ5NyswMDowMCxjb25zaXN0ZW5jeSxwYXNzLGhpZ2gsMjQxOTcsMCwwLjAsRGF0ZSBpcyB0aGUgZmlyc3QgZGF5IG9mIHRoZSBZZWFyL01vbnRoIHN1cHBsaWVkIG9uIHRoZSBzYW1lIHJvdy4NCmQyLWNvdW50LW5vbm5lZ2F0aXZlLEQyLDIwMjYtMDktMDlUMTM6MDc6MjMuNjExNDk3KzAwOjAwLHZhbGlkaXR5LHBhc3MsY3JpdGljYWwsMjQxOTcsMCwwLjAsUHVibGlzaGVkIGFnZ3JlZ2F0ZSByZXF1ZXN0IGNvdW50cyBhcmUgbm9uLW5lZ2F0aXZlIGludGVnZXJzLg0KZDItZXhhY3Qtcm93LXVuaXF1ZSxEMiwyMDI2LTA5LTA5VDEzOjA3OjIzLjYxMTQ5NyswMDowMCx1bmlxdWVuZXNzLHBhc3MsaGlnaCwyNDE5NywwLDAuMCxObyBkdXBsaWNhdGUgZnVsbCBzb3VyY2Ugcm93cyBhZnRlciB0cmltbWluZyB3aGl0ZXNwYWNlLg0KZDItbm9ybWFsaXplZC1rZXktY29sbGlzaW9uLEQyLDIwMjYtMDktMDlUMTM6MDc6MjMuNjExNDk3KzAwOjAwLHVuaXF1ZW5lc3Msd2FybixtZWRpdW0sMjQxOTcsMSw0LjEzMjc0MzcyODU2MTM5MmUtMDUsQ291bnRzIHB1Ymxpc2hlciByb3dzIHRoYXQgY29sbGlkZSBvbiBjYXNlLW5vcm1hbGl6ZWQgR3JvdXAgQ29kZSArIENhdGVnb3J5IENvZGUgKyBEYXRlLiBSb3dzIHJlbWFpbiBzZXBhcmF0ZSBhbmQgYXJlIG5ldmVyIHNpbGVudGx5IG1lcmdlZDsgZG93bnN0cmVhbSBmYWN0cyB1c2UgYSBkZXRlcm1pbmlzdGljIGZ1bGwtcm93IGtleSBhbmQgcmV0YWluIHRoZSByYXcgY29kZXMuDQpkMi1uby1mdXR1cmUtcGVyaW9kLEQyLDIwMjYtMDktMDlUMTM6MDc6MjMuNjExNDk3KzAwOjAwLHRpbWVsaW5lc3MscGFzcyxoaWdoLDI0MTk3LDAsMC4wLE5vIHNvdXJjZSBwZXJpb2QgaXMgbGF0ZXIgdGhhbiB0aGUgcmV0cmlldmFsIGRhdGUuDQpkMi1tb250aGx5LWZyZXNobmVzcyxEMiwyMDI2LTA5LTA5VDEzOjA3OjIzLjYxMTQ5NyswMDowMCx0aW1lbGluZXNzLHBhc3MsbWVkaXVtLDEsMCwwLjAsTGF0ZXN0IHBlcmlvZCBlbmRzIDIwMjYtMDctMzE7IHJldHJpZXZhbCBsYWcgaXMgNDAgZGF5cyAod2FybiBhYm92ZSA2MikuDQpkMi1ncm91cC1sYWJlbC1zdGFiaWxpdHksRDIsMjAyNi0wOS0wOVQxMzowNzoyMy42MTE0OTcrMDA6MDAsY29uc2lzdGVuY3ksd2Fybixsb3csOTgsMiwwLjAyMDQwODE2MzI2NTMwNjEyLENvdW50cyBub3JtYWxpemVkIGdyb3VwIGNvZGVzIHRoYXQgbWFwIHRvIG1vcmUgdGhhbiBvbmUgZGVzY3JpcHRpb24gYWNyb3NzIGhpc3RvcnkuDQpkMi1jYXRlZ29yeS1sYWJlbC1zdGFiaWxpdHksRDIsMjAyNi0wOS0wOVQxMzowNzoyMy42MTE0OTcrMDA6MDAsY29uc2lzdGVuY3ksd2Fybixsb3csNDE4LDM1LDAuMDgzNzMyMDU3NDE2MjY3OTUsQ291bnRzIG5vcm1hbGl6ZWQgY2F0ZWdvcnkgY29kZXMgdGhhdCBtYXAgdG8gbW9yZSB0aGFuIG9uZSBkZXNjcmlwdGlvbiBhY3Jvc3MgaGlzdG9yeS4NCg==", BinaryEncoding.Base64),
+			    Raw = Csv.Document(Binary, [Delimiter=",", Columns=10, Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+			    Headers = Table.PromoteHeaders(Raw, [PromoteAllScalars=true]),
+			    Selected = Table.SelectColumns(Headers, {"quality_check_key", "source_key", "profiled_at_utc", "quality_dimension", "status", "severity", "rows_evaluated", "failed_rows", "failure_rate", "detail"}),
+			    Typed = Table.TransformColumnTypes(Selected, {{"quality_check_key", type text}, {"source_key", type text}, {"profiled_at_utc", type text}, {"quality_dimension", type text}, {"status", type text}, {"severity", type text}, {"rows_evaluated", Int64.Type}, {"failed_rows", Int64.Type}, {"failure_rate", type number}, {"detail", type text}}, "en-AU")
+			in
+			    Typed
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation

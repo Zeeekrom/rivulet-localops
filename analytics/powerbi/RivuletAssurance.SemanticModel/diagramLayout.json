@@ -1,0 +1,113 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 476.46440930897563,
+            "y": 22.74938840433265
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "4876398d-0560-5da0-a673-aa9b81845488",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 339.9145413192878,
+            "y": 254.72866984752773
+          },
+          "nodeIndex": "Decision",
+          "nodeLineageTag": "5d38417e-39f6-59e0-9d5d-d7949d73d727",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 460.23228814446065
+          },
+          "nodeIndex": "GateRule",
+          "nodeLineageTag": "b27c7b0c-83cd-5808-ae17-84ed2cfa5956",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 765.8204128261353,
+            "y": -29.06182731729905
+          },
+          "nodeIndex": "ManualFallback",
+          "nodeLineageTag": "a040ff0d-3549-53a5-a4a0-4058a81406f1",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 984.1973514606875,
+            "y": 486.06329853859313
+          },
+          "nodeIndex": "QualityCheck",
+          "nodeLineageTag": "8124dd16-2847-5e52-a285-3aeec6460ca4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 183.26080350983364,
+            "y": -50
+          },
+          "nodeIndex": "Review",
+          "nodeLineageTag": "5e1b20bc-2ed1-5b75-ab56-fcea102e88a3",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 694.5102913946782,
+            "y": 251.71135606056447
+          },
+          "nodeIndex": "Source",
+          "nodeLineageTag": "c16752c3-c361-5fca-8ecc-b66c7d8ede07",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

@@ -1,0 +1,21 @@
+# Run from the rivulet-council-ops repository root.
+
+.\.venv\Scripts\python.exe scripts\build_powerbi_project.py
+.\.venv\Scripts\python.exe scripts\build_powerbi_project.py --check
+.\.venv\Scripts\python.exe scripts\validate_powerbi_project.py
+npx --yes --package @microsoft/powerbi-report-authoring-cli powerbi-report-author validate "analytics\powerbi\RivuletAssurance.Report" --pretty
+.\scripts\verify.ps1
+git diff --check
+
+# Desktop Review (Power BI Desktop path varies by installation).
+$env:PBI_DESKTOP_PATH = '<PBIDesktop.exe>'
+npx --yes @microsoft/powerbi-desktop-bridge-cli open "analytics\powerbi\RivuletAssurance.pbip" --timeout 90
+npx --yes @microsoft/powerbi-desktop-bridge-cli status
+
+# The live Desktop semantic model was connected with Microsoft's Power BI Modeling MCP server.
+# partition_operations.RefreshWithXMLA refreshed Source, QualityCheck, Decision, GateRule,
+# Review, ManualFallback and Date in one transaction: 7 successful, 0 failed.
+# dax_query_operations.Execute reconciled the thirteen values in reference_metrics.csv plus
+# the diagnostic 126 eligible / 108 matched asset counts.
+
+npx --yes @microsoft/powerbi-desktop-bridge-cli screenshot-all --pid <desktop-pid> --output-dir "evidence\F10\2026-09-10\screenshots" --scale 2 --settle 3000 --wait-seconds 60

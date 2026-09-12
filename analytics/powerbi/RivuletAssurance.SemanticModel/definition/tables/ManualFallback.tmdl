@@ -1,0 +1,63 @@
+table ManualFallback
+	lineageTag: a040ff0d-3549-53a5-a4a0-4058a81406f1
+
+	measure 'Manual Fallback Count' = COUNTROWS(ManualFallback)
+		formatString: #,0
+		lineageTag: e7c35a23-0247-5302-b4b5-1fe0d0aa603d
+
+	column fallback_key
+		dataType: string
+		lineageTag: 0b3ce5d5-9ac5-52f2-b66f-ed190869683b
+		summarizeBy: none
+		sourceColumn: fallback_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column source_key
+		dataType: string
+		lineageTag: 969eba36-3690-5d30-8ff1-fea81563d685
+		summarizeBy: none
+		sourceColumn: source_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column date_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 9c18ebe4-5bb9-5517-bdcc-9a87170bdc5a
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column reason
+		dataType: string
+		lineageTag: d0fd07b0-9c87-5c47-8be1-25ee6247efbc
+		summarizeBy: none
+		sourceColumn: reason
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_truth_class
+		dataType: string
+		lineageTag: 36093b29-c2e5-539b-a27f-5de75a5d4bcc
+		summarizeBy: none
+		sourceColumn: data_truth_class
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ManualFallback-027bef16-5d4d-57ec-bf2e-1b925d4d7aa6 = m
+		mode: import
+		source =
+			let
+			    Binary = Binary.FromText("ZmFsbGJhY2tfa2V5LHNvdXJjZV9rZXksZGF0ZV9rZXksb2NjdXJyZWRfYXRfdXRjLGNvcnJlbGF0aW9uX2lkLGFjY291bnRhYmxlX293bmVyX2lkLHByb3ZpZGVyX2tleSxyZWFzb24sZGF0YV90cnV0aF9jbGFzcw0KMDZjNWZjZjAtOTM3Yi01ZGI4LWFjNjUtNTgzODU1NGI3N2JkLEQ2LDIwMjUxMTIwLDIwMjUtMTEtMjBUMTA6MDA6MDArMDA6MDAsc3ludGhldGljLWZhbGxiYWNrLTAyLTAsb3duZXI6bWFudWFsLGU2OTZkNGZiZjkyMzQ2YTZhN2YyNWNlOWFiYzE3YTdmNDMxY2QzMjk3NmE1N2UxM2RmN2M4M2U5Zjk4NmRhNzgsUHJvdmlkZXIgZGlzYWJsZWQgYnkga2lsbCBzd2l0Y2g7IHJvdXRlIHRvIG1hbnVhbCBoYW5kbGluZy4sc3ludGhldGljX29wZXJhdGlvbmFsDQo2YjIzZjMwYS1hM2U2LTU2NWUtYTU2OS01YTllZGNlNWZjMGMsRDYsMjAyNTExMjAsMjAyNS0xMS0yMFQxMTowMDowMCswMDowMCxzeW50aGV0aWMtZmFsbGJhY2stMDItMSxvd25lcjptYW51YWwsZTY5NmQ0ZmJmOTIzNDZhNmE3ZjI1Y2U5YWJjMTdhN2Y0MzFjZDMyOTc2YTU3ZTEzZGY3YzgzZTlmOTg2ZGE3OCxQcm92aWRlciBkaXNhYmxlZCBieSBraWxsIHN3aXRjaDsgcm91dGUgdG8gbWFudWFsIGhhbmRsaW5nLixzeW50aGV0aWNfb3BlcmF0aW9uYWwNCjJiYTFjYzdiLThmYTMtNTYxZC1hZDQyLTA2N2M0N2YyOTFhYSxENiwyMDI2MDIyMCwyMDI2LTAyLTIwVDEwOjAwOjAwKzAwOjAwLHN5bnRoZXRpYy1mYWxsYmFjay0wNS0wLG93bmVyOm1hbnVhbCxlNjk2ZDRmYmY5MjM0NmE2YTdmMjVjZTlhYmMxN2E3ZjQzMWNkMzI5NzZhNTdlMTNkZjdjODNlOWY5ODZkYTc4LFByb3ZpZGVyIGRpc2FibGVkIGJ5IGtpbGwgc3dpdGNoOyByb3V0ZSB0byBtYW51YWwgaGFuZGxpbmcuLHN5bnRoZXRpY19vcGVyYXRpb25hbA0KNzljMTk5ZTctZjIwYy01YzFhLWEwNzktZmYyNDhkZmNhNzM0LEQ2LDIwMjYwMjIwLDIwMjYtMDItMjBUMTE6MDA6MDArMDA6MDAsc3ludGhldGljLWZhbGxiYWNrLTA1LTEsb3duZXI6bWFudWFsLGU2OTZkNGZiZjkyMzQ2YTZhN2YyNWNlOWFiYzE3YTdmNDMxY2QzMjk3NmE1N2UxM2RmN2M4M2U5Zjk4NmRhNzgsUHJvdmlkZXIgZGlzYWJsZWQgYnkga2lsbCBzd2l0Y2g7IHJvdXRlIHRvIG1hbnVhbCBoYW5kbGluZy4sc3ludGhldGljX29wZXJhdGlvbmFsDQo5NDY0Y2UzMS00MjZmLTUwYTktYmNlNy02MDdiNmUwZDg2NDgsRDYsMjAyNjA1MjAsMjAyNi0wNS0yMFQxMDowMDowMCswMDowMCxzeW50aGV0aWMtZmFsbGJhY2stMDgtMCxvd25lcjptYW51YWwsZTY5NmQ0ZmJmOTIzNDZhNmE3ZjI1Y2U5YWJjMTdhN2Y0MzFjZDMyOTc2YTU3ZTEzZGY3YzgzZTlmOTg2ZGE3OCxQcm92aWRlciBkaXNhYmxlZCBieSBraWxsIHN3aXRjaDsgcm91dGUgdG8gbWFudWFsIGhhbmRsaW5nLixzeW50aGV0aWNfb3BlcmF0aW9uYWwNCjQyNDg1MzI1LWE0MjgtNTIxNS1hZGEzLTBlZDI2NmY3ZTg3YixENiwyMDI2MDUyMCwyMDI2LTA1LTIwVDExOjAwOjAwKzAwOjAwLHN5bnRoZXRpYy1mYWxsYmFjay0wOC0xLG93bmVyOm1hbnVhbCxlNjk2ZDRmYmY5MjM0NmE2YTdmMjVjZTlhYmMxN2E3ZjQzMWNkMzI5NzZhNTdlMTNkZjdjODNlOWY5ODZkYTc4LFByb3ZpZGVyIGRpc2FibGVkIGJ5IGtpbGwgc3dpdGNoOyByb3V0ZSB0byBtYW51YWwgaGFuZGxpbmcuLHN5bnRoZXRpY19vcGVyYXRpb25hbA0KOTNhMGRjMDYtNmM5OS01ODk5LWI5ZjMtMmVjYjVjNjliMDFmLEQ2LDIwMjYwODIwLDIwMjYtMDgtMjBUMTA6MDA6MDArMDA6MDAsc3ludGhldGljLWZhbGxiYWNrLTExLTAsb3duZXI6bWFudWFsLGU2OTZkNGZiZjkyMzQ2YTZhN2YyNWNlOWFiYzE3YTdmNDMxY2QzMjk3NmE1N2UxM2RmN2M4M2U5Zjk4NmRhNzgsUHJvdmlkZXIgZGlzYWJsZWQgYnkga2lsbCBzd2l0Y2g7IHJvdXRlIHRvIG1hbnVhbCBoYW5kbGluZy4sc3ludGhldGljX29wZXJhdGlvbmFsDQoyMjBkN2NiNC05NjRkLTUxY2MtYmIzYi0yZjM2OTRiOTgxYjAsRDYsMjAyNjA4MjAsMjAyNi0wOC0yMFQxMTowMDowMCswMDowMCxzeW50aGV0aWMtZmFsbGJhY2stMTEtMSxvd25lcjptYW51YWwsZTY5NmQ0ZmJmOTIzNDZhNmE3ZjI1Y2U5YWJjMTdhN2Y0MzFjZDMyOTc2YTU3ZTEzZGY3YzgzZTlmOTg2ZGE3OCxQcm92aWRlciBkaXNhYmxlZCBieSBraWxsIHN3aXRjaDsgcm91dGUgdG8gbWFudWFsIGhhbmRsaW5nLixzeW50aGV0aWNfb3BlcmF0aW9uYWwNCg==", BinaryEncoding.Base64),
+			    Raw = Csv.Document(Binary, [Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+			    Headers = Table.PromoteHeaders(Raw, [PromoteAllScalars=true]),
+			    Selected = Table.SelectColumns(Headers, {"fallback_key", "source_key", "date_key", "reason", "data_truth_class"}),
+			    Typed = Table.TransformColumnTypes(Selected, {{"fallback_key", type text}, {"source_key", type text}, {"date_key", Int64.Type}, {"reason", type text}, {"data_truth_class", type text}}, "en-AU")
+			in
+			    Typed
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation

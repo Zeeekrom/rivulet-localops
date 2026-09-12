@@ -1,0 +1,9 @@
+Experiment date (Australia/Hobart): 2026-09-10
+Windows Power BI Desktop: 2.157.1354.0
+Microsoft Power BI Desktop Bridge CLI: 0.1.2
+Microsoft Power BI Report Authoring CLI: 0.1.4
+Microsoft Power BI Modeling MCP server: 0.5.0.0
+Python: 3.12.9
+Node.js: 24.18.1
+npm: 11.16.0
+Git: 2.50.1.windows.1

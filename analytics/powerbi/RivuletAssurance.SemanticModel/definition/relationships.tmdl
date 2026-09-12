@@ -1,0 +1,32 @@
+relationship 5636f64d-cf77-5bb3-be7a-01c572d02748
+	fromColumn: QualityCheck.source_key
+	toColumn: Source.source_key
+
+relationship bf691862-27b4-55be-a5d6-e66521df0a0d
+	fromColumn: Decision.source_key
+	toColumn: Source.source_key
+
+relationship 3839e066-e564-5bc8-a767-102f391ed598
+	fromColumn: ManualFallback.source_key
+	toColumn: Source.source_key
+
+relationship f2a1a087-0578-5f28-866b-4198a98432bf
+	fromColumn: GateRule.decision_key
+	toColumn: Decision.decision_key
+
+relationship ddcef2bd-8e02-5f4c-9994-6faa6f89aacb
+	isActive: false
+	fromColumn: Review.decision_key
+	toColumn: Decision.decision_key
+
+relationship 3cc8c538-f46b-50af-ab01-4f1e98c2fd8c
+	fromColumn: Decision.date_key
+	toColumn: Date.date_key
+
+relationship 2623f114-9efe-51b9-9cf4-dd5697229ab3
+	fromColumn: Review.date_key
+	toColumn: Date.date_key
+
+relationship cf5b5704-4579-51fd-aaa2-c672e2525e47
+	fromColumn: ManualFallback.date_key
+	toColumn: Date.date_key

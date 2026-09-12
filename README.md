@@ -2,7 +2,7 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.4.1-2F855A)
+![Release](https://img.shields.io/badge/release-v0.5.0-2F855A)
 
 Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review, a provider kill switch and a truth-labelled analytics mart in one reproducible workflow.
 
@@ -32,7 +32,7 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.4.1
+## Current release: v0.5.0
 
 | Capability | Implemented evidence |
 |---|---|
@@ -44,13 +44,14 @@ flowchart LR
 | Human control | Pending queue; separate owner and reviewer; append-only accept/override/escalate history |
 | Replay | Recomputes the decision and compares policy version/hash, provider version, category, priority and Gate rules |
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
-| Verification | 18 automated tests plus a 12-case deterministic regression set, reproduced by GitHub Actions |
+| Verification | 27 automated tests plus a 12-case deterministic regression set; repository checks are reproduced by GitHub Actions |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
 | Data quality | 19 automated source checks: 15 pass, 4 documented warnings, 0 fail and 0 blocking |
 | Synthetic analytics fixture | D6 deterministically reproduces 316 hash-chained events: 180 decisions, 120 reviews, 8 manual fallbacks and 8 provider-control changes |
 | Analytics mart | 14 non-empty dimension/fact tables as versioned CSV plus a reproducible local SQLite build; 8 reconciliation checks pass |
 | Metric governance | Numerators, denominators, grain, filters, null handling, truth class and caveats are defined; no unsupported target is invented |
+| Power BI assurance | Deterministically generated two-page PBIP/PBIR/TMDL project: 7 Import tables, 29 measures, 8 relationships, 27 visuals, visible truth boundaries and versioned Desktop evidence |
 
 The current diagnosis engine is deliberately rules-based. It is a transparent control baseline for later model comparison and is not presented as generative AI.
 
@@ -62,6 +63,7 @@ The current diagnosis engine is deliberately rules-based. It is a transparent co
 - SHA-256 canonical event hashing
 - GeoJSON and public ArcGIS asset data
 - Contracted public CSV data, deterministic JSONL events and a star-schema analytics mart
+- Power BI Project (PBIP/PBIR/TMDL) with deterministic generation and Microsoft report validation
 - pytest and FastAPI TestClient
 - pip-tools lockfile
 - GitHub Actions verification
@@ -124,7 +126,9 @@ Expected release evidence:
 - source profile: 19 checks, 0 fail, 0 blocking
 - deterministic D6: 316 events with stable SHA-256 and a valid hash chain
 - analytics mart: 14 tables and 8 successful reconciliations
-- `25 passed`
+- Power BI project: 51 controlled files, 88 structural checks and Microsoft validator 0 errors / 0 warnings
+- Power BI Desktop: 7 of 7 Import partitions refreshed and 13 of 13 DAX reference values reconciled
+- `27 passed`
 - 12 deterministic regression cases with zero category/priority differences
 - the Sprint 2 review runner completes on Windows without retaining the disposable SQLite files
 
@@ -137,7 +141,15 @@ Run the end-to-end review story separately with:
 The machine-readable review result and its claim boundary are in
 [`evidence/F08/2026-09-09`](evidence/F08/2026-09-09/README.md).
 Source-quality and analytics evidence are in
-[`F06`](evidence/F06/2026-09-09/README.md) and [`F09`](evidence/F09/2026-09-09/README.md).
+[`F06`](evidence/F06/2026-09-09/README.md) and [`F09`](evidence/F09/2026-09-09/README.md). Power BI build, refresh,
+reconciliation, screenshots and Desktop round-trip evidence are in
+[`F10 initial Review`](evidence/F10/2026-09-10/README.md) and
+[`F10 round-trip`](evidence/F10/2026-09-12/README.md).
+
+To open the report, run the normal verification first, then open
+`analytics/powerbi/RivuletAssurance.pbip` in Power BI Desktop and refresh. PBIP/PBIR are preview formats. After any
+Desktop edit or refresh, rerun `scripts/build_powerbi_project.py` before validating or committing; the generator is
+the repository's canonical serialization boundary.
 
 The 12-case result is a regression check on self-authored, uncomplicated cases. It is not model-accuracy or real-world effectiveness evidence.
 
@@ -153,4 +165,6 @@ The 12-case result is a regression check on self-authored, uncomplicated cases. 
 
 ## Next verified slice
 
-The next planned slice is a two-page Power BI view for source provenance/quality and Gate/decision assurance, refreshed from the versioned mart and reconciled to reference metrics. Authentication/RBAC, adversarial evaluation, Windows enterprise lab integration and Azure deployment remain later stages and are not represented as completed.
+The next planned slice is one read-only `case-agent` with explicit identity, capability, data and tool allowlists plus
+audited rejection of unauthorized actions. Authentication/RBAC, adversarial evaluation, Windows enterprise lab
+integration, PostgreSQL and Azure deployment remain later stages and are not represented as completed.

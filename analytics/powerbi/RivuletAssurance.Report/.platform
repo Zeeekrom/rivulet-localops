@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Rivulet Assurance"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "6fbdfe92-1b71-5fcd-bf77-3b3ec3f252b5"
+  }
+}

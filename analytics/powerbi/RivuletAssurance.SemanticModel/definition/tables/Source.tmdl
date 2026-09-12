@@ -1,0 +1,107 @@
+table Source
+	lineageTag: c16752c3-c361-5fca-8ecc-b66c7d8ede07
+
+	measure 'Source Count' = COUNTROWS(Source)
+		formatString: #,0
+		lineageTag: 4ba1b480-3012-54a1-a70e-da6c3c72bd28
+
+	measure 'Public Source Count' = CALCULATE([Source Count], Source[data_truth_class] = "real_public_reference")
+		formatString: #,0
+		lineageTag: 6a33350c-4056-571a-8b37-0791d1d1380d
+
+	measure 'D1 Asset Rows' = CALCULATE(MAX(Source[record_count]), Source[source_key] = "D1")
+		formatString: #,0
+		lineageTag: d5d0b915-01be-5120-80a2-60792ae24f3a
+
+	measure 'D2 Aggregate Rows' = CALCULATE(MAX(Source[record_count]), Source[source_key] = "D2")
+		formatString: #,0
+		lineageTag: 8060d76e-25db-5447-a43c-ef1c1c7a8687
+
+	measure 'D6 Synthetic Events' = CALCULATE(MAX(Source[record_count]), Source[source_key] = "D6")
+		formatString: #,0
+		lineageTag: 5635e401-c96f-51e5-9852-0c3582104e17
+
+	measure 'Source Records' = SUM(Source[record_count])
+		formatString: #,0
+		lineageTag: ad5a08b6-c51c-55fc-8815-2abfa6190cf3
+
+	column source_key
+		dataType: string
+		lineageTag: 85ca8eb0-2837-5453-86bb-5e74b0950a26
+		summarizeBy: none
+		sourceColumn: source_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column title
+		dataType: string
+		lineageTag: 1c3b4df1-da6d-51ca-99ad-44e9e74d24d2
+		summarizeBy: none
+		sourceColumn: title
+
+		annotation SummarizationSetBy = Automatic
+
+	column publisher
+		dataType: string
+		lineageTag: 192daa89-8ada-5da9-946e-2d7d56ff3388
+		summarizeBy: none
+		sourceColumn: publisher
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_truth_class
+		dataType: string
+		lineageTag: e044f103-7d3e-5a35-ab02-6739dbb36e98
+		summarizeBy: none
+		sourceColumn: data_truth_class
+
+		annotation SummarizationSetBy = Automatic
+
+	column record_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 515167ca-4aa5-5227-8a47-87aca1af2831
+		summarizeBy: none
+		sourceColumn: record_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column snapshot_utc
+		dataType: string
+		lineageTag: b604e1c5-aa7a-5321-8b7a-9d56c14a6650
+		summarizeBy: none
+		sourceColumn: snapshot_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column license_name
+		dataType: string
+		lineageTag: 239af754-6321-5479-a3bc-db6a028b1ce5
+		summarizeBy: none
+		sourceColumn: license_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column landing_page
+		dataType: string
+		lineageTag: 8324063e-239c-5f9d-b7c1-ca5760658654
+		summarizeBy: none
+		sourceColumn: landing_page
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Source-97ff8deb-1e49-5463-bbcd-407be9d982d2 = m
+		mode: import
+		source =
+			let
+			    Binary = Binary.FromText("c291cmNlX2tleSx0aXRsZSxwdWJsaXNoZXIsZGF0YV90cnV0aF9jbGFzcyxyZWNvcmRfY291bnQsc25hcHNob3RfdXRjLGxpY2Vuc2VfbmFtZSxsYW5kaW5nX3BhZ2UNCkQxLENpdHkgb2YgSG9iYXJ0IEFTU0VUUyBMaXR0ZXIgQmlucyBwdWJsaWMgZmVhdHVyZSBsYXllcixDaXR5IG9mIEhvYmFydCxyZWFsX3B1YmxpY19yZWZlcmVuY2UsNzI3LDIwMjYtMDgtMzBUMDQ6Mzc6NTYuNzM4OTYyKzAwOjAwLENyZWF0aXZlIENvbW1vbnMgQXR0cmlidXRpb24gNC4wIEludGVybmF0aW9uYWwsaHR0cHM6Ly93d3cuYXJjZ2lzLmNvbS9ob21lL2l0ZW0uaHRtbD9pZD0yODVmNDEwNDYzNTc0NGIxYTFiOTUyYzM5MzRmMjE2NQ0KRDIsVG93bnN2aWxsZSBDaXR5IENvdW5jaWwgQ3VzdG9tZXIgUmVxdWVzdCBNYW5hZ2VtZW50IOKAkyBSZXF1ZXN0IGZvciBTZXJ2aWNlLFRvd25zdmlsbGUgQ2l0eSBDb3VuY2lsLHJlYWxfcHVibGljX3JlZmVyZW5jZSwyNDE5NywyMDI2LTA5LTA5VDEzOjA3OjIzLjYxMTQ5NyswMDowMCxDcmVhdGl2ZSBDb21tb25zIEF0dHJpYnV0aW9uIDQuMCBJbnRlcm5hdGlvbmFsLGh0dHBzOi8vZGF0YS5nb3YuYXUvZGF0YS9kYXRhc2V0L3Rvd25zdmlsbGUtY2l0eS1jb3VuY2lsLWN1c3RvbWVyLXJlcXVlc3QtbWFuYWdlbWVudC1yZXF1ZXN0LWZvci1zZXJ2aWNlDQpENixSaXZ1bGV0IGZpeGVkLXNlZWQgc3ludGhldGljIG9wZXJhdGlvbmFsIGxlZGdlcixSaXZ1bGV0IExvY2FsT3BzIHBvcnRmb2xpbyBwcm9qZWN0LHN5bnRoZXRpY19vcGVyYXRpb25hbCwzMTYsMjAyNi0wOS0wOVQwMDowMDowMCswMDowMCxNSVQgKHByb2plY3QtZ2VuZXJhdGVkIHN5bnRoZXRpYyBkYXRhKSxodHRwczovL2dpdGh1Yi5jb20vWmVlZWtyb20vcml2dWxldC1sb2NhbG9wcy90cmVlL21haW4vZGF0YS9nZW5lcmF0ZWQvbGVkZ2VyX3YxDQo=", BinaryEncoding.Base64),
+			    Raw = Csv.Document(Binary, [Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+			    Headers = Table.PromoteHeaders(Raw, [PromoteAllScalars=true]),
+			    Selected = Table.SelectColumns(Headers, {"source_key", "title", "publisher", "data_truth_class", "record_count", "snapshot_utc", "license_name", "landing_page"}),
+			    Typed = Table.TransformColumnTypes(Selected, {{"source_key", type text}, {"title", type text}, {"publisher", type text}, {"data_truth_class", type text}, {"record_count", Int64.Type}, {"snapshot_utc", type text}, {"license_name", type text}, {"landing_page", type text}}, "en-AU")
+			in
+			    Typed
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation

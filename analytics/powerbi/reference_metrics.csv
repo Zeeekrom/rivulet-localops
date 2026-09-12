@@ -1,0 +1,14 @@
+measure,expected_value,unit,data_truth_class,reference_table
+Public Source Count,2,count,real_public_reference,dim_source
+D1 Asset Rows,727,count,real_public_reference,dim_source
+D2 Aggregate Rows,24197,count,real_public_reference,dim_source
+Quality Check Count,19,count,mixed_reference_control,fact_quality_check
+Warning Check Count,4,count,mixed_reference_control,fact_quality_check
+Blocking Failure Count,0,count,mixed_reference_control,fact_quality_check
+Decision Count,180,count,synthetic_operational,fact_decision
+Pass Rate,0.4,ratio,synthetic_operational,fact_decision
+Review Rate,0.6666666666666666,ratio,synthetic_operational,fact_decision
+Override Rate,0.20833333333333334,ratio,synthetic_operational,fact_decision/fact_review
+Manual Fallback Count,8,count,synthetic_operational,fact_manual_fallback
+Median Review Lag,450.0,minutes,synthetic_operational,fact_review
+Asset Match Rate,0.8571428571428571,ratio,synthetic_operational,fact_decision

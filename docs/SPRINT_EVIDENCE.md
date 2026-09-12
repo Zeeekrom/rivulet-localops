@@ -2,9 +2,9 @@
 
 | Evidence field | Value |
 |---|---|
-| Date | 2026-09-09 |
-| Release | v0.4.1 |
-| Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `ubuntu-latest`, installed from `requirements-dev.lock` |
+| Date | 2026-09-12 |
+| Release | v0.5.0 |
+| Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `ubuntu-latest`, installed from `requirements-dev.lock`; Power BI Desktop checks run locally on Windows |
 
 This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
 
@@ -92,6 +92,27 @@ See [`evidence/F06/2026-09-09`](../evidence/F06/2026-09-09/README.md) and
 [`evidence/F09/2026-09-09`](../evidence/F09/2026-09-09/README.md). The D6 Gate mix and review timing are deliberately
 generated regression fixtures. They are not real workload, effectiveness, service-level or productivity evidence.
 
+## Sprint 2.5B — Power BI provenance and assurance thin slice
+
+Goal: make data provenance, quality, Gate outcomes and human-control paths inspectable without mixing public reference
+data with synthetic operational fixtures.
+
+| Acceptance item | Result |
+|---|---|
+| Deterministic PBIP/PBIR/TMDL project | 51 controlled files; build check passes |
+| Report/model structure | 2 pages, 27 visuals, 7 Import tables, 29 measures, 8 relationships |
+| Microsoft report validation | 0 errors, 0 warnings |
+| Desktop Import refresh | 7 of 7 partitions succeeded |
+| Live DAX/reference reconciliation | 13 of 13 exact; eligible/matched asset decisions 126/108 |
+| Truth and claim boundaries | Visible on both pages; public reference and synthetic operational facts remain distinct |
+| Desktop round-trip | Portable editor/culture/layout metadata generated; local cache/settings ignored; repository schemas restored before validation |
+| Full local verification | 27 tests passed; 12-case regression unchanged; 8 of 8 mart reconciliations pass |
+
+The first attempt to accept Desktop's normalized files was intentionally retained as a failed finding: Desktop removed
+the PBIR `$schema`, causing `PBIR_JSON_FILE_NO_SCHEMA`. The generator is now the canonical serialization gate after
+every Desktop edit or refresh. See [`F10 initial Review`](../evidence/F10/2026-09-10/README.md) and
+[`F10 round-trip`](../evidence/F10/2026-09-12/README.md).
+
 ## Hosted CI evidence
 
 Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The first v0.4.0 hosted run failed
@@ -101,6 +122,9 @@ evidence and the v0.4.0 tag was not rewritten. Public commit `901358e9e468` pass
 ([run 34479182180](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34479182180)) and the `v0.4.1` tag workflow
 ([run 34479185154](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34479185154)). A hosted workflow runs on a
 disposable runner; it does not deploy the API or prove production operations.
+
+The v0.5.0 hosted workflow identifiers are added only after the main and immutable tag workflows complete. Local
+Desktop refresh/DAX/screenshots cannot run on the Linux hosted runner and remain separately versioned F10 evidence.
 
 ## Reproduction
 
@@ -113,7 +137,7 @@ py -3.12 -m venv .venv
 Observed release output:
 
 ```text
-25 passed
+27 passed
 {
   "cases": 12,
   "category_accuracy": 1.0,

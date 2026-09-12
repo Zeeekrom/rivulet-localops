@@ -22,3 +22,8 @@ private-evidence/
 data/runtime/
 data/generated/**/*.sqlite3
 data/mart/**/*.sqlite3
+
+# Power BI Desktop user/machine state. Microsoft documents these as local-only;
+# editorSettings.json remains version-controlled because it travels with the model.
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
