@@ -257,9 +257,14 @@ def m_literal_strings(values: list[str]) -> str:
     return "{" + ", ".join(json.dumps(value) for value in values) + "}"
 
 
+def canonical_csv_bytes(csv_path: Path) -> bytes:
+    """Return a platform-independent representation for embedded generated CSV."""
+    return csv_path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+
+
 def build_table_tmdl(spec: TableSpec) -> str:
     csv_path = MART / spec.csv_name
-    payload = base64.b64encode(csv_path.read_bytes()).decode("ascii")
+    payload = base64.b64encode(canonical_csv_bytes(csv_path)).decode("ascii")
     bool_columns = [column.name for column in spec.columns if column.data_type == "boolean"]
     typed_columns = [column for column in spec.columns if column.data_type != "boolean"]
     m_types = {
@@ -841,6 +846,17 @@ def build_files() -> dict[Path, str]:
 
 def write_or_check(files: dict[Path, str], check: bool) -> int:
     failures: list[str] = []
+    manifest = {
+        "project": (OUTPUT / f"{PROJECT_NAME}.pbip").relative_to(ROOT).as_posix(),
+        "files": len(files),
+        "pages": 2,
+        "visuals": len(page_one_visuals()) + len(page_two_visuals()),
+        "source_csv_sha256": {
+            spec.csv_name: hashlib.sha256(canonical_csv_bytes(MART / spec.csv_name)).hexdigest() for spec in TABLES
+        },
+    }
+    manifest_path = OUTPUT / "build_manifest.json"
+    manifest_text = json_text(manifest)
     for path, content in files.items():
         if check:
             if not path.exists() or path.read_text(encoding="utf-8") != content:
@@ -849,22 +865,14 @@ def write_or_check(files: dict[Path, str], check: bool) -> int:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8", newline="\n")
     if check:
+        if not manifest_path.exists() or manifest_path.read_text(encoding="utf-8") != manifest_text:
+            failures.append(str(manifest_path.relative_to(ROOT)))
         if failures:
             print(json.dumps({"status": "stale", "files": failures}, indent=2))
             return 1
         print(json.dumps({"status": "pass", "files": len(files)}, indent=2))
         return 0
-    manifest = {
-        "project": str((OUTPUT / f"{PROJECT_NAME}.pbip").relative_to(ROOT)),
-        "files": len(files),
-        "pages": 2,
-        "visuals": len(page_one_visuals()) + len(page_two_visuals()),
-        "source_csv_sha256": {
-            spec.csv_name: hashlib.sha256((MART / spec.csv_name).read_bytes()).hexdigest() for spec in TABLES
-        },
-    }
-    manifest_path = OUTPUT / "build_manifest.json"
-    manifest_path.write_text(json_text(manifest), encoding="utf-8", newline="\n")
+    manifest_path.write_text(manifest_text, encoding="utf-8", newline="\n")
     print(json.dumps(manifest, indent=2))
     return 0
 

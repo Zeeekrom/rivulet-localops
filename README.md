@@ -2,7 +2,7 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.5.0-2F855A)
+![Release](https://img.shields.io/badge/release-v0.5.1-2F855A)
 
 Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review, a provider kill switch and a truth-labelled analytics mart in one reproducible workflow.
 
@@ -32,7 +32,7 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.5.0
+## Current release: v0.5.1
 
 | Capability | Implemented evidence |
 |---|---|
@@ -44,7 +44,7 @@ flowchart LR
 | Human control | Pending queue; separate owner and reviewer; append-only accept/override/escalate history |
 | Replay | Recomputes the decision and compares policy version/hash, provider version, category, priority and Gate rules |
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
-| Verification | 27 automated tests plus a 12-case deterministic regression set; repository checks are reproduced by GitHub Actions |
+| Verification | 28 automated tests plus a 12-case deterministic regression set; repository checks are reproduced by GitHub Actions |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
 | Data quality | 19 automated source checks: 15 pass, 4 documented warnings, 0 fail and 0 blocking |
@@ -128,7 +128,7 @@ Expected release evidence:
 - analytics mart: 14 tables and 8 successful reconciliations
 - Power BI project: 51 controlled files, 88 structural checks and Microsoft validator 0 errors / 0 warnings
 - Power BI Desktop: 7 of 7 Import partitions refreshed and 13 of 13 DAX reference values reconciled
-- `27 passed`
+- `28 passed`
 - 12 deterministic regression cases with zero category/priority differences
 - the Sprint 2 review runner completes on Windows without retaining the disposable SQLite files
 

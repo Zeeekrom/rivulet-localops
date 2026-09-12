@@ -3,8 +3,8 @@
 | Evidence field | Value |
 |---|---|
 | Date | 2026-09-12 |
-| Release | v0.5.0 |
-| Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `ubuntu-latest`, installed from `requirements-dev.lock`; Power BI Desktop checks run locally on Windows |
+| Release | v0.5.1 |
+| Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `windows-latest`, installed from `requirements-dev.lock`; Power BI Desktop checks run locally on Windows |
 
 This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
 
@@ -106,7 +106,7 @@ data with synthetic operational fixtures.
 | Live DAX/reference reconciliation | 13 of 13 exact; eligible/matched asset decisions 126/108 |
 | Truth and claim boundaries | Visible on both pages; public reference and synthetic operational facts remain distinct |
 | Desktop round-trip | Portable editor/culture/layout metadata generated; local cache/settings ignored; repository schemas restored before validation |
-| Full local verification | 27 tests passed; 12-case regression unchanged; 8 of 8 mart reconciliations pass |
+| Full local verification | 28 tests passed; 12-case regression unchanged; 8 of 8 mart reconciliations pass |
 
 The first attempt to accept Desktop's normalized files was intentionally retained as a failed finding: Desktop removed
 the PBIR `$schema`, causing `PBIR_JSON_FILE_NO_SCHEMA`. The generator is now the canonical serialization gate after
@@ -123,8 +123,12 @@ evidence and the v0.4.0 tag was not rewritten. Public commit `901358e9e468` pass
 ([run 34479185154](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34479185154)). A hosted workflow runs on a
 disposable runner; it does not deploy the API or prove production operations.
 
-The v0.5.0 hosted workflow identifiers are added only after the main and immutable tag workflows complete. Local
-Desktop refresh/DAX/screenshots cannot run on the Linux hosted runner and remain separately versioned F10 evidence.
+The v0.5.0 main and tag workflows both failed in a fresh Windows checkout because seven TMDL partitions embedded CRLF
+CSV bytes while Git supplied LF CSV bytes: [main run 34673442580](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673442580)
+and [tag run 34673442408](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673442408). The tag remains
+unchanged. v0.5.1 canonicalizes embedded generated CSV to LF, hashes and checks that same representation, and adds a
+CRLF/LF equivalence test. Its hosted workflow identifiers are added only after both workflows complete. Local Desktop
+refresh/DAX/screenshots cannot run on the hosted runner and remain separately versioned F10 evidence.
 
 ## Reproduction
 
@@ -137,7 +141,7 @@ py -3.12 -m venv .venv
 Observed release output:
 
 ```text
-27 passed
+28 passed
 {
   "cases": 12,
   "category_accuracy": 1.0,

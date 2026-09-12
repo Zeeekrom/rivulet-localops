@@ -1,6 +1,6 @@
 # Technical Architecture
 
-Status: implemented local release v0.5.0. Planned capabilities are marked explicitly.
+Status: implemented local release v0.5.1. Planned capabilities are marked explicitly.
 
 ## 1. System boundary
 
@@ -150,7 +150,7 @@ Two deterministic separation controls apply:
 - the accountable owner cannot review the same decision;
 - a Gate-rejected or Gate-escalated decision cannot be directly accepted—reviewers must override or escalate with an explicit reason.
 
-These are application controls, not identity assurance. The IDs are not authenticated in v0.5.0.
+These are application controls, not identity assurance. The IDs are not authenticated in v0.5.1.
 
 ## 7. Replay
 
@@ -199,7 +199,8 @@ truth-class mixing. See the [data dictionary](../analytics/DATA_DICTIONARY.md) a
 provenance page exposes sources, truth classes and quality outcomes; the assurance page exposes synthetic Gate,
 review, override, fallback and lag fixtures. Thirteen reference measures are reconciled against versioned mart values.
 
-The project is deterministically regenerated from seven CSV tables. Portable editor, culture and diagram metadata are
+The project is deterministically regenerated from seven CSV tables; generated CSV bytes are normalized to LF before
+embedding so Windows generation and fresh Git checkouts produce identical TMDL. Portable editor, culture and diagram metadata are
 versioned; Desktop's local settings and data cache are ignored. After Desktop writes the project, the generator restores
 the canonical form—including PBIP/PBIR schema references required by Microsoft's validator—before commit. PBIP/PBIR
 remain preview formats, and local refresh evidence is not a Power BI Service, Fabric or gateway deployment claim.

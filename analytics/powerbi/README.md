@@ -19,9 +19,10 @@ From the repository root:
 npx --yes --package @microsoft/powerbi-report-authoring-cli powerbi-report-author validate "analytics\powerbi\RivuletAssurance.Report" --pretty
 ```
 
-The builder reads seven versioned tables from `data/mart/v1/csv/` and embeds their exact bytes in Power Query Import
-partitions. This avoids machine-specific file paths and credentials while keeping the PBIP deterministic. Run the
-builder after rebuilding the mart; `--check` fails when the committed project is stale.
+The builder reads seven versioned tables from `data/mart/v1/csv/`, canonicalizes CSV line endings to LF, and embeds
+that stable representation in Power Query Import partitions. This avoids machine-specific file paths, credentials and
+Windows/Git newline drift while keeping the PBIP deterministic. Run the builder after rebuilding the mart; `--check`
+fails when either the committed project or its source-hash manifest is stale.
 
 Power BI Desktop writes machine-specific state under `.pbi`. `localSettings.json` and `cache.abf` are ignored, while
 `editorSettings.json`, `definition/cultures/en-AU.tmdl`, and `diagramLayout.json` are generated and versioned because

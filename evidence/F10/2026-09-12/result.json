@@ -36,7 +36,7 @@
     "import_partition_failures": 0,
     "live_dax_reference_metrics": 13,
     "live_dax_mismatches": 0,
-    "pytest_passed": 27,
+    "pytest_passed": 28,
     "pytest_warnings": 2,
     "self_authored_regression_cases": 12,
     "self_authored_regression_failures": 0,
@@ -70,7 +70,19 @@
       "sha256": "FCD36FAF9B1AB6BBA4D89924FE91C22882505EA035D674AFEA86B4605CC7B432"
     }
   ],
-  "canonicalization_rule": "After any Desktop edit or refresh, rerun the repository generator before Microsoft validation and commit.",
+  "hosted_portability": {
+    "v0.5.0": {
+      "status": "failed",
+      "main_run": 34673442580,
+      "tag_run": 34673442408,
+      "stale_tmdl_table_files": 7,
+      "cause": "TMDL partitions embedded Windows CRLF CSV bytes while fresh Git checkouts supplied LF CSV bytes."
+    },
+    "recovery_candidate": "v0.5.1",
+    "recovery_local_status": "pass",
+    "recovery_test_count": 28
+  },
+  "canonicalization_rule": "Canonicalize generated CSV to LF; after any Desktop edit or refresh, rerun the repository generator before Microsoft validation and commit.",
   "claim_boundary": "D1/D2 are real public reference data with different grains. D2 is Townsville aggregate context, not Hobart demand. D6 and all decision, Gate, review, fallback, rate and lag values are fixed-seed synthetic operational regression fixtures.",
   "not_verified": [
     "Power BI Service or Fabric deployment",

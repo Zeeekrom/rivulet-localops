@@ -31,9 +31,21 @@ verification. The canonical build now contains 51 controlled files and 88 struct
 - Power BI Desktop 2.157.1354.0 opened the canonical project.
 - Modeling MCP refresh: 7 successful Import partitions, 0 failures.
 - Live DAX: 13 of 13 reference values reconciled; eligible/matched asset decisions remained 126/108.
-- Repository verification: 27 tests passed, 2 known upstream warnings; 12 self-authored regression cases had 0
+- Repository recovery verification: 28 tests passed, 2 known upstream warnings; 12 self-authored regression cases had 0
   failures; all 8 analytics mart reconciliations passed.
 - Both refreshed pages were visually inspected and captured again.
+
+## Hosted portability finding
+
+Public v0.5.0 main and tag workflows both failed in a fresh Windows checkout because the seven generated TMDL table
+partitions embedded CRLF bytes from the local mart while Git stored the same generated CSV files with LF endings. The
+failure is preserved in main [run 34673442580](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673442580)
+and tag [run 34673442408](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673442408); the v0.5.0 tag was not
+moved or deleted.
+
+The recovery generator canonicalizes embedded generated CSV to LF on every operating system, calculates manifest
+hashes over the same canonical bytes, checks that manifest under `--check`, and adds a CRLF/LF equivalence test. Local
+recovery verification passes 28 tests. Recovery is released under a new patch version rather than rewriting v0.5.0.
 
 ## Evidence files
 
