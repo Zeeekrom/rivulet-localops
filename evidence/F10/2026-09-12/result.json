@@ -78,9 +78,14 @@
       "stale_tmdl_table_files": 7,
       "cause": "TMDL partitions embedded Windows CRLF CSV bytes while fresh Git checkouts supplied LF CSV bytes."
     },
-    "recovery_candidate": "v0.5.1",
+    "recovery_release": "v0.5.1",
     "recovery_local_status": "pass",
-    "recovery_test_count": 28
+    "recovery_test_count": 28,
+    "staged_tree_fresh_checkout": "pass",
+    "main_run": 34673725103,
+    "main_run_status": "success",
+    "tag_run": 34673726741,
+    "tag_run_status": "success"
   },
   "canonicalization_rule": "Canonicalize generated CSV to LF; after any Desktop edit or refresh, rerun the repository generator before Microsoft validation and commit.",
   "claim_boundary": "D1/D2 are real public reference data with different grains. D2 is Townsville aggregate context, not Hobart demand. D6 and all decision, Gate, review, fallback, rate and lag values are fixed-seed synthetic operational regression fixtures.",

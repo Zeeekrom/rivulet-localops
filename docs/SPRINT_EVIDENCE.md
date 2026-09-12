@@ -127,7 +127,9 @@ The v0.5.0 main and tag workflows both failed in a fresh Windows checkout becaus
 CSV bytes while Git supplied LF CSV bytes: [main run 34673442580](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673442580)
 and [tag run 34673442408](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673442408). The tag remains
 unchanged. v0.5.1 canonicalizes embedded generated CSV to LF, hashes and checks that same representation, and adds a
-CRLF/LF equivalence test. Its hosted workflow identifiers are added only after both workflows complete. Local Desktop
+CRLF/LF equivalence test. The staged-tree fresh-checkout preflight passed before release; v0.5.1 then passed
+[main run 34673725103](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673725103) and immutable
+[tag run 34673726741](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673726741). Local Desktop
 refresh/DAX/screenshots cannot run on the hosted runner and remain separately versioned F10 evidence.
 
 ## Reproduction

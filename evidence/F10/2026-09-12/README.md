@@ -47,6 +47,11 @@ The recovery generator canonicalizes embedded generated CSV to LF on every opera
 hashes over the same canonical bytes, checks that manifest under `--check`, and adds a CRLF/LF equivalence test. Local
 recovery verification passes 28 tests. Recovery is released under a new patch version rather than rewriting v0.5.0.
 
+The staged-tree fresh-checkout preflight passed before release. Public v0.5.1 then passed both
+[main run 34673725103](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673725103) and immutable
+[tag run 34673726741](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34673726741). These hosted runs verify
+repository checkout/build/test portability; they do not run Power BI Desktop or deploy the application.
+
 ## Evidence files
 
 - `result.json` — machine-readable result and exact live values.
