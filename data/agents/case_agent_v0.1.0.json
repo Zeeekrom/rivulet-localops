@@ -1,0 +1,45 @@
+{
+  "registry_id": "rivulet.agent-capabilities",
+  "version": "0.1.0",
+  "status": "approved_for_demo",
+  "is_synthetic": true,
+  "agents": [
+    {
+      "agent_id": "case-agent",
+      "agent_version": "0.1.0",
+      "owner_id": "service-owner.demo",
+      "purpose": "Read one synthetic case and approved public asset context to produce a structured diagnosis.",
+      "automation_level": "L0_shadow_read_only",
+      "enabled": true,
+      "grant_ttl_seconds": 300,
+      "max_tool_calls": 4,
+      "credential_mode": "none",
+      "provider": {
+        "provider": "deterministic-rules",
+        "version": "0.1.0",
+        "mode": "baseline"
+      },
+      "allowed_tools": [
+        {
+          "tool_name": "case.read",
+          "allowed_data_classes": ["synthetic_case"],
+          "resource_templates": ["case:{request_id}"]
+        },
+        {
+          "tool_name": "asset.lookup",
+          "allowed_data_classes": ["real_public_reference"],
+          "resource_templates": ["public_asset:hobart_litter_bins"]
+        }
+      ],
+      "explicitly_denied_tools": [
+        "shell.exec",
+        "package.install",
+        "internet.fetch",
+        "case.search",
+        "policy.publish",
+        "decision.submit",
+        "connector.write"
+      ]
+    }
+  ]
+}

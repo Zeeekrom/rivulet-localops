@@ -3,7 +3,7 @@
 | Evidence field | Value |
 |---|---|
 | Date | 2026-09-12 |
-| Release | v0.5.1 |
+| Release | v0.6.0 |
 | Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `windows-latest`, installed from `requirements-dev.lock`; Power BI Desktop checks run locally on Windows |
 
 This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
@@ -113,6 +113,34 @@ the PBIR `$schema`, causing `PBIR_JSON_FILE_NO_SCHEMA`. The generator is now the
 every Desktop edit or refresh. See [`F10 initial Review`](../evidence/F10/2026-09-10/README.md) and
 [`F10 round-trip`](../evidence/F10/2026-09-12/README.md).
 
+## Sprint 3 — Bounded read-only case-agent
+
+Goal: prove that agent identity, provider, tool, data and resource permissions can fail closed independently of a
+generative model.
+
+| Acceptance item | Result |
+|---|---|
+| Server-selected agent identity and named demo owner | Pass |
+| Versioned capability registry with canonical content hash | Pass |
+| Five-minute invocation grant and four-call budget | Pass |
+| Minimal allowlist | `case.read` for the current synthetic case; `asset.lookup` for the Hobart public reference |
+| Shell and unlisted tool request | Denied and audited |
+| Cross-case resource request | Denied and audited |
+| Restricted data-class request | Denied and audited |
+| Excess tool-call budget | Denied before provider execution |
+| Provider identity/version mismatch | Failed closed before provider execution |
+| Provider kill switch | HTTP 503 manual fallback and denied audit |
+| Raw request text in agent audit payload | Absent |
+| Full local verification | 35 tests passed; F18 12 of 12 checks; ledger integrity pass |
+
+The disposable F18 review produced seven agent invocations: one completed, five denied and one failed before
+execution. Along with one provider-control event, all eight ledger events formed a valid hash chain. See
+[`evidence/F18/2026-09-12`](../evidence/F18/2026-09-12/README.md).
+
+This is an L0 local control harness over the deterministic-rules provider, with credential mode `none`. It does not
+authenticate callers, prove real object-level authorization, use a generative model, run the Gate, make a human
+decision or execute a connector.
+
 ## Hosted CI evidence
 
 Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The first v0.4.0 hosted run failed
@@ -143,7 +171,7 @@ py -3.12 -m venv .venv
 Observed release output:
 
 ```text
-28 passed
+35 passed
 {
   "cases": 12,
   "category_accuracy": 1.0,
@@ -162,6 +190,7 @@ The word “accuracy” in the evaluator's JSON field is retained for compatibil
 | Townsville request-for-service snapshot | Real public aggregate reference data | Monthly aggregate context only; not Hobart demand or individual requests |
 | Request and review events | Synthetic demonstration data | Never described as resident or council operational history |
 | Gate policy | Synthetic demonstration policy | Never described as official or council-approved policy |
+| Agent capability registry | Synthetic control configuration | Demo identity, owner, provider binding and allowlists; not an external identity or signed policy system |
 | Priority targets | Demonstration rules | Never described as observed service performance |
 
 ## Claim ledger
@@ -173,6 +202,7 @@ The word “accuracy” in the evaluator's JSON field is retained for compatibil
 | Decision/review history is append-only through the application API | Yes | Local SQLite implementation |
 | The hash chain detects tested in-place modification | Yes | Not an immutable external audit store |
 | Provider automation can be stopped and manually routed | Yes | Same-process local operations control |
+| The bounded agent rejects the tested unauthorized capabilities | Yes | Local synthetic-case contract and deterministic provider only |
 | Identities are authenticated and authorised | No | IDs are asserted fields only |
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |

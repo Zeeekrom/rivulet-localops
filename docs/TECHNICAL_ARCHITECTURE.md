@@ -1,19 +1,20 @@
 # Technical Architecture
 
-Status: implemented local release v0.5.1. Planned capabilities are marked explicitly.
+Status: implemented local release v0.6.0. Planned capabilities are marked explicitly.
 
 ## 1. System boundary
 
-Rivulet LocalOps currently runs as one local FastAPI process with three logical areas:
+Rivulet LocalOps currently runs as one local FastAPI process with four logical areas:
 
 1. decision support: request validation, deterministic classification, priority and asset match;
 2. governance: versioned policy pack, deterministic Gate, decision/review ledger and replay;
 3. operations: health, ledger-integrity verification and provider kill switch.
+4. agent control: server-selected identity, versioned capabilities, short-lived grants, allowlists and invocation audit.
 
 SQLite is the current local event store. D1/D2 public snapshots and the D6 synthetic event export feed a reproducible
 SQLite/CSV analytics mart. There is no web frontend, authenticated identity provider, external business connector,
-PostgreSQL service, Power BI Service/Fabric deployment or application cloud deployment in this release. A local,
-version-controlled Power BI Project reads seven mart tables through deterministic Import partitions.
+PostgreSQL service, Power BI Service/Fabric deployment, application cloud deployment or generative-model provider in
+this release. A local, version-controlled Power BI Project reads seven mart tables through deterministic Import partitions.
 
 ```mermaid
 flowchart TB
@@ -23,6 +24,8 @@ flowchart TB
         A[AssetRepository]
         G[DeterministicPolicyGate]
         E[SQLiteEventLedger]
+    C[Capability registry]
+    B[Read-only case-agent]
     R[Review and replay API]
     O[Operations API]
     M[Analytics mart builder]
@@ -33,6 +36,9 @@ flowchart TB
     J[Versioned JSON policy] --> G
     H[Hobart GeoJSON snapshot] --> A
     V --> T
+    C --> B
+    B --> T
+    B --> E
     T --> A
     T --> G
     G --> E
@@ -105,6 +111,9 @@ The ledger uses one append-only `ledger_events` table. Event types currently inc
 - `decision.replayed`
 - `decision.manual_fallback`
 - `provider.control_changed`
+- `agent.invocation.completed`
+- `agent.invocation.denied`
+- `agent.invocation.failed`
 
 Every event stores:
 
@@ -150,7 +159,7 @@ Two deterministic separation controls apply:
 - the accountable owner cannot review the same decision;
 - a Gate-rejected or Gate-escalated decision cannot be directly accepted—reviewers must override or escalate with an explicit reason.
 
-These are application controls, not identity assurance. The IDs are not authenticated in v0.5.1.
+These are application controls, not identity assurance. The IDs are not authenticated in v0.6.0.
 
 ## 7. Replay
 
@@ -177,7 +186,24 @@ When disabled:
 
 The current kill switch is logically separated under `/ops/v1`, but it is not physically out-of-band because it shares the application process and SQLite file.
 
-## 9. Analytics contracts and mart
+## 9. Bounded case-agent control
+
+The server exposes one fixed `case-agent` identity from a versioned, content-hashed synthetic capability registry. Its
+automation level is `L0_shadow_read_only`: it can read only the current synthetic case and, when coordinates are
+present, the approved Hobart public-asset reference. A five-minute invocation grant and a four-call budget limit each
+run. Shell, package installation, arbitrary internet access, case search, policy publication, decision submission and
+connector write are explicitly denied; every other undeclared capability is denied by default.
+
+Provider identity, version and mode must match the registry before diagnosis executes. Completed, denied and failed
+invocations append agent/owner/purpose IDs, registry/policy/provider versions, grant times, tool receipts, content
+hashes, latency and termination reason to the existing ledger. Raw request prose is omitted from the agent audit
+payload. The agent never runs the deterministic Gate, records a human decision or writes to an external connector.
+
+These controls do not authenticate callers, implement real object-level authorization or turn the deterministic-rules
+adapter into generative AI. The registry is not signed, and a plain input SHA-256 hash is not a privacy-preserving
+commitment for personal data.
+
+## 10. Analytics contracts and mart
 
 D1 City of Hobart assets, D2 Townsville monthly request aggregates and D6 fixed-seed synthetic ledger events each
 have a machine-readable source manifest. The manifest pins publisher, URLs, licence, retrieval time, hash, row/event
@@ -193,7 +219,7 @@ hash drift, blocking source checks, primary/FK failures, count reconciliation er
 truth-class mixing. See the [data dictionary](../analytics/DATA_DICTIONARY.md) and
 [metric dictionary](../analytics/metric_dictionary.csv).
 
-## 10. Power BI project boundary
+## 11. Power BI project boundary
 
 `analytics/powerbi/RivuletAssurance.pbip` opens a two-page enhanced-PBIR report backed by a TMDL Import model. The
 provenance page exposes sources, truth classes and quality outcomes; the assurance page exposes synthetic Gate,
@@ -205,25 +231,27 @@ versioned; Desktop's local settings and data cache are ignored. After Desktop wr
 the canonical form—including PBIP/PBIR schema references required by Microsoft's validator—before commit. PBIP/PBIR
 remain preview formats, and local refresh evidence is not a Power BI Service, Fabric or gateway deployment claim.
 
-## 11. Technology status
+## 12. Technology status
 
 | Area | Current | Planned, not implemented |
 |---|---|---|
 | Application | Python 3.12, FastAPI, Pydantic | Web review experience |
-| Decision engine | Deterministic rules provider | Bounded model-provider comparison |
+| Decision engine | Deterministic rules provider behind a bounded read-only agent adapter | Model-provider comparison after security evaluation |
 | Operational store | SQLite append-only events | PostgreSQL, migrations and retention controls |
 | Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL | Additional sources only when a report field requires them |
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
-| Identity | Validated asserted IDs | Authentication, RBAC and service identities |
-| Security | Gate, hash chain, separation checks, kill switch, negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
+| Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
+| Security | Gate, hash chain, agent capability allowlists, provider binding, separation checks, kill switch and negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
 | Delivery | Lockfile, verification script, GitHub Actions workflow | Protected environments and cloud deployment |
 
-## 12. Primary limitations
+## 13. Primary limitations
 
 - The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
 - Self-authored regression cases do not establish real-world accuracy.
 - SQLite is suitable for the current local demonstrator, not a multi-node production service.
 - Asserted identity fields do not prevent impersonation.
+- Agent capability checks are local contract controls, not authorization against a multi-user case store; the registry is hashed but not signed.
+- No generative model is connected, and the current agent cannot execute the Gate, a human decision or a connector.
 - No connector means no action is executed and no downstream receipt exists.
 - No real council has validated the policy, workflow or operational fit.
 - D2 is Townsville aggregate context, not Hobart operational demand; D6 metrics are designed fixtures, not measured performance.

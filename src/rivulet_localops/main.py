@@ -5,10 +5,16 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 
+from .agent_runtime import AgentInvocationDenied, CaseAgentRunner
 from .assets import AssetRepository
+from .capabilities import load_capability_registry
 from .gate import DeterministicPolicyGate
 from .ledger import LedgerIntegrityError, SQLiteEventLedger
 from .models import (
+    AgentCapabilityProfile,
+    AgentInvocationListResponse,
+    AgentInvocationRequest,
+    AgentInvocationResponse,
     DecisionListResponse,
     DecisionRecord,
     DecisionSubmissionRequest,
@@ -27,6 +33,7 @@ from .providers import RulesTriageProvider
 
 DEFAULT_ASSET_PATH = Path(__file__).resolve().parents[2] / "data" / "hobart_litter_bins.geojson"
 DEFAULT_POLICY_PATH = Path(__file__).resolve().parents[2] / "data" / "policies" / "waste_litter_demo_v0.1.0.json"
+DEFAULT_CAPABILITY_PATH = Path(__file__).resolve().parents[2] / "data" / "agents" / "case_agent_v0.1.0.json"
 DEFAULT_LEDGER_PATH = Path(__file__).resolve().parents[2] / "data" / "runtime" / "rivulet_localops.sqlite3"
 PROVIDER_ID = "deterministic-rules"
 
@@ -35,22 +42,27 @@ def create_app(
     asset_path: Path | None = None,
     policy_path: Path | None = None,
     ledger_path: Path | None = None,
+    capability_path: Path | None = None,
 ) -> FastAPI:
     resolved_path = asset_path or Path(os.getenv("RIVULET_ASSET_PATH", DEFAULT_ASSET_PATH))
     resolved_policy_path = policy_path or Path(os.getenv("RIVULET_POLICY_PATH", DEFAULT_POLICY_PATH))
+    resolved_capability_path = capability_path or Path(os.getenv("RIVULET_CAPABILITY_PATH", DEFAULT_CAPABILITY_PATH))
     resolved_ledger_path = ledger_path or Path(os.getenv("RIVULET_LEDGER_PATH", DEFAULT_LEDGER_PATH))
     policy = load_policy_pack(resolved_policy_path)
+    capability_registry = load_capability_registry(resolved_capability_path)
     assets = AssetRepository(resolved_path)
     provider = RulesTriageProvider(assets, policy.evidence.max_asset_distance_metres)
     gate = DeterministicPolicyGate(policy)
     ledger = SQLiteEventLedger(resolved_ledger_path)
+    case_agent = CaseAgentRunner(capability_registry, provider, ledger, policy.version)
 
     application = FastAPI(
         title="Rivulet LocalOps",
-    version="0.5.1",
+        version="0.6.0",
         description="Explainable and accountable service-request decision support for small Tasmanian councils.",
     )
     application.state.ledger = ledger
+    application.state.case_agent = case_agent
 
     @application.exception_handler(LedgerIntegrityError)
     async def ledger_integrity_failure(_: Request, error: LedgerIntegrityError) -> JSONResponse:
@@ -123,6 +135,35 @@ def create_app(
         diagnosis = provider.diagnose(submission.request)
         gate_decision = gate.evaluate(submission, diagnosis)
         return ledger.record_decision(submission, gate_decision)
+
+    @application.get("/ops/v1/agents/{agent_id}/capabilities", response_model=AgentCapabilityProfile)
+    def get_agent_capabilities(agent_id: str) -> AgentCapabilityProfile:
+        _require_ledger_integrity()
+        if agent_id != case_agent.agent_id:
+            raise HTTPException(status_code=404, detail="Unknown agent identity")
+        return case_agent.profile
+
+    @application.post("/api/v1/agents/case-agent/invoke", response_model=AgentInvocationResponse)
+    def invoke_case_agent(invocation: AgentInvocationRequest) -> AgentInvocationResponse:
+        _require_ledger_integrity()
+        try:
+            return case_agent.invoke(invocation, provider_disabled=_provider_status().disabled)
+        except AgentInvocationDenied as error:
+            raise HTTPException(
+                status_code=error.status_code,
+                detail={
+                    "status": "capability_denied" if error.status_code == 403 else "manual_fallback",
+                    "audit": error.audit.model_dump(mode="json"),
+                },
+            ) from error
+
+    @application.get("/ops/v1/agents/invocations", response_model=AgentInvocationListResponse)
+    def list_agent_invocations(
+        limit: int = Query(default=50, ge=1, le=200),
+        status: Literal["completed", "denied", "failed"] | None = None,
+    ) -> AgentInvocationListResponse:
+        _require_ledger_integrity()
+        return ledger.list_agent_invocations(limit=limit, status=status)
 
     @application.get("/api/v1/decisions", response_model=DecisionListResponse)
     def list_decisions(

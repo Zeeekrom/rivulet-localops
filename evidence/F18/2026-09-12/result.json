@@ -1,0 +1,46 @@
+{
+  "experiment_id": "F18",
+  "experiment_date_local": "2026-09-12",
+  "status": "pass",
+  "scope": "Sprint 3 read-only case-agent identity, capability, data and tool enforcement",
+  "checks": {
+    "profile_is_server_owned_read_only": true,
+    "allowed_tools_are_minimal": true,
+    "allowed_invocation_completed": true,
+    "shell_denied_and_audited": true,
+    "cross_case_denied_and_audited": true,
+    "restricted_data_class_denied_and_audited": true,
+    "tool_budget_denied_before_execution": true,
+    "provider_identity_mismatch_failed_before_execution": true,
+    "provider_kill_switch_denied_and_audited": true,
+    "raw_request_text_not_stored_in_agent_audit": true,
+    "seven_agent_invocations_queryable": true,
+    "ledger_integrity_preserved": true
+  },
+  "summary": {
+    "checks_total": 12,
+    "checks_passed": 12,
+    "agent_invocations": 7,
+    "completed": 1,
+    "denied": 5,
+    "failed": 1,
+    "ledger_event_count": 8,
+    "focused_agent_tests": 7,
+    "repository_tests": 35
+  },
+  "allowed_tools": [
+    "case.read",
+    "asset.lookup"
+  ],
+  "denied_examples": [
+    "shell.exec",
+    "case.read on another request_id",
+    "asset.lookup with restricted_operational data",
+    "tool call count over budget",
+    "provider identity mismatch",
+    "provider disabled by kill switch"
+  ],
+  "provider": "deterministic-rules 0.1.0",
+  "credential_mode": "none",
+  "claim_boundary": "This is a local L0 control harness using the deterministic-rules baseline and synthetic requests. It does not use a generative model, authenticate callers, prove object-level authorization against a real case store, execute connectors, or establish production security."
+}

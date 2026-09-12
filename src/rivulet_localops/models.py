@@ -219,3 +219,109 @@ class ReplayResult(BaseModel):
     priority_match: bool
     rule_outcomes_match: bool
     reproducible: bool
+
+
+class AgentToolPermission(BaseModel):
+    tool_name: str = Field(min_length=3, max_length=100, pattern=r"^[a-z][a-z0-9_.-]+$")
+    allowed_data_classes: list[str] = Field(min_length=1, max_length=10)
+    resource_templates: list[str] = Field(min_length=1, max_length=10)
+
+
+class AgentCapabilityProfile(BaseModel):
+    registry_id: str
+    registry_version: str
+    registry_hash: str = Field(min_length=64, max_length=64)
+    agent_id: str
+    agent_version: str
+    owner_id: str
+    purpose: str
+    automation_level: Literal["L0_shadow_read_only"]
+    enabled: bool
+    grant_ttl_seconds: int = Field(ge=30, le=900)
+    max_tool_calls: int = Field(ge=1, le=10)
+    credential_mode: Literal["none"]
+    provider: ProviderReference
+    allowed_tools: list[AgentToolPermission]
+    allowed_data_classes: list[str]
+    explicitly_denied_tools: list[str]
+    default_policy_deny: Literal[True]
+
+
+class AgentToolCallRequest(BaseModel):
+    tool_name: str = Field(min_length=3, max_length=100, pattern=r"^[a-z][a-z0-9_.-]+$")
+    resource: str = Field(min_length=3, max_length=200)
+    data_class: str = Field(min_length=3, max_length=100)
+
+
+class AgentToolReceipt(BaseModel):
+    tool_name: str
+    resource: str
+    data_class: str
+    decision: Literal["allow", "deny"]
+    executed: bool
+    reason: str
+
+
+class AgentInvocationRequest(BaseModel):
+    request_id: str = Field(min_length=8, max_length=100, pattern=r"^[A-Za-z0-9._:@-]+$")
+    request: DiagnoseRequest
+    purpose: Literal["diagnose_case"] = "diagnose_case"
+    correlation_id: str = Field(
+        default_factory=lambda: str(uuid4()),
+        min_length=8,
+        max_length=100,
+        pattern=r"^[A-Za-z0-9._:@-]+$",
+    )
+    data_truth_class: Literal["synthetic"] = "synthetic"
+    requested_tool_calls: list[AgentToolCallRequest] = Field(default_factory=list, max_length=8)
+
+
+class AgentInvocationTrace(BaseModel):
+    invocation_id: str
+    agent_id: str
+    agent_version: str
+    owner_id: str
+    purpose: Literal["diagnose_case"]
+    request_id: str
+    correlation_id: str
+    data_truth_class: Literal["synthetic"]
+    automation_level: Literal["L0_shadow_read_only"]
+    registry_id: str
+    registry_version: str
+    registry_hash: str = Field(min_length=64, max_length=64)
+    grant_id: str
+    grant_issued_at: datetime
+    grant_expires_at: datetime
+    policy_pack_version: str
+    provider: ProviderReference
+    credential_mode: Literal["none"]
+    allowed_tools: list[str]
+    allowed_data_classes: list[str]
+    tool_receipts: list[AgentToolReceipt]
+    input_hash: str = Field(min_length=64, max_length=64)
+    output_hash: str | None = Field(default=None, min_length=64, max_length=64)
+    status: Literal["completed", "denied", "failed"]
+    gate_result: Literal["not_run_read_only"] = "not_run_read_only"
+    human_decision: Literal["pending"] = "pending"
+    estimated_provider_cost: Literal[0] = 0
+    latency_ms: float = Field(ge=0)
+    termination_reason: str
+    raw_input_stored: Literal[False] = False
+
+
+class AgentInvocationAuditRecord(AgentInvocationTrace):
+    ledger_event_id: str
+    ledger_sequence: int = Field(gt=0)
+    recorded_at: datetime
+    previous_event_hash: str | None
+    event_hash: str
+
+
+class AgentInvocationResponse(BaseModel):
+    diagnosis: DiagnoseResponse
+    audit: AgentInvocationAuditRecord
+
+
+class AgentInvocationListResponse(BaseModel):
+    count: int = Field(ge=0)
+    items: list[AgentInvocationAuditRecord]

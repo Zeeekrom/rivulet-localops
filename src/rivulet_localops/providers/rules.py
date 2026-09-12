@@ -9,6 +9,7 @@ from rivulet_localops.models import (
     DiagnoseResponse,
     EngineInfo,
     PriorityResult,
+    ProviderReference,
 )
 from rivulet_localops.taxonomy import CATEGORIES, GENERAL_CATEGORY, Category
 
@@ -87,6 +88,8 @@ def _priority(text: str, category_code: str) -> tuple[PriorityResult, bool]:
 
 
 class RulesTriageProvider:
+    reference = ProviderReference(provider="deterministic-rules", version="0.1.0", mode="baseline")
+
     def __init__(
         self,
         assets: AssetRepository,
@@ -141,6 +144,6 @@ class RulesTriageProvider:
             explanation=explanation,
             missing_information=missing,
             human_review_required=review_required,
-            engine=EngineInfo(provider="deterministic-rules", version="0.1.0", mode="baseline"),
+            engine=EngineInfo(**self.reference.model_dump()),
             disclaimer="Decision support only. A council officer must confirm emergency, enforcement and ambiguous cases.",
         )

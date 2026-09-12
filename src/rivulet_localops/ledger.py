@@ -9,6 +9,9 @@ from typing import Any
 from uuid import uuid4
 
 from .models import (
+    AgentInvocationAuditRecord,
+    AgentInvocationListResponse,
+    AgentInvocationTrace,
     DecisionEvidence,
     DecisionListResponse,
     DecisionRecord,
@@ -160,6 +163,46 @@ class SQLiteEventLedger:
         with closing(self._connect()) as connection:
             row = connection.execute("SELECT COUNT(*) AS count FROM ledger_events").fetchone()
         return int(row["count"])
+
+    @staticmethod
+    def _agent_audit_from_row(row: sqlite3.Row) -> AgentInvocationAuditRecord:
+        payload = json.loads(row["payload_json"])
+        payload.pop("schema_version", None)
+        return AgentInvocationAuditRecord(
+            ledger_event_id=row["event_id"],
+            ledger_sequence=row["sequence"],
+            recorded_at=row["occurred_at"],
+            previous_event_hash=row["previous_event_hash"],
+            event_hash=row["event_hash"],
+            **payload,
+        )
+
+    def record_agent_invocation(self, trace: AgentInvocationTrace) -> AgentInvocationAuditRecord:
+        event = self._append(
+            event_type=f"agent.invocation.{trace.status}",
+            actor_id=trace.agent_id,
+            correlation_id=trace.correlation_id,
+            entity_id=trace.invocation_id,
+            payload={"schema_version": "1.0", **trace.model_dump(mode="json")},
+        )
+        return self._agent_audit_from_row(event)
+
+    def list_agent_invocations(
+        self,
+        *,
+        limit: int = 50,
+        status: str | None = None,
+    ) -> AgentInvocationListResponse:
+        if status is None:
+            query = "SELECT * FROM ledger_events WHERE event_type LIKE 'agent.invocation.%' ORDER BY sequence DESC LIMIT ?"
+            parameters: tuple[Any, ...] = (limit,)
+        else:
+            query = "SELECT * FROM ledger_events WHERE event_type = ? ORDER BY sequence DESC LIMIT ?"
+            parameters = (f"agent.invocation.{status}", limit)
+        with closing(self._connect()) as connection:
+            rows = connection.execute(query, parameters).fetchall()
+        items = [self._agent_audit_from_row(row) for row in rows]
+        return AgentInvocationListResponse(count=len(items), items=items)
 
     def _append(
         self,

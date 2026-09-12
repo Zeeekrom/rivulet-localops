@@ -1,0 +1,10 @@
+# Run from rivulet-council-ops.
+.\.venv\Scripts\python.exe -m pytest -q tests\test_agent_capabilities.py
+.\.venv\Scripts\python.exe scripts\run_agent_capability_review.py
+.\scripts\verify.ps1
+git diff --check
+
+# Manual API demonstration after starting uvicorn:
+# GET  /ops/v1/agents/case-agent/capabilities
+# POST /api/v1/agents/case-agent/invoke
+# GET  /ops/v1/agents/invocations

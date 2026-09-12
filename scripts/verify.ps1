@@ -29,6 +29,9 @@ try {
 
     & $python scripts\run_eval.py
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+    & $python scripts\run_agent_capability_review.py
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 finally {
     Pop-Location
