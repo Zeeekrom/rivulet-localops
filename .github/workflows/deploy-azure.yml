@@ -1,0 +1,80 @@
+name: deploy-azure-demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Existing public GHCR image tag"
+        required: true
+        default: "v0.7.0"
+        type: string
+      expires_on:
+        description: "Review/teardown date (YYYY-MM-DD)"
+        required: true
+        default: "2026-10-16"
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: azure-portfolio-demo
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: azure-demo
+    steps:
+      - uses: actions/checkout@v6
+      - name: Sign in to Azure with GitHub OIDC
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: What-if, deploy and verify public boundary
+        uses: azure/cli@v3
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
+          EXPIRES_ON: ${{ inputs.expires_on }}
+        with:
+          inlineScript: |
+            set -euo pipefail
+            image="ghcr.io/zeeekrom/rivulet-localops:${IMAGE_TAG}"
+            az deployment group what-if \
+              --resource-group "${RESOURCE_GROUP}" \
+              --template-file infra/azure/main.bicep \
+              --parameters containerImage="${image}" release="${IMAGE_TAG}" expiresOn="${EXPIRES_ON}" \
+              --no-pretty-print
+            url=$(az deployment group create \
+              --name "rivulet-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+              --resource-group "${RESOURCE_GROUP}" \
+              --template-file infra/azure/main.bicep \
+              --parameters containerImage="${image}" release="${IMAGE_TAG}" expiresOn="${EXPIRES_ON}" \
+              --query properties.outputs.applicationUrl.value -o tsv)
+            for attempt in $(seq 1 18); do
+              if curl --fail --silent --show-error --max-time 20 "${url}/healthz" > health.json; then
+                break
+              fi
+              if [[ "${attempt}" == "18" ]]; then
+                echo "Health check did not pass after 18 attempts." >&2
+                exit 1
+              fi
+              sleep 10
+            done
+            python -c "import json; b=json.load(open('health.json')); assert b['status']=='ok' and b['profile']=='public_demo'"
+            for path in docs openapi.json api/v1/submit ops/v1/ledger/integrity; do
+              code=$(curl --silent --output /dev/null --write-out '%{http_code}' "${url}/${path}")
+              [[ "${code}" == "404" ]] || { echo "Boundary failure: /${path} returned ${code}" >&2; exit 1; }
+            done
+            curl --fail --silent --show-error --request POST "${url}/demo/v1/scenarios/blocked-shell/run" > deny.json
+            python -c "import json; b=json.load(open('deny.json')); assert b['observed_outcome']=='deny' and b['ledger_integrity_ok']"
+            echo "application_url=${url}" >> "${GITHUB_OUTPUT}"
+            echo "### Azure demo verification" >> "${GITHUB_STEP_SUMMARY}"
+            echo "- Endpoint: ${url}" >> "${GITHUB_STEP_SUMMARY}"
+            echo "- Health: pass" >> "${GITHUB_STEP_SUMMARY}"
+            echo "- Internal/docs route boundary: pass (4/4 returned 404)" >> "${GITHUB_STEP_SUMMARY}"
+            echo "- Capability-deny path: pass" >> "${GITHUB_STEP_SUMMARY}"

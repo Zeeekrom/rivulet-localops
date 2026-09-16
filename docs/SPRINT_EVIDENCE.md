@@ -2,9 +2,9 @@
 
 | Evidence field | Value |
 |---|---|
-| Date | 2026-09-12 |
-| Release | v0.6.0 |
-| Environment | Python 3.12 in a clean local virtual environment and GitHub-hosted `windows-latest`, installed from `requirements-dev.lock`; Power BI Desktop checks run locally on Windows |
+| Date | 2026-09-16 |
+| Release | v0.7.0 |
+| Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0 for the Linux image; prior releases also verified on GitHub-hosted `windows-latest` |
 
 This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
 
@@ -141,6 +141,28 @@ This is an L0 local control harness over the deterministic-rules provider, with 
 authenticate callers, prove real object-level authorization, use a generative model, run the Gate, make a human
 decision or execute a connector.
 
+## Sprint 3.5 — Cloud-safe web demo (local Build/Check)
+
+Goal: turn the accepted controls into a public-facing portfolio console without exposing the internal application.
+
+| Acceptance item | Result |
+|---|---|
+| React/TypeScript production build | Pass; 17 modules, 238.71 kB JS / 73.37 kB gzip, 22.21 kB CSS / 5.81 kB gzip |
+| Separate public FastAPI profile | Pass; health/bootstrap/predefined scenario routes only |
+| Visitor free text or arbitrary tool call | Intentionally absent |
+| Scenario coverage | `pass`, `reject`, `escalate`, shell deny and cross-case deny |
+| Internal/docs route boundary | 4 of 4 tested routes return 404 from the running container |
+| Container identity and health | Pass; `10001:10001`, healthy |
+| Oversized request | 413 with browser security headers |
+| Bicep build | Pass with Bicep 0.47.16 |
+| Full local verification | 40 tests, 8/8 mart reconciliations, 51-file/88-check Power BI validation, regression and F18 pass |
+| Azure endpoint | Pending; no deployment claim |
+
+See [`evidence/F22/2026-09-16`](../evidence/F22/2026-09-16/README.md). Docker Desktop 4.54.0 first failed
+on its Windows AF_UNIX inference/secrets listener; it was updated in place to 4.91.0 without a factory reset. The first
+reproducible-image build then exposed a missing runtime-lock allow-list entry, which was fixed before acceptance. Both
+failed attempts are retained in F22 rather than overwritten by the successful run.
+
 ## Hosted CI evidence
 
 Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The first v0.4.0 hosted run failed
@@ -166,6 +188,9 @@ The v0.6.0 Sprint 3 release commit `d29260d3c3ecde57e2dfd2a7015ec56006594d48` pa
 reproduced the 35-test suite and deterministic evaluation in fresh Windows checkouts; they are not application
 deployment or production-security evidence.
 
+The v0.7.0 hosted main/tag CI, OCI publication/SBOM and Azure deployment runs are pending. F22 currently proves only
+the local browser/container boundary and must not be cited as a live cloud deployment.
+
 ## Reproduction
 
 ```powershell
@@ -177,7 +202,7 @@ py -3.12 -m venv .venv
 Observed release output:
 
 ```text
-35 passed
+40 passed
 {
   "cases": 12,
   "category_accuracy": 1.0,
@@ -212,7 +237,8 @@ The word “accuracy” in the evaluator's JSON field is retained for compatibil
 | Identities are authenticated and authorised | No | IDs are asserted fields only |
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
-| The system is deployed to Azure or an enterprise Windows environment | No | Later planned profiles |
+| The system is deployed to Azure or an enterprise Windows environment | No | Bicep/OIDC exist, but no successful endpoint evidence is recorded yet |
+| The public profile excludes tested internal routes | Yes | Real local Linux container; four named negative routes, not a general penetration test |
 | Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
 
 ## Known verification warning

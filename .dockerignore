@@ -1,0 +1,35 @@
+**
+!pyproject.toml
+!README.md
+!requirements-runtime.lock
+!src/
+!src/**
+!data/
+!data/hobart_litter_bins.geojson
+!data/agents/
+!data/agents/case_agent_v0.1.0.json
+!data/policies/
+!data/policies/waste_litter_demo_v0.1.0.json
+!data/mart/
+!data/mart/v1/
+!data/mart/v1/build_report.json
+!web/
+!web/package.json
+!web/package-lock.json
+!web/tsconfig.json
+!web/tsconfig.app.json
+!web/tsconfig.node.json
+!web/vite.config.ts
+!web/index.html
+!web/public/
+!web/public/**
+!web/src/
+!web/src/**
+
+# Never send local build/test artefacts in the Docker build context. These
+# exclusions must follow the web allow-list because the last matching rule wins.
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo
+.playwright-cli/
+output/

@@ -24,6 +24,18 @@ try {
     & $python scripts\validate_powerbi_project.py
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+    Push-Location (Join-Path $projectRoot "web")
+    try {
+        & npm ci --ignore-scripts
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+        & npm run build
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    }
+    finally {
+        Pop-Location
+    }
+
     & $python -m pytest -q
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

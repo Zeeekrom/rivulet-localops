@@ -2,7 +2,7 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.6.0-2F855A)
+![Release](https://img.shields.io/badge/release-v0.7.0-2F855A)
 
 Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, a bounded read-only agent, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review, a provider kill switch and a truth-labelled analytics mart in one reproducible workflow.
 
@@ -36,7 +36,7 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.6.0
+## Current release: v0.7.0
 
 | Capability | Implemented evidence |
 |---|---|
@@ -49,7 +49,7 @@ flowchart LR
 | Replay | Recomputes the decision and compares policy version/hash, provider version, category, priority and Gate rules |
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
-| Verification | 35 automated tests, a 12-case deterministic regression set and a 12-check F18 capability review; repository checks are reproduced by GitHub Actions |
+| Verification | 40 automated tests, a 12-case deterministic regression set, a 12-check F18 capability review and a real-container F22 boundary review |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
 | Data quality | 19 automated source checks: 15 pass, 4 documented warnings, 0 fail and 0 blocking |
@@ -57,6 +57,9 @@ flowchart LR
 | Analytics mart | 14 non-empty dimension/fact tables as versioned CSV plus a reproducible local SQLite build; 8 reconciliation checks pass |
 | Metric governance | Numerators, denominators, grain, filters, null handling, truth class and caveats are defined; no unsupported target is invented |
 | Power BI assurance | Deterministically generated two-page PBIP/PBIR/TMDL project: 7 Import tables, 29 measures, 8 relationships, 27 visuals, visible truth boundaries and versioned Desktop evidence |
+| Cloud-safe web console | React/TypeScript assurance dashboard backed by a separate FastAPI profile; visitors can run only five server-owned synthetic scenarios |
+| Container delivery | Multi-stage Linux image, exact runtime lock, non-root UID/GID 10001, health probe, same-origin assets and public/internal route separation |
+| Azure delivery contract | Container Apps Consumption Bicep with 0.25 vCPU/0.5 GiB, scale 0–1, public GHCR image and a GitHub OIDC deployment workflow; live deployment is still pending |
 
 The current diagnosis engine and agent adapter are deliberately rules-based. They form a transparent control baseline for later model comparison and are not presented as generative AI.
 
@@ -69,9 +72,11 @@ The current diagnosis engine and agent adapter are deliberately rules-based. The
 - GeoJSON and public ArcGIS asset data
 - Contracted public CSV data, deterministic JSONL events and a star-schema analytics mart
 - Power BI Project (PBIP/PBIR/TMDL) with deterministic generation and Microsoft report validation
+- React 19, TypeScript and Vite 8
+- Docker multi-stage build and Azure Container Apps Bicep
 - pytest and FastAPI TestClient
-- pip-tools lockfile
-- GitHub Actions verification
+- exact development and runtime lockfiles
+- GitHub Actions verification, OCI build/SBOM attestation and OIDC deployment workflow
 
 See [Technical Architecture](docs/TECHNICAL_ARCHITECTURE.md) for components, data contracts, controls and limitations. See [Sprint Evidence](docs/SPRINT_EVIDENCE.md) for the completed acceptance checks and claim boundaries.
 
@@ -86,6 +91,18 @@ py -3.12 -m venv .venv
 ```
 
 Open `http://127.0.0.1:8000/docs` for the interactive API.
+
+To run the cloud-safe browser demo locally without exposing the internal API surface:
+
+```powershell
+npm --prefix web ci
+npm --prefix web run build
+docker build -t rivulet-localops:local .
+docker run --rm -p 127.0.0.1:8000:8000 rivulet-localops:local
+```
+
+Open `http://127.0.0.1:8000`. This profile disables API documentation and does not load internal `/api/v1/*` or
+`/ops/*` routes. Its SQLite ledger is intentionally ephemeral and resets when the container is replaced.
 
 Submit a synthetic request:
 
@@ -123,6 +140,9 @@ Send it to `POST /api/v1/submit`. The response includes the original Gate result
 | `POST /api/v1/agents/case-agent/invoke` | Run one bounded synthetic-case diagnosis without Gate or connector execution |
 | `GET /ops/v1/agents/invocations` | Query completed, denied and failed agent audit records |
 
+The separately deployed public profile exposes only `GET /healthz`, `GET /demo/v1/bootstrap`, predefined scenario
+execution under `POST /demo/v1/scenarios/{scenario_id}/run`, and static web assets. It accepts no visitor free text.
+
 ## Verify
 
 ```powershell
@@ -136,7 +156,7 @@ Expected release evidence:
 - analytics mart: 14 tables and 8 successful reconciliations
 - Power BI project: 51 controlled files, 88 structural checks and Microsoft validator 0 errors / 0 warnings
 - Power BI Desktop: 7 of 7 Import partitions refreshed and 13 of 13 DAX reference values reconciled
-- `35 passed`
+- `40 passed`
 - 12 deterministic regression cases with zero category/priority differences
 - F18: 12 of 12 capability checks; 7 invocations = 1 completed, 5 denied and 1 failed before execution
 - the Sprint 2 review runner completes on Windows without retaining the disposable SQLite files
@@ -144,6 +164,8 @@ Expected release evidence:
 The v0.6.0 release passed GitHub Actions on both
 [main run 34688891241](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688891241) and
 [tag run 34688892353](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688892353).
+The v0.7.0 hosted CI, container publication and Azure deployment evidence are not yet recorded; local evidence must not
+be read as a successful hosted deployment.
 
 Run the end-to-end review story separately with:
 
@@ -158,7 +180,8 @@ Source-quality and analytics evidence are in
 reconciliation, screenshots and Desktop round-trip evidence are in
 [`F10 initial Review`](evidence/F10/2026-09-10/README.md) and
 [`F10 round-trip`](evidence/F10/2026-09-12/README.md). Sprint 3 identity, tool, data, resource, budget and provider-binding
-evidence is in [`F18`](evidence/F18/2026-09-12/README.md).
+evidence is in [`F18`](evidence/F18/2026-09-12/README.md). The v0.7.0 cloud-safe frontend, real-container negative-route
+checks and rendered desktop/mobile screenshots are in [`F22`](evidence/F22/2026-09-16/README.md).
 
 To open the report, run the normal verification first, then open
 `analytics/powerbi/RivuletAssurance.pbip` in Power BI Desktop and refresh. PBIP/PBIR are preview formats. After any
@@ -179,10 +202,13 @@ The 12-case result is a regression check on self-authored, uncomplicated cases. 
 - No endpoint writes to a real business system.
 - Townsville data is monthly aggregate reference context, not Hobart demand or individual requests.
 - Every D6 decision, review, actor, time and operational metric is fixed-seed synthetic data. Its rates exercise calculations and are not council performance or model-accuracy evidence.
+- The public demo ledger is local to one container replica and resets after scale-to-zero or revision replacement; it is demonstration trace state, not retained audit evidence.
+- Bicep and an OIDC workflow are delivery contracts, not proof that the application is live in Azure. A live endpoint is claimed only after a recorded deployment and negative-route check.
 
 ## Next verified slice
 
-The next planned slice is adversarial and secure-delivery verification: ambiguous and injection-style inputs,
-cross-case/provider-outage paths, secret scanning, static/dependency analysis, an SBOM and recovery evidence.
-Authentication/RBAC, Windows enterprise lab integration, PostgreSQL and Azure deployment remain later stages and are
-not represented as completed.
+The immediate release gate is to reproduce v0.7.0 in hosted CI, publish the GHCR image/SBOM, and—only within the
+enabled Azure for Students spending limit—verify the same public boundary on a minimal Container Apps revision.
+After that, the next slice is adversarial and secure-delivery verification: ambiguous/injection-style inputs,
+cross-case/provider-outage paths, SAST/SCA and recovery evidence. Authentication/RBAC, Windows enterprise lab
+integration and PostgreSQL remain later stages and are not represented as completed.

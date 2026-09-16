@@ -1,0 +1,23 @@
+# From rivulet-council-ops on Windows PowerShell
+.\scripts\verify.ps1
+npm --prefix web ci
+npm --prefix web run build
+.\.venv\Scripts\python.exe -m pytest tests/test_public_demo.py -q
+az bicep build --file infra/azure/main.bicep --stdout
+
+$docker = 'C:\Program Files\Docker\Docker\resources\bin\docker.exe'
+& $docker build --tag rivulet-localops:0.7.0-local .
+& $docker run --detach --name rivulet-demo-local --publish 127.0.0.1:18080:8000 rivulet-localops:0.7.0-local
+& $docker inspect --format '{{.Config.User}}' rivulet-demo-local
+& $docker inspect --format '{{.State.Health.Status}}' rivulet-demo-local
+
+# HTTP checks performed against http://127.0.0.1:18080
+# GET  / and /demo/v1/bootstrap
+# POST /demo/v1/scenarios/bin-near-asset/run
+# POST /demo/v1/scenarios/blocked-shell/run
+# POST 1025-byte body to /demo/v1/scenarios/bin-near-asset/run
+# GET  /docs, /openapi.json, /api/v1/submit, /ops/v1/ledger/integrity
+
+& $docker logs rivulet-demo-local
+& $docker stop rivulet-demo-local
+& $docker rm rivulet-demo-local

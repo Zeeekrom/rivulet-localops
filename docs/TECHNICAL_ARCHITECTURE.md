@@ -1,19 +1,24 @@
 # Technical Architecture
 
-Status: implemented local release v0.6.0. Planned capabilities are marked explicitly.
+Status: implemented local release v0.7.0. The cloud-safe profile is container-verified locally; live Azure deployment
+is still pending and is marked explicitly.
 
 ## 1. System boundary
 
-Rivulet LocalOps currently runs as one local FastAPI process with four logical areas:
+Rivulet LocalOps has two intentionally separate FastAPI entry points. The internal application contains four logical areas:
 
 1. decision support: request validation, deterministic classification, priority and asset match;
 2. governance: versioned policy pack, deterministic Gate, decision/review ledger and replay;
 3. operations: health, ledger-integrity verification and provider kill switch.
 4. agent control: server-selected identity, versioned capabilities, short-lived grants, allowlists and invocation audit.
 
+The separate `public_demo` entry point serves a React/TypeScript assurance console and only a health route, bootstrap
+metadata and five server-owned synthetic scenarios. It does not register internal `/api/v1/*`, `/ops/*`, OpenAPI or
+documentation routes and accepts no visitor free text.
+
 SQLite is the current local event store. D1/D2 public snapshots and the D6 synthetic event export feed a reproducible
-SQLite/CSV analytics mart. There is no web frontend, authenticated identity provider, external business connector,
-PostgreSQL service, Power BI Service/Fabric deployment, application cloud deployment or generative-model provider in
+SQLite/CSV analytics mart. There is no authenticated identity provider, external business connector, PostgreSQL
+service, Power BI Service/Fabric deployment, proven live application-cloud deployment or generative-model provider in
 this release. A local, version-controlled Power BI Project reads seven mart tables through deterministic Import partitions.
 
 ```mermaid
@@ -159,7 +164,7 @@ Two deterministic separation controls apply:
 - the accountable owner cannot review the same decision;
 - a Gate-rejected or Gate-escalated decision cannot be directly accepted—reviewers must override or escalate with an explicit reason.
 
-These are application controls, not identity assurance. The IDs are not authenticated in v0.6.0.
+These are application controls, not identity assurance. The IDs are not authenticated in v0.7.0.
 
 ## 7. Replay
 
@@ -231,20 +236,36 @@ versioned; Desktop's local settings and data cache are ignored. After Desktop wr
 the canonical form—including PBIP/PBIR schema references required by Microsoft's validator—before commit. PBIP/PBIR
 remain preview formats, and local refresh evidence is not a Power BI Service, Fabric or gateway deployment claim.
 
-## 12. Technology status
+## 12. Public web and container boundary
+
+The production Vite build is copied into the FastAPI image and served same-origin. The container installs exact-pinned
+runtime dependencies, declares non-root `10001:10001`, writes its disposable SQLite ledger only under `/tmp`, and
+exposes port 8000 with an HTTP health check. Browser responses receive CSP, frame, content-type, referrer and permissions
+headers; oversized bodies and a small in-memory execution-rate limit reduce accidental abuse.
+
+The predefined cases cover Gate `pass`, `reject`, `escalate`, explicit shell-capability denial and cross-case denial.
+F22 starts the built Linux image and checks `/docs`, `/openapi.json`, `/api/v1/submit` and
+`/ops/v1/ledger/integrity` all return 404. The ledger resets whenever the single replica is replaced or scales to zero.
+
+Azure IaC declares one Container Apps Consumption environment and one 0.25-vCPU/0.5-GiB app with HTTPS-only ingress,
+min replicas 0 and max replicas 1. Images are designed to come from public GHCR; GitHub Actions obtains Azure access
+through OIDC rather than a long-lived client secret. Until a hosted workflow and endpoint check are recorded, these
+remain tested delivery artefacts rather than cloud-deployment evidence.
+
+## 13. Technology status
 
 | Area | Current | Planned, not implemented |
 |---|---|---|
-| Application | Python 3.12, FastAPI, Pydantic | Web review experience |
+| Application | Python 3.12, FastAPI/Pydantic plus React 19/TypeScript/Vite cloud-safe console | Authenticated review experience |
 | Decision engine | Deterministic rules provider behind a bounded read-only agent adapter | Model-provider comparison after security evaluation |
 | Operational store | SQLite append-only events | PostgreSQL, migrations and retention controls |
 | Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL | Additional sources only when a report field requires them |
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
-| Security | Gate, hash chain, agent capability allowlists, provider binding, separation checks, kill switch and negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
-| Delivery | Lockfile, verification script, GitHub Actions workflow | Protected environments and cloud deployment |
+| Security | Gate, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch and negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
+| Delivery | Exact lockfiles, verification, multi-stage image, Bicep, OCI/SBOM and OIDC workflows | Recorded hosted v0.7.0 runs and live Azure endpoint |
 
-## 13. Primary limitations
+## 14. Primary limitations
 
 - The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
 - Self-authored regression cases do not establish real-world accuracy.
@@ -256,3 +277,5 @@ remain preview formats, and local refresh evidence is not a Power BI Service, Fa
 - No real council has validated the policy, workflow or operational fit.
 - D2 is Townsville aggregate context, not Hobart operational demand; D6 metrics are designed fixtures, not measured performance.
 - PBIP/PBIR are preview formats; local Desktop refresh and screenshots do not establish a governed Power BI Service deployment.
+- The public-demo rate limiter is per process, and its SQLite trace resets with the container; neither is a distributed production control.
+- Local image/Bicep checks do not establish that GHCR or Azure deployment succeeded.

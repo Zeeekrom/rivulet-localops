@@ -1,0 +1,56 @@
+{
+  "experiment_id": "F22",
+  "experiment_date_local": "2026-09-16",
+  "status": "local_pass_cloud_pending",
+  "scope": "Sprint 3.5 cloud-safe web demo local build and real-container boundary acceptance",
+  "retained_failures": [
+    {
+      "stage": "docker_desktop_startup",
+      "observed_version": "4.54.0",
+      "reason": "Windows AF_UNIX inference/secrets listener path rejected",
+      "resolution": "in-place update to Docker Desktop 4.91.0; no factory reset or data purge"
+    },
+    {
+      "stage": "first_reproducible_image_build",
+      "reason": "requirements-runtime.lock was omitted by the Docker build-context allow-list",
+      "resolution": "explicitly allow the runtime lock; rebuild passed"
+    }
+  ],
+  "checks": {
+    "frontend_production_build": true,
+    "npm_audit_zero_known_vulnerabilities": true,
+    "runtime_dependencies_exact_pinned": true,
+    "docker_build": true,
+    "docker_health": true,
+    "container_non_root_user": true,
+    "root_status_200": true,
+    "bootstrap_status_200": true,
+    "pass_scenario": true,
+    "capability_deny_scenario": true,
+    "oversized_body_413": true,
+    "error_response_security_headers": true,
+    "docs_404": true,
+    "openapi_404": true,
+    "internal_submit_404": true,
+    "ops_ledger_404": true,
+    "bicep_build": true,
+    "full_repository_verify": true,
+    "azure_student_balance_expiry_confirmed": false,
+    "public_release_published": false,
+    "azure_endpoint_deployed": false
+  },
+  "summary": {
+    "pytest_passed": 40,
+    "pytest_upstream_warnings": 2,
+    "powerbi_generator_files": 51,
+    "powerbi_validator_checks": 88,
+    "mart_reconciliations_passed": 8,
+    "container_image_id_prefix": "ada27d277e82",
+    "container_image_size": "244MB",
+    "container_user": "10001:10001",
+    "final_build_context_bytes": 784820,
+    "desktop_screenshot_sha256": "f729b8f6068f0bc0f11fe761fda104512d93768d56140d2db164530b4c38aec7",
+    "mobile_screenshot_sha256": "f4a55059e107a53c79de07fbf213123298d2ca6ecce90f89bf7c040af656fe2c"
+  },
+  "claim_boundary": "Local build/run evidence only. No Azure endpoint, production identity, real model, council performance or model-accuracy claim is established."
+}
