@@ -66,13 +66,13 @@ jobs:
               fi
               sleep 10
             done
-            python -c "import json; b=json.load(open('health.json')); assert b['status']=='ok' and b['profile']=='public_demo'"
+            jq -e '.status == "ok" and .profile == "public_demo"' health.json > /dev/null
             for path in docs openapi.json api/v1/submit ops/v1/ledger/integrity; do
               code=$(curl --silent --output /dev/null --write-out '%{http_code}' "${url}/${path}")
               [[ "${code}" == "404" ]] || { echo "Boundary failure: /${path} returned ${code}" >&2; exit 1; }
             done
             curl --fail --silent --show-error --request POST "${url}/demo/v1/scenarios/blocked-shell/run" > deny.json
-            python -c "import json; b=json.load(open('deny.json')); assert b['observed_outcome']=='deny' and b['ledger_integrity_ok']"
+            jq -e '.observed_outcome == "deny" and .ledger_integrity_ok == true' deny.json > /dev/null
             echo "application_url=${url}" >> "${GITHUB_OUTPUT}"
             echo "### Azure demo verification" >> "${GITHUB_STEP_SUMMARY}"
             echo "- Endpoint: ${url}" >> "${GITHUB_STEP_SUMMARY}"
