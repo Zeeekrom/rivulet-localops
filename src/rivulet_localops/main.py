@@ -58,7 +58,7 @@ def create_app(
 
     application = FastAPI(
         title="Rivulet LocalOps",
-        version="0.7.0",
+        version="0.7.1",
         description="Explainable and accountable service-request decision support for small Tasmanian councils.",
     )
     application.state.ledger = ledger

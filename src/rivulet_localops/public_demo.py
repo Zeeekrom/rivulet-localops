@@ -154,7 +154,7 @@ def _load_bootstrap(mart_report_path: Path, case_agent: CaseAgentRunner) -> Demo
     scenarios = [scenario.summary for scenario in _scenarios().values()]
     return DemoBootstrap(
         product="Rivulet LocalOps",
-        release="v0.7.0",
+        release="v0.7.1",
         profile="public_demo",
         environment_note=(
             "Public portfolio sandbox. Runtime audit state is ephemeral and may reset when the container scales to zero "
@@ -262,7 +262,7 @@ def create_public_demo_app(
 
     application = FastAPI(
         title="Rivulet LocalOps Public Demo",
-        version="0.7.0",
+        version="0.7.1",
         docs_url=None,
         redoc_url=None,
         openapi_url=None,
@@ -309,7 +309,7 @@ def create_public_demo_app(
         return {
             "status": "ok" if integrity.ok else "degraded",
             "profile": "public_demo",
-            "release": "v0.7.0",
+            "release": "v0.7.1",
             "ledger_integrity_ok": integrity.ok,
             "ledger_event_count": integrity.event_count,
         }

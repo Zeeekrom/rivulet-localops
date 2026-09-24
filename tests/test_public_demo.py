@@ -20,6 +20,7 @@ def test_bootstrap_keeps_public_and_synthetic_truth_classes_separate(tmp_path: P
     assert response.status_code == 200
     body = response.json()
     assert body["profile"] == "public_demo"
+    assert body["release"] == "v0.7.1"
     assert {source["truth_class"] for source in body["sources"]} == {
         "real_public_reference",
         "synthetic_operational",

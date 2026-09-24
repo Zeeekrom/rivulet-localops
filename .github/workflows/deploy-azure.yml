@@ -6,12 +6,12 @@ on:
       image_tag:
         description: "Existing public GHCR image tag"
         required: true
-        default: "v0.7.0"
+        default: "v0.7.1"
         type: string
       expires_on:
         description: "Review/teardown date (YYYY-MM-DD)"
         required: true
-        default: "2026-10-16"
+        default: "2026-10-24"
         type: string
 
 permissions:
@@ -38,6 +38,7 @@ jobs:
         uses: azure/cli@v3
         env:
           RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           EXPIRES_ON: ${{ inputs.expires_on }}
         with:
@@ -47,13 +48,13 @@ jobs:
             az deployment group what-if \
               --resource-group "${RESOURCE_GROUP}" \
               --template-file infra/azure/main.bicep \
-              --parameters containerImage="${image}" release="${IMAGE_TAG}" expiresOn="${EXPIRES_ON}" \
+              --parameters location="${AZURE_LOCATION}" containerImage="${image}" release="${IMAGE_TAG}" expiresOn="${EXPIRES_ON}" \
               --no-pretty-print
             url=$(az deployment group create \
               --name "rivulet-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
               --resource-group "${RESOURCE_GROUP}" \
               --template-file infra/azure/main.bicep \
-              --parameters containerImage="${image}" release="${IMAGE_TAG}" expiresOn="${EXPIRES_ON}" \
+              --parameters location="${AZURE_LOCATION}" containerImage="${image}" release="${IMAGE_TAG}" expiresOn="${EXPIRES_ON}" \
               --query properties.outputs.applicationUrl.value -o tsv)
             for attempt in $(seq 1 18); do
               if curl --fail --silent --show-error --max-time 20 "${url}/healthz" > health.json; then
@@ -75,6 +76,7 @@ jobs:
             echo "application_url=${url}" >> "${GITHUB_OUTPUT}"
             echo "### Azure demo verification" >> "${GITHUB_STEP_SUMMARY}"
             echo "- Endpoint: ${url}" >> "${GITHUB_STEP_SUMMARY}"
+            echo "- Region: ${AZURE_LOCATION}" >> "${GITHUB_STEP_SUMMARY}"
             echo "- Health: pass" >> "${GITHUB_STEP_SUMMARY}"
             echo "- Internal/docs route boundary: pass (4/4 returned 404)" >> "${GITHUB_STEP_SUMMARY}"
             echo "- Capability-deny path: pass" >> "${GITHUB_STEP_SUMMARY}"

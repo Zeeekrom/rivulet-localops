@@ -3,7 +3,7 @@
 | Evidence field | Value |
 |---|---|
 | Date | 2026-09-16 |
-| Release | v0.7.0 |
+| Release | v0.7.1 recovery candidate |
 | Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0 for the Linux image; prior releases also verified on GitHub-hosted `windows-latest` |
 
 This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
@@ -155,6 +155,7 @@ Goal: turn the accepted controls into a public-facing portfolio console without 
 | Container identity and health | Pass; `10001:10001`, healthy |
 | Oversized request | 413 with browser security headers |
 | Bicep build | Pass with Bicep 0.47.16 |
+| Azure policy-aware preflight | New Zealand North validate/what-if pass; 2 Create, 1 Ignore, no application resources created |
 | Full local verification | 40 tests, 8/8 mart reconciliations, 51-file/88-check Power BI validation, regression and F18 pass |
 | Azure endpoint | Pending; no deployment claim |
 
@@ -188,8 +189,13 @@ The v0.6.0 Sprint 3 release commit `d29260d3c3ecde57e2dfd2a7015ec56006594d48` pa
 reproduced the 35-test suite and deterministic evaluation in fresh Windows checkouts; they are not application
 deployment or production-security evidence.
 
-The v0.7.0 hosted main/tag CI, OCI publication/SBOM and Azure deployment runs are pending. F22 currently proves only
-the local browser/container boundary and must not be cited as a live cloud deployment.
+The v0.7.0 release passed hosted
+[main verify 35092219320](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092219320),
+[tag verify 35092221720](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221720) and
+[container/SBOM 35092221757](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221757). The immutable tag
+is retained. Azure preflight then showed the Student policy rejects Australia East, tenant users cannot register Entra
+apps, and the API requires an omitted logging block rather than `destination: 'none'`. v0.7.1 uses an exact-RG managed
+identity federation and New Zealand North; its hosted image and live deployment runs are still pending.
 
 ## Reproduction
 

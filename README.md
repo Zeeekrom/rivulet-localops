@@ -2,7 +2,7 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.7.0-2F855A)
+![Release](https://img.shields.io/badge/release-v0.7.1-2F855A)
 
 Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, a bounded read-only agent, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review, a provider kill switch and a truth-labelled analytics mart in one reproducible workflow.
 
@@ -36,7 +36,7 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.7.0
+## Current release: v0.7.1 recovery candidate
 
 | Capability | Implemented evidence |
 |---|---|
@@ -59,7 +59,7 @@ flowchart LR
 | Power BI assurance | Deterministically generated two-page PBIP/PBIR/TMDL project: 7 Import tables, 29 measures, 8 relationships, 27 visuals, visible truth boundaries and versioned Desktop evidence |
 | Cloud-safe web console | React/TypeScript assurance dashboard backed by a separate FastAPI profile; visitors can run only five server-owned synthetic scenarios |
 | Container delivery | Multi-stage Linux image, exact runtime lock, non-root UID/GID 10001, health probe, same-origin assets and public/internal route separation |
-| Azure delivery contract | Container Apps Consumption Bicep with 0.25 vCPU/0.5 GiB, scale 0–1, public GHCR image and a GitHub OIDC deployment workflow; live deployment is still pending |
+| Azure delivery contract | New Zealand North Container Apps Consumption Bicep with 0.25 vCPU/0.5 GiB, scale 0–1, public GHCR image and resource-group-scoped managed-identity OIDC; live deployment is still pending |
 
 The current diagnosis engine and agent adapter are deliberately rules-based. They form a transparent control baseline for later model comparison and are not presented as generative AI.
 
@@ -164,8 +164,11 @@ Expected release evidence:
 The v0.6.0 release passed GitHub Actions on both
 [main run 34688891241](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688891241) and
 [tag run 34688892353](https://github.com/Zeeekrom/rivulet-localops/actions/runs/34688892353).
-The v0.7.0 hosted CI, container publication and Azure deployment evidence are not yet recorded; local evidence must not
-be read as a successful hosted deployment.
+The v0.7.0 release passed hosted
+[main verify](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092219320),
+[tag verify](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221720) and
+[container/SBOM](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221757) workflows. v0.7.1 preserves
+that tag and corrects deployment-region/OIDC/Bicep preflight findings; its hosted and Azure evidence are pending.
 
 Run the end-to-end review story separately with:
 
@@ -207,8 +210,10 @@ The 12-case result is a regression check on self-authored, uncomplicated cases. 
 
 ## Next verified slice
 
-The immediate release gate is to reproduce v0.7.0 in hosted CI, publish the GHCR image/SBOM, and—only within the
-enabled Azure for Students spending limit—verify the same public boundary on a minimal Container Apps revision.
+The immediate release gate is to reproduce v0.7.1 in hosted CI, publish the GHCR image/SBOM, and—only within the
+enabled Azure for Students spending limit—verify the same public boundary on a minimal New Zealand North Container
+Apps revision. The subscription has spending limit On but no active Sponsorship balance is visible, so no upgrade or
+unbounded paid resource is permitted.
 After that, the next slice is adversarial and secure-delivery verification: ambiguous/injection-style inputs,
 cross-case/provider-outage paths, SAST/SCA and recovery evidence. Authentication/RBAC, Windows enterprise lab
 integration and PostgreSQL remain later stages and are not represented as completed.

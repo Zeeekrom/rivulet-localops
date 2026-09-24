@@ -1,6 +1,6 @@
 # Technical Architecture
 
-Status: implemented local release v0.7.0. The cloud-safe profile is container-verified locally; live Azure deployment
+Status: implemented local release v0.7.1 recovery candidate. The cloud-safe profile is container-verified locally; live Azure deployment
 is still pending and is marked explicitly.
 
 ## 1. System boundary
@@ -164,7 +164,7 @@ Two deterministic separation controls apply:
 - the accountable owner cannot review the same decision;
 - a Gate-rejected or Gate-escalated decision cannot be directly accepted—reviewers must override or escalate with an explicit reason.
 
-These are application controls, not identity assurance. The IDs are not authenticated in v0.7.0.
+These are application controls, not identity assurance. The IDs are not authenticated in v0.7.1.
 
 ## 7. Replay
 
@@ -247,9 +247,10 @@ The predefined cases cover Gate `pass`, `reject`, `escalate`, explicit shell-cap
 F22 starts the built Linux image and checks `/docs`, `/openapi.json`, `/api/v1/submit` and
 `/ops/v1/ledger/integrity` all return 404. The ledger resets whenever the single replica is replaced or scales to zero.
 
-Azure IaC declares one Container Apps Consumption environment and one 0.25-vCPU/0.5-GiB app with HTTPS-only ingress,
+Azure IaC declares one New Zealand North Container Apps Consumption environment and one 0.25-vCPU/0.5-GiB app with HTTPS-only ingress,
 min replicas 0 and max replicas 1. Images are designed to come from public GHCR; GitHub Actions obtains Azure access
-through OIDC rather than a long-lived client secret. Until a hosted workflow and endpoint check are recorded, these
+through a user-assigned managed identity federated to the `azure-demo` environment, scoped as Contributor only to the
+dedicated resource group and without a client secret. Until a hosted workflow and endpoint check are recorded, these
 remain tested delivery artefacts rather than cloud-deployment evidence.
 
 ## 13. Technology status
@@ -263,7 +264,7 @@ remain tested delivery artefacts rather than cloud-deployment evidence.
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
 | Security | Gate, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch and negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
-| Delivery | Exact lockfiles, verification, multi-stage image, Bicep, OCI/SBOM and OIDC workflows | Recorded hosted v0.7.0 runs and live Azure endpoint |
+| Delivery | Exact lockfiles, verification, multi-stage image, Bicep, OCI/SBOM and resource-group-scoped OIDC workflows | Recorded hosted v0.7.1 runs and live Azure endpoint |
 
 ## 14. Primary limitations
 

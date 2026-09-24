@@ -2,7 +2,7 @@
 
 ## Result
 
-**LOCAL BUILD/CHECK PASS — Azure deployment remains pending.** The React/TypeScript assurance console, its separate
+**LOCAL + HOSTED BUILD/CHECK PASS — Azure deployment remains pending.** The React/TypeScript assurance console, its separate
 FastAPI `public_demo` surface, the multi-stage Linux container and the Azure Bicep template all build locally. The
 container was then started as the image-declared non-root user and exercised through its real HTTP boundary.
 
@@ -41,8 +41,17 @@ diagnostic context, while the successful local build/run is the project evidence
   the demo cannot support claims about council performance, model accuracy or a live council workflow.
 - The public demo uses the deterministic-rules L0 provider and no model credential; it is not generative AI.
 - The runtime ledger is ephemeral and resets when a container instance is replaced or scaled to zero.
-- Azure Student balance/expiry, public GHCR release, OIDC identity, hosted workflow and live endpoint are still open
-  gates and must be appended here only after their own evidence exists.
+- Azure Student balance/expiry and live endpoint remain open gates. The hosted release result is recorded below; it
+  does not turn this local acceptance into an Azure deployment claim.
+
+## Hosted release update (verified 2026-09-24)
+
+The immutable v0.7.0 release commit passed GitHub Actions in fresh hosted checkouts on
+[main run 35092219320](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092219320) and
+[tag run 35092221720](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221720). The container workflow
+[run 35092221757](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221757) published an anonymously
+pullable GHCR OCI index with provenance and SBOM attestation. These runs close the hosted build gate, not the Azure
+deployment gate.
 
 ## Evidence files
 

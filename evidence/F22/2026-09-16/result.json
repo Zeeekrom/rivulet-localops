@@ -1,7 +1,7 @@
 {
   "experiment_id": "F22",
   "experiment_date_local": "2026-09-16",
-  "status": "local_pass_cloud_pending",
+  "status": "local_and_hosted_pass_cloud_pending",
   "scope": "Sprint 3.5 cloud-safe web demo local build and real-container boundary acceptance",
   "retained_failures": [
     {
@@ -36,7 +36,11 @@
     "bicep_build": true,
     "full_repository_verify": true,
     "azure_student_balance_expiry_confirmed": false,
-    "public_release_published": false,
+    "public_release_published": true,
+    "hosted_main_verify": true,
+    "hosted_tag_verify": true,
+    "hosted_container_publish": true,
+    "ghcr_anonymous_pull": true,
     "azure_endpoint_deployed": false
   },
   "summary": {
@@ -52,5 +56,5 @@
     "desktop_screenshot_sha256": "f729b8f6068f0bc0f11fe761fda104512d93768d56140d2db164530b4c38aec7",
     "mobile_screenshot_sha256": "f4a55059e107a53c79de07fbf213123298d2ca6ecce90f89bf7c040af656fe2c"
   },
-  "claim_boundary": "Local build/run evidence only. No Azure endpoint, production identity, real model, council performance or model-accuracy claim is established."
+  "claim_boundary": "Local and hosted build/package evidence only. No Azure endpoint, production identity, real model, council performance or model-accuracy claim is established."
 }

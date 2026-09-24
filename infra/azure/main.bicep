@@ -12,7 +12,7 @@ param containerImage string
 param namePrefix string = 'rivulet-demo'
 
 @description('Release label exposed to the container.')
-param release string = 'v0.7.0'
+param release string = 'v0.7.1'
 
 @description('ISO date after which the demo resources should be reviewed or removed.')
 param expiresOn string
@@ -30,9 +30,6 @@ resource environment 'Microsoft.App/managedEnvironments@2026-01-01' = {
   location: location
   tags: commonTags
   properties: {
-    appLogsConfiguration: {
-      destination: 'none'
-    }
     publicNetworkAccess: 'Enabled'
   }
 }
