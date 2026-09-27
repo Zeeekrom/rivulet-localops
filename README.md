@@ -8,6 +8,9 @@ Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainabl
 
 This is an independent technical prototype. It is not an official City of Hobart, Tasmanian Government or council service. It contains no real resident requests and performs no real council-system writes.
 
+**Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
+— five server-owned synthetic scenarios only; no visitor free text or real resident data.
+
 ## Why it exists
 
 Automated classification is only one part of a trustworthy operational workflow. The harder questions are:
@@ -36,7 +39,7 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.7.1 recovery candidate
+## Current release: v0.7.1
 
 | Capability | Implemented evidence |
 |---|---|
@@ -49,7 +52,7 @@ flowchart LR
 | Replay | Recomputes the decision and compares policy version/hash, provider version, category, priority and Gate rules |
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
-| Verification | 40 automated tests, a 12-case deterministic regression set, a 12-check F18 capability review and a real-container F22 boundary review |
+| Verification | 40 automated tests, a 12-case deterministic regression set, F18 capability, F22 container and F23 live Azure reviews |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
 | Data quality | 19 automated source checks: 15 pass, 4 documented warnings, 0 fail and 0 blocking |
@@ -59,7 +62,7 @@ flowchart LR
 | Power BI assurance | Deterministically generated two-page PBIP/PBIR/TMDL project: 7 Import tables, 29 measures, 8 relationships, 27 visuals, visible truth boundaries and versioned Desktop evidence |
 | Cloud-safe web console | React/TypeScript assurance dashboard backed by a separate FastAPI profile; visitors can run only five server-owned synthetic scenarios |
 | Container delivery | Multi-stage Linux image, exact runtime lock, non-root UID/GID 10001, health probe, same-origin assets and public/internal route separation |
-| Azure delivery contract | New Zealand North Container Apps Consumption Bicep with 0.25 vCPU/0.5 GiB, scale 0–1, public GHCR image and resource-group-scoped managed-identity OIDC; live deployment is still pending |
+| Azure deployment | Live New Zealand North Container Apps Consumption revision: 0.25 vCPU/0.5 GiB, scale 0–1, public GHCR image and resource-group-scoped managed-identity OIDC with no client secret |
 
 The current diagnosis engine and agent adapter are deliberately rules-based. They form a transparent control baseline for later model comparison and are not presented as generative AI.
 
@@ -167,8 +170,12 @@ The v0.6.0 release passed GitHub Actions on both
 The v0.7.0 release passed hosted
 [main verify](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092219320),
 [tag verify](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221720) and
-[container/SBOM](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221757) workflows. v0.7.1 preserves
-that tag and corrects deployment-region/OIDC/Bicep preflight findings; its hosted and Azure evidence are pending.
+[container/SBOM](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221757) workflows. v0.7.1 then passed
+[main verify 35993932294](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35993932294),
+[tag verify 35993936061](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35993936061) and
+[container/SBOM 35993936049](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35993936049). After two retained
+deployment-recovery failures, the workflow fix passed [main verify 35995184675](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995184675)
+and the complete Azure OIDC/deploy/boundary gate passed [run 35995289399](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995289399).
 
 Run the end-to-end review story separately with:
 
@@ -184,7 +191,8 @@ reconciliation, screenshots and Desktop round-trip evidence are in
 [`F10 initial Review`](evidence/F10/2026-09-10/README.md) and
 [`F10 round-trip`](evidence/F10/2026-09-12/README.md). Sprint 3 identity, tool, data, resource, budget and provider-binding
 evidence is in [`F18`](evidence/F18/2026-09-12/README.md). The v0.7.0 cloud-safe frontend, real-container negative-route
-checks and rendered desktop/mobile screenshots are in [`F22`](evidence/F22/2026-09-16/README.md).
+checks and rendered desktop/mobile screenshots are in [`F22`](evidence/F22/2026-09-16/README.md). The v0.7.1 live
+Azure endpoint, OIDC, scale, negative-route and recovery evidence is in [`F23`](evidence/F23/2026-09-24/README.md).
 
 To open the report, run the normal verification first, then open
 `analytics/powerbi/RivuletAssurance.pbip` in Power BI Desktop and refresh. PBIP/PBIR are preview formats. After any
@@ -206,14 +214,11 @@ The 12-case result is a regression check on self-authored, uncomplicated cases. 
 - Townsville data is monthly aggregate reference context, not Hobart demand or individual requests.
 - Every D6 decision, review, actor, time and operational metric is fixed-seed synthetic data. Its rates exercise calculations and are not council performance or model-accuracy evidence.
 - The public demo ledger is local to one container replica and resets after scale-to-zero or revision replacement; it is demonstration trace state, not retained audit evidence.
-- Bicep and an OIDC workflow are delivery contracts, not proof that the application is live in Azure. A live endpoint is claimed only after a recorded deployment and negative-route check.
+- F23 proves one bounded Azure portfolio deployment and named negative-route checks; it does not establish production readiness, authenticated users, durable audit retention, actual idle scale-to-zero or zero cost.
 
 ## Next verified slice
 
-The immediate release gate is to reproduce v0.7.1 in hosted CI, publish the GHCR image/SBOM, and—only within the
-enabled Azure for Students spending limit—verify the same public boundary on a minimal New Zealand North Container
-Apps revision. The subscription has spending limit On but no active Sponsorship balance is visible, so no upgrade or
-unbounded paid resource is permitted.
-After that, the next slice is adversarial and secure-delivery verification: ambiguous/injection-style inputs,
+The next slice is adversarial and secure-delivery verification: ambiguous/injection-style inputs,
 cross-case/provider-outage paths, SAST/SCA and recovery evidence. Authentication/RBAC, Windows enterprise lab
-integration and PostgreSQL remain later stages and are not represented as completed.
+integration and PostgreSQL remain later stages and are not represented as completed. The live Azure demo remains
+within the enabled Student spending limit, with no subscription upgrade or claim of remaining sponsorship credit.

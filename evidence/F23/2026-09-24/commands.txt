@@ -1,0 +1,20 @@
+# From rivulet-council-ops on Windows PowerShell; tenant/subscription/client identifiers are intentionally omitted.
+az provider show --namespace Microsoft.App --query registrationState -o tsv
+az provider show --namespace Microsoft.ManagedIdentity --query registrationState -o tsv
+az deployment group validate --resource-group rg-rivulet-demo-aue --template-file infra/azure/main.bicep --parameters location=newzealandnorth containerImage=ghcr.io/zeeekrom/rivulet-localops:v0.7.1 release=v0.7.1 expiresOn=2026-10-24
+az deployment group what-if --resource-group rg-rivulet-demo-aue --template-file infra/azure/main.bicep --parameters location=newzealandnorth containerImage=ghcr.io/zeeekrom/rivulet-localops:v0.7.1 release=v0.7.1 expiresOn=2026-10-24
+
+# GitHub Actions deployment (environment secrets contain identifiers; there is no client secret).
+gh workflow run deploy-azure.yml --repo Zeeekrom/rivulet-localops -f image_tag=v0.7.1 -f expires_on=2026-10-24
+gh run watch 35995289399 --repo Zeeekrom/rivulet-localops --exit-status
+
+# Sanitized live-state queries.
+az containerapp show --resource-group rg-rivulet-demo-aue --name rivulet-demo --query "{name:name,location:location,provisioningState:properties.provisioningState,runningStatus:properties.runningStatus,fqdn:properties.configuration.ingress.fqdn,latestRevision:properties.latestRevisionName,image:properties.template.containers[0].image,minReplicas:properties.template.scale.minReplicas,maxReplicas:properties.template.scale.maxReplicas}"
+az containerapp env show --resource-group rg-rivulet-demo-aue --name rivulet-demo-env --query "{location:location,provisioningState:properties.provisioningState,appLogsConfiguration:properties.appLogsConfiguration}"
+
+# HTTP checks against the endpoint above.
+# GET  /healthz and /demo/v1/bootstrap
+# POST /demo/v1/scenarios/bin-near-asset/run
+# POST /demo/v1/scenarios/blocked-shell/run
+# POST a 1,025-byte body to /demo/v1/scenarios/bin-near-asset/run
+# GET  /docs, /openapi.json, /api/v1/submit, /ops/v1/ledger/integrity

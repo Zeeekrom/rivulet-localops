@@ -1,7 +1,7 @@
 # Technical Architecture
 
-Status: implemented local release v0.7.1 recovery candidate. The cloud-safe profile is container-verified locally; live Azure deployment
-is still pending and is marked explicitly.
+Status: release v0.7.1 is container-verified locally and deployed as a bounded Azure portfolio demo. F23 records the
+live endpoint, hosted deployment gate and limitations.
 
 ## 1. System boundary
 
@@ -16,10 +16,11 @@ The separate `public_demo` entry point serves a React/TypeScript assurance conso
 metadata and five server-owned synthetic scenarios. It does not register internal `/api/v1/*`, `/ops/*`, OpenAPI or
 documentation routes and accepts no visitor free text.
 
-SQLite is the current local event store. D1/D2 public snapshots and the D6 synthetic event export feed a reproducible
+SQLite is the current event store. D1/D2 public snapshots and the D6 synthetic event export feed a reproducible
 SQLite/CSV analytics mart. There is no authenticated identity provider, external business connector, PostgreSQL
-service, Power BI Service/Fabric deployment, proven live application-cloud deployment or generative-model provider in
-this release. A local, version-controlled Power BI Project reads seven mart tables through deterministic Import partitions.
+service, Power BI Service/Fabric deployment or generative-model provider in this release. The public profile has one
+recorded Azure deployment; its SQLite trace remains ephemeral. A local, version-controlled Power BI Project reads
+seven mart tables through deterministic Import partitions.
 
 ```mermaid
 flowchart TB
@@ -250,8 +251,9 @@ F22 starts the built Linux image and checks `/docs`, `/openapi.json`, `/api/v1/s
 Azure IaC declares one New Zealand North Container Apps Consumption environment and one 0.25-vCPU/0.5-GiB app with HTTPS-only ingress,
 min replicas 0 and max replicas 1. Images are designed to come from public GHCR; GitHub Actions obtains Azure access
 through a user-assigned managed identity federated to the `azure-demo` environment, scoped as Contributor only to the
-dedicated resource group and without a client secret. Until a hosted workflow and endpoint check are recorded, these
-remain tested delivery artefacts rather than cloud-deployment evidence.
+dedicated resource group and without a client secret. F23 records successful hosted OIDC, ARM what-if/deploy, health,
+four negative-route checks and capability denial against the live endpoint. Log Analytics is not attached; the expiry
+tag is governance metadata rather than automatic deletion.
 
 ## 13. Technology status
 
@@ -264,7 +266,7 @@ remain tested delivery artefacts rather than cloud-deployment evidence.
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
 | Security | Gate, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch and negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
-| Delivery | Exact lockfiles, verification, multi-stage image, Bicep, OCI/SBOM and resource-group-scoped OIDC workflows | Recorded hosted v0.7.1 runs and live Azure endpoint |
+| Delivery | Exact lockfiles, verification, multi-stage image, public OCI/SBOM, Bicep, resource-group-scoped OIDC and recorded live Azure endpoint | Production observability, automated expiry/teardown and multi-environment promotion |
 
 ## 14. Primary limitations
 
@@ -279,4 +281,5 @@ remain tested delivery artefacts rather than cloud-deployment evidence.
 - D2 is Townsville aggregate context, not Hobart operational demand; D6 metrics are designed fixtures, not measured performance.
 - PBIP/PBIR are preview formats; local Desktop refresh and screenshots do not establish a governed Power BI Service deployment.
 - The public-demo rate limiter is per process, and its SQLite trace resets with the container; neither is a distributed production control.
-- Local image/Bicep checks do not establish that GHCR or Azure deployment succeeded.
+- F23 covers one public revision and named boundary checks, not general penetration testing, production security,
+  actual idle scale-to-zero, zero cost or a billing/availability SLO.

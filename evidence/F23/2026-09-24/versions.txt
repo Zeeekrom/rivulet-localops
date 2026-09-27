@@ -1,0 +1,12 @@
+Rivulet LocalOps release: v0.7.1
+Public release commit: 26df247
+Public workflow-fix commit: 31cc8e5
+Container image: ghcr.io/zeeekrom/rivulet-localops:v0.7.1
+OCI index digest: sha256:f4bd35081e6ab751792138fc93f55fddcd48a0cfae7dcf25b6870f85efe7a225
+Container Python base: 3.12-slim / Python 3.12.14
+FastAPI: 0.141.1
+Uvicorn: 0.52.4
+Local Azure CLI: 2.80.0
+Hosted azure/cli action image: 2.90.0
+Local Bicep CLI: 0.47.16
+Azure Container Apps region: New Zealand North

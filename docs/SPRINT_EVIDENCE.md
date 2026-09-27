@@ -2,11 +2,11 @@
 
 | Evidence field | Value |
 |---|---|
-| Date | 2026-09-16 |
-| Release | v0.7.1 recovery candidate |
-| Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0 for the Linux image; prior releases also verified on GitHub-hosted `windows-latest` |
+| Date | 2026-09-24 |
+| Release | v0.7.1 |
+| Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0; GitHub-hosted verification; Azure Container Apps in New Zealand North |
 
-This document records implemented results verified locally and by GitHub Actions. Hosted CI is build evidence, not an application cloud deployment. It does not claim real-user validation, production adoption or generative-model accuracy.
+This document records implemented results verified locally, by GitHub Actions and—only for the bounded public profile—on Azure. It does not claim real-user validation, production adoption or generative-model accuracy.
 
 ## Foundation / Sprint 0
 
@@ -141,7 +141,7 @@ This is an L0 local control harness over the deterministic-rules provider, with 
 authenticate callers, prove real object-level authorization, use a generative model, run the Gate, make a human
 decision or execute a connector.
 
-## Sprint 3.5 — Cloud-safe web demo (local Build/Check)
+## Sprint 3.5 — Cloud-safe web demo (Review accepted)
 
 Goal: turn the accepted controls into a public-facing portfolio console without exposing the internal application.
 
@@ -155,14 +155,20 @@ Goal: turn the accepted controls into a public-facing portfolio console without 
 | Container identity and health | Pass; `10001:10001`, healthy |
 | Oversized request | 413 with browser security headers |
 | Bicep build | Pass with Bicep 0.47.16 |
-| Azure policy-aware preflight | New Zealand North validate/what-if pass; 2 Create, 1 Ignore, no application resources created |
+| Azure policy-aware deployment | Pass; New Zealand North, HTTPS-only, 0.25 CPU/0.5 GiB, min 0/max 1, no client secret |
 | Full local verification | 40 tests, 8/8 mart reconciliations, 51-file/88-check Power BI validation, regression and F18 pass |
-| Azure endpoint | Pending; no deployment claim |
+| Live Azure endpoint | Pass; health/bootstrap/pass/deny, 4 negative routes, 413/security headers and desktop/mobile rendering |
 
 See [`evidence/F22/2026-09-16`](../evidence/F22/2026-09-16/README.md). Docker Desktop 4.54.0 first failed
 on its Windows AF_UNIX inference/secrets listener; it was updated in place to 4.91.0 without a factory reset. The first
 reproducible-image build then exposed a missing runtime-lock allow-list entry, which was fixed before acceptance. Both
 failed attempts are retained in F22 rather than overwritten by the successful run.
+
+See [`evidence/F23/2026-09-24`](../evidence/F23/2026-09-24/README.md) for the live endpoint and the complete recovery
+chain. The first deploy run failed closed on a custom GitHub OIDC subject mismatch. The second created the app but its
+post-deploy assertion used a missing `python` command in the Azure CLI action image. The default-branch workflow now
+uses `jq`; the third hosted run passed OIDC, what-if, idempotent deployment, health, four route denials and blocked-shell
+denial. F23 does not prove production readiness, actual idle scale-to-zero, zero cost or remaining Student credit.
 
 ## Hosted CI evidence
 
@@ -195,7 +201,9 @@ The v0.7.0 release passed hosted
 [container/SBOM 35092221757](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35092221757). The immutable tag
 is retained. Azure preflight then showed the Student policy rejects Australia East, tenant users cannot register Entra
 apps, and the API requires an omitted logging block rather than `destination: 'none'`. v0.7.1 uses an exact-RG managed
-identity federation and New Zealand North; its hosted image and live deployment runs are still pending.
+identity federation and New Zealand North. Its main/tag/container runs `35993932294`/`35993936061`/`35993936049`,
+post-fix main run `35995184675` and successful deploy run `35995289399` are recorded in F23. Failed deploy runs
+`35994259185` and `35994416800` remain public recovery evidence.
 
 ## Reproduction
 
@@ -243,8 +251,9 @@ The word “accuracy” in the evaluator's JSON field is retained for compatibil
 | Identities are authenticated and authorised | No | IDs are asserted fields only |
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
-| The system is deployed to Azure or an enterprise Windows environment | No | Bicep/OIDC exist, but no successful endpoint evidence is recorded yet |
-| The public profile excludes tested internal routes | Yes | Real local Linux container; four named negative routes, not a general penetration test |
+| The bounded public profile is deployed to Azure | Yes | One New Zealand North Container Apps revision; F23, not a production-readiness claim |
+| The system is deployed to an enterprise Windows environment | No | Windows lab remains a later slice |
+| The public profile excludes tested internal routes | Yes | Local container and live Azure endpoint; four named negative routes, not a general penetration test |
 | Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
 
 ## Known verification warning
