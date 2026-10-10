@@ -12,7 +12,7 @@ param containerImage string
 param namePrefix string = 'rivulet-demo'
 
 @description('Release label exposed to the container.')
-param release string = 'v0.7.1'
+param release string = 'v0.7.2'
 
 @description('ISO date after which the demo resources should be reviewed or removed.')
 param expiresOn string

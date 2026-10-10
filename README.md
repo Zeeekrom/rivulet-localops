@@ -2,18 +2,18 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.7.1-2F855A)
+![Release](https://img.shields.io/badge/release-v0.7.2-2F855A)
 
 Rivulet LocalOps turns a written service policy into decisions that can be executed, checked and traced to a named owner. Its reference scenario is a local council handling waste and litter requests. Each request is diagnosed, tested against an approved policy, recorded in a tamper-evident ledger and reviewed by a second person.
 
 This is an independent technical prototype. It is not an official City of Hobart, Tasmanian Government or council service. It contains no real resident requests and performs no real council-system writes.
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
-— five server-owned synthetic scenarios only; no visitor free text or real resident data.
+— five server-owned synthetic scenarios only; no visitor free text or real resident data. The live demo still serves v0.7.1, with the earlier page layout, until v0.7.2 is deployed.
 
-<img src="evidence/F22/2026-09-16/desktop-pass.png" alt="The public assurance console after a request passes the Gate" width="640">
+<img src="evidence/F24/2026-10-10/desktop-pass.png" alt="The overview console after a request passes the policy check" width="640">
 
-The public console after a synthetic request passes the Gate. The page shows the agent's receipts, each policy rule that was checked, and the source class of every figure.
+The v0.7.2 console after a synthetic request passes the policy check. Every figure carries its source class, and the policy rules, agent receipts and record hashes open from the result.
 
 ## Contents
 
@@ -22,7 +22,7 @@ The public console after a synthetic request passes the Gate. The page shows the
 - [Who it is for](#who-it-is-for)
 - [One request, start to finish](#one-request-start-to-finish)
 - [The screens](#the-screens)
-- [What works today: v0.7.1](#what-works-today-v071)
+- [What works today: v0.7.2](#what-works-today-v072)
 - [Design principles](#design-principles)
 - [Real data and synthetic data](#real-data-and-synthetic-data)
 - [How it was built](#how-it-was-built)
@@ -45,7 +45,7 @@ The public console after a synthetic request passes the Gate. The page shows the
 | Stack | Python 3.12, FastAPI, SQLite, React 19 and TypeScript, a Power BI project, Docker, Azure Container Apps and GitHub Actions |
 | Evidence | 40 automated tests, 19 source-quality checks, a 316-event synthetic ledger and a live Azure deployment |
 | Data | Real public reference data, and requests that are clearly labelled synthetic |
-| Status | Release v0.7.1. A portfolio prototype. It has not been validated with a council and is not production-ready |
+| Status | Release v0.7.2. A portfolio prototype. It has not been validated with a council and is not production-ready |
 
 ## The problem
 
@@ -105,9 +105,9 @@ flowchart LR
 | ![Gate and decision assurance](evidence/F10/2026-09-12/screenshots/Gate%20%26%20decision%20assurance.png) | ![Data provenance and quality](evidence/F10/2026-09-12/screenshots/Data%20provenance%20%26%20quality.png) |
 | **Power BI: Gate and decision assurance.** Gate outcomes and the human-control paths | **Power BI: data provenance and quality.** Each source with its contract and its checks |
 
-The web console is shown at the top of this page. A phone-width capture of a denied path is kept in [`evidence/F22`](evidence/F22/2026-09-16/README.md).
+The web console is shown at the top of this page. A phone-width capture of a denied path is kept in [`evidence/F24`](evidence/F24/2026-10-10/README.md).
 
-## What works today: v0.7.1
+## What works today: v0.7.2
 
 | Capability | Implemented evidence |
 |---|---|
@@ -120,7 +120,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Replay | Recomputes the decision and compares policy version/hash, provider version, category, priority and Gate rules |
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
-| Verification | 40 automated tests, a 12-case deterministic regression set, F18 capability, F22 container and F23 live Azure reviews |
+| Verification | 40 automated tests, a 12-case deterministic regression set, F18 capability, F22 container, F23 live Azure and F24 interface reviews |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
 | Data quality | 19 automated source checks: 15 pass, 4 documented warnings, 0 fail and 0 blocking |
@@ -128,7 +128,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Analytics mart | 14 non-empty dimension/fact tables as versioned CSV plus a reproducible local SQLite build; 8 reconciliation checks pass |
 | Metric governance | Numerators, denominators, grain, filters, null handling, truth class and caveats are defined; no unsupported target is invented |
 | Power BI assurance | Deterministically generated two-page PBIP/PBIR/TMDL project: 7 Import tables, 29 measures, 8 relationships, 27 visuals, visible truth boundaries and versioned Desktop evidence |
-| Cloud-safe web console | React/TypeScript assurance dashboard backed by a separate FastAPI profile; visitors can run only five server-owned synthetic scenarios |
+| Cloud-safe web console | React/TypeScript overview console in plain language, backed by a separate FastAPI profile; visitors can run only five server-owned synthetic scenarios |
 | Container delivery | Multi-stage Linux image, exact runtime lock, non-root UID/GID 10001, health probe, same-origin assets and public/internal route separation |
 | Azure deployment | Live New Zealand North Container Apps Consumption revision: 0.25 vCPU/0.5 GiB, scale 0–1, public GHCR image and resource-group-scoped managed-identity OIDC with no client secret |
 
@@ -167,6 +167,7 @@ Each public source has a manifest with its publisher, URL, licence, retrieval da
 | v0.6.0 | 12 Sep 2026 | Bounded read-only case-agent with capability controls |
 | v0.7.0 | 16 Sep 2026 | Web console and container image |
 | v0.7.1 | 24 Sep 2026 | Live Azure deployment through OIDC, with no stored client secret |
+| v0.7.2 | 10 Oct 2026 | Web console redesigned as a plain-language overview. The API, policy and controls are unchanged |
 
 The order was deliberate: the controls came before any model, and each sprint ended with a review against recorded evidence. See [Sprint Evidence](docs/SPRINT_EVIDENCE.md).
 
@@ -304,7 +305,7 @@ reconciliation, screenshots and Desktop round-trip evidence are in
 [`F10 initial Review`](evidence/F10/2026-09-10/README.md) and
 [`F10 round-trip`](evidence/F10/2026-09-12/README.md). Sprint 3 identity, tool, data, resource, budget and provider-binding
 evidence is in [`F18`](evidence/F18/2026-09-12/README.md). The v0.7.0 cloud-safe frontend, real-container negative-route
-checks and rendered desktop/mobile screenshots are in [`F22`](evidence/F22/2026-09-16/README.md). The v0.7.1 live
+checks and rendered desktop/mobile screenshots are in [`F22`](evidence/F22/2026-09-16/README.md). The v0.7.2 interface redesign, with its local checks and screenshots, is in [`F24`](evidence/F24/2026-10-10/README.md). The v0.7.1 live
 Azure endpoint, OIDC, scale, negative-route and recovery evidence is in [`F23`](evidence/F23/2026-09-24/README.md).
 
 To open the report, run the normal verification first, then open

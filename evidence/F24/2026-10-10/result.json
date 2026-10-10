@@ -1,0 +1,20 @@
+{
+  "evidence_id": "F24",
+  "date": "2026-10-10",
+  "release": "v0.7.2",
+  "scope": "front-end redesign of the public web console; API, policy, capability registry and ledger unchanged",
+  "environment": {"node": "24.18.1", "npm": "11.16.0", "python": "3.12.9", "browser": "Microsoft Edge headless"},
+  "build": {"command": "npm --prefix web run build", "modules_transformed": 17, "status": "pass"},
+  "local_public_profile": {
+    "healthz": {"status": "ok", "release": "v0.7.2", "ledger_integrity_ok": true},
+    "negative_routes": {"/docs": 404, "/openapi.json": 404, "/api/v1/submit": 404, "/ops/v1/ledger/integrity": 404},
+    "scenarios": [
+      {"title": "Evidence complete", "observed_outcome": "pass", "matches_fixture": true},
+      {"title": "Safety escalation", "observed_outcome": "escalate", "matches_fixture": true},
+      {"title": "Capability denied", "observed_outcome": "deny", "matches_fixture": true}
+    ]
+  },
+  "screenshots": ["desktop-pass.png", "desktop-escalate.png", "mobile-deny.png"],
+  "not_covered": ["local container build and run", "Azure deployment of v0.7.2", "reader study"],
+  "claim_boundary": "Local check of a redesigned interface on synthetic fixtures. Not evidence of council performance, model accuracy, production readiness or a deployed v0.7.2."
+}

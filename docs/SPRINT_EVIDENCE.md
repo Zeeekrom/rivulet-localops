@@ -2,8 +2,8 @@
 
 | Evidence field | Value |
 |---|---|
-| Date | 2026-09-24 |
-| Release | v0.7.1 |
+| Date | 2026-10-10 |
+| Release | v0.7.2 |
 | Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0; GitHub-hosted verification; Azure Container Apps in New Zealand North |
 
 This document records implemented results verified locally, by GitHub Actions and—only for the bounded public profile—on Azure. It does not claim real-user validation, production adoption or generative-model accuracy.
@@ -170,6 +170,24 @@ post-deploy assertion used a missing `python` command in the Azure CLI action im
 uses `jq`; the third hosted run passed OIDC, what-if, idempotent deployment, health, four route denials and blocked-shell
 denial. F23 does not prove production readiness, actual idle scale-to-zero, zero cost or remaining Student credit.
 
+## v0.7.2 — Plain-language overview console
+
+Goal: make the public console readable by someone who is not an engineer, without removing any control or truth label.
+
+| Acceptance item | Result |
+|---|---|
+| React/TypeScript production build | Pass; 17 modules |
+| API, policy, capability registry and ledger | Unchanged; only the front-end and the release label differ from v0.7.1 |
+| Source class on every figure | Kept; D1 and D2 as real public data, D6 as synthetic test data |
+| Policy rules, agent receipts and record hashes | Kept on the page, behind two disclosure controls |
+| Scenario outcomes on the local public profile | `pass`, `escalate` and `deny` each match their fixture |
+| Internal/docs route boundary on the local public profile | 4 of 4 tested routes return 404 |
+| Phone-width layout | Pass; single column at 390 px |
+| Full local verification | 40 tests, 8/8 mart reconciliations, 88-check Power BI validation, regression and F18 pass |
+| Local container run and Azure deployment of v0.7.2 | Not performed in this slice |
+
+See [`evidence/F24/2026-10-10`](../evidence/F24/2026-10-10/README.md). The live Azure demo keeps serving v0.7.1 until a deployment is run for v0.7.2. No reader study was run, so the easier reading is a design intent and not a measured result.
+
 ## Hosted CI evidence
 
 Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The first v0.4.0 hosted run failed
@@ -253,6 +271,7 @@ The word “accuracy” in the evaluator's JSON field is retained for compatibil
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
 | The bounded public profile is deployed to Azure | Yes | One New Zealand North Container Apps revision; F23, not a production-readiness claim |
 | The system is deployed to an enterprise Windows environment | No | Windows lab remains a later slice |
+| The v0.7.2 interface is live on Azure | No | The live demo serves v0.7.1 until a v0.7.2 deployment is run |
 | The public profile excludes tested internal routes | Yes | Local container and live Azure endpoint; four named negative routes, not a general penetration test |
 | Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
 
