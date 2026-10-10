@@ -4,16 +4,52 @@
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
 ![Release](https://img.shields.io/badge/release-v0.7.1-2F855A)
 
-Rivulet LocalOps is a portfolio-grade civic workflow demonstrator for explainable and accountable local-government service-request decisions. It connects deterministic triage, a bounded read-only agent, public asset matching, a versioned policy Gate, a tamper-evident event ledger, human review, a provider kill switch and a truth-labelled analytics mart in one reproducible workflow.
+Rivulet LocalOps turns a written service policy into decisions that can be executed, checked and traced to a named owner. Its reference scenario is a local council handling waste and litter requests. Each request is diagnosed, tested against an approved policy, recorded in a tamper-evident ledger and reviewed by a second person.
 
 This is an independent technical prototype. It is not an official City of Hobart, Tasmanian Government or council service. It contains no real resident requests and performs no real council-system writes.
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 — five server-owned synthetic scenarios only; no visitor free text or real resident data.
 
-## Why it exists
+<img src="evidence/F22/2026-09-16/desktop-pass.png" alt="The public assurance console after a request passes the Gate" width="640">
 
-Automated classification is only one part of a trustworthy operational workflow. The harder questions are:
+The public console after a synthetic request passes the Gate. The page shows the agent's receipts, each policy rule that was checked, and the source class of every figure.
+
+## Contents
+
+- [At a glance](#at-a-glance)
+- [The problem](#the-problem)
+- [Who it is for](#who-it-is-for)
+- [One request, start to finish](#one-request-start-to-finish)
+- [The screens](#the-screens)
+- [What works today: v0.7.1](#what-works-today-v071)
+- [Design principles](#design-principles)
+- [Real data and synthetic data](#real-data-and-synthetic-data)
+- [How it was built](#how-it-was-built)
+- [Problems that became rules](#problems-that-became-rules)
+- [Technology stack](#technology-stack)
+- [Run locally](#run-locally)
+- [API surface](#api-surface)
+- [Verify](#verify)
+- [Security and data boundary](#security-and-data-boundary)
+- [What is not finished](#what-is-not-finished)
+- [What the project showed](#what-the-project-showed)
+
+## At a glance
+
+| | |
+|---|---|
+| What it is | A civic workflow demonstrator: explainable triage, a policy Gate, a decision ledger, human review and assurance reporting in one reproducible workflow |
+| Who it is for | Teams that handle public service requests under written policy: service managers, policy owners, reviewers, and the IT and data staff who support them |
+| The problem | Automation can classify a request. It usually cannot show which rule allowed an action, what evidence was used, or who was accountable |
+| Stack | Python 3.12, FastAPI, SQLite, React 19 and TypeScript, a Power BI project, Docker, Azure Container Apps and GitHub Actions |
+| Evidence | 40 automated tests, 19 source-quality checks, a 316-event synthetic ledger and a live Azure deployment |
+| Data | Real public reference data, and requests that are clearly labelled synthetic |
+| Status | Release v0.7.1. A portfolio prototype. It has not been validated with a council and is not production-ready |
+
+## The problem
+
+Automated classification is only one part of a trustworthy operational workflow. An organisation that answers to the public also has to be able to answer these questions about any single decision:
 
 - Which approved rule allowed or blocked an action?
 - What evidence and software version were used?
@@ -23,6 +59,20 @@ Automated classification is only one part of a trustworthy operational workflow.
 - Can automation be stopped safely when integrity or provider concerns arise?
 
 Rivulet LocalOps makes those controls executable and testable.
+
+## Who it is for
+
+| Role | The question they need answered | What Rivulet shows them |
+|---|---|---|
+| Service or operations manager | Which requests can go ahead and which need a person? | A Gate result of pass, reject or escalate, with the rule and the reason for each |
+| Policy owner | Is the system applying the policy that was approved? | A versioned policy pack, with its version and content hash recorded on every decision |
+| Reviewer or auditor | Can a decision be checked later without taking the software's word for it? | An append-only ledger, a replay of any decision and an integrity check of the hash chain |
+| IT or security lead | What can the automated agent touch, and can it be stopped? | Allowlists for tools and data, a call budget, a time-limited grant and a provider kill switch |
+| Data analyst | Which numbers are real and which are test data? | Source contracts, data-quality checks and a report that labels every figure by its source class |
+
+These roles describe a reference scenario. No council and no resident took part in designing or testing the prototype.
+
+## One request, start to finish
 
 ```mermaid
 flowchart LR
@@ -39,7 +89,25 @@ flowchart LR
     K --> M[Recorded manual fallback]
 ```
 
-## Current release: v0.7.1
+1. **A request arrives.** For example, an overflowing public bin beside a footpath, with coordinates. Every request in the system is synthetic.
+2. **Diagnosis.** Rules place it in one of eight operational categories or a general fallback, and return the priority rule, a confidence value, the terms that matched and a list of missing information.
+3. **Asset context.** The nearest public bin is found in a 727-feature snapshot of City of Hobart open data.
+4. **The Gate.** A versioned policy decides pass, reject or escalate, and gives the rule behind each outcome. Only one action can ever pass: creating a draft work order.
+5. **The ledger.** The decision is appended as an event with request, policy and event hashes, chained with SHA-256.
+6. **Review.** A second person accepts, overrides or escalates. Their review is appended. The original Gate result is never overwritten.
+7. **Replay and integrity.** Any decision can be recomputed and compared with what was recorded, and the whole chain can be verified.
+8. **Stopping.** A kill switch disables the provider. Requests then take a manual route, and that fallback is recorded too.
+
+## The screens
+
+| | |
+|---|---|
+| ![Gate and decision assurance](evidence/F10/2026-09-12/screenshots/Gate%20%26%20decision%20assurance.png) | ![Data provenance and quality](evidence/F10/2026-09-12/screenshots/Data%20provenance%20%26%20quality.png) |
+| **Power BI: Gate and decision assurance.** Gate outcomes and the human-control paths | **Power BI: data provenance and quality.** Each source with its contract and its checks |
+
+The web console is shown at the top of this page. A phone-width capture of a denied path is kept in [`evidence/F22`](evidence/F22/2026-09-16/README.md).
+
+## What works today: v0.7.1
 
 | Capability | Implemented evidence |
 |---|---|
@@ -65,6 +133,51 @@ flowchart LR
 | Azure deployment | Live New Zealand North Container Apps Consumption revision: 0.25 vCPU/0.5 GiB, scale 0–1, public GHCR image and resource-group-scoped managed-identity OIDC with no client secret |
 
 The current diagnosis engine and agent adapter are deliberately rules-based. They form a transparent control baseline for later model comparison and are not presented as generative AI.
+
+## Design principles
+
+- **Rules first, models later.** Diagnosis and the agent adapter are deterministic. They give a transparent baseline that a model can later be compared against.
+- **The Gate decides. The agent does not.** The agent reads one case and approved public data. It cannot run the Gate, make the human decision or call a connector.
+- **One permitted action.** Only a draft work order can pass. Nothing writes to an outside system.
+- **History is appended.** A review adds to the record. It never replaces the original result.
+- **A second person reviews.** The accountable owner and the reviewer are separate fields on every decision.
+- **Deny by default.** Tools, data and resources are allowlisted, the grant lasts five minutes, the budget is four calls, and a change of provider identity fails closed before anything runs.
+- **Automation can be switched off.** The kill switch is persistent, and the manual route it forces is itself recorded.
+- **Every number carries its source class.** Real public reference data and synthetic operations are never mixed in one figure.
+- **Failures are kept.** Failed hosted runs stay on the public record and release tags are not moved.
+
+## Real data and synthetic data
+
+| Set | What it is | Source class |
+|---|---|---|
+| D1 | City of Hobart public litter-bin assets, 727 features | Real public reference |
+| D2 | Townsville request-for-service counts, monthly aggregates | Real public reference. Context only, not Hobart demand |
+| D6 | 316 hash-chained events from a fixed seed: 180 decisions, 120 reviews, 8 manual fallbacks and 8 provider-control changes | Synthetic operations |
+| Policy | A versioned waste and litter policy written for the demonstration | Synthetic. Not a council policy |
+
+Each public source has a manifest with its publisher, URL, licence, retrieval date, hash, schema, grain and limitations. Rates calculated from D6 exercise the calculations. They say nothing about council performance or model accuracy.
+
+## How it was built
+
+| Release | Date | What it added |
+|---|---|---|
+| v0.3.0, v0.3.1 | 9 Sep 2026 | Policy Gate, decision ledger, review queue, replay and kill switch |
+| v0.4.0, v0.4.1 | 9-10 Sep 2026 | Contracted public sources, data-quality checks and the analytics mart |
+| v0.5.0, v0.5.1 | 12 Sep 2026 | Power BI assurance report generated from code |
+| v0.6.0 | 12 Sep 2026 | Bounded read-only case-agent with capability controls |
+| v0.7.0 | 16 Sep 2026 | Web console and container image |
+| v0.7.1 | 24 Sep 2026 | Live Azure deployment through OIDC, with no stored client secret |
+
+The order was deliberate: the controls came before any model, and each sprint ended with a review against recorded evidence. See [Sprint Evidence](docs/SPRINT_EVIDENCE.md).
+
+## Problems that became rules
+
+| What went wrong | What changed |
+|---|---|
+| A review run on Windows failed during cleanup because read-only SQLite connections were left open | v0.3.1 closes them explicitly and adds a reusable review runner |
+| The first v0.4.0 hosted run failed: line-ending normalisation changed the bytes of hashed data snapshots | v0.4.1 marks those snapshots as non-text so a fresh checkout keeps the exact bytes |
+| The v0.5.0 workflows failed on a fresh Windows checkout because generated report partitions embedded CRLF | v0.5.1 writes one canonical form, hashes that form and tests CRLF and LF equivalence |
+| Two Azure deployment attempts failed before v0.7.1 was accepted | Both runs are kept as evidence beside the run that passed |
 
 ## Technology stack
 
@@ -216,9 +329,18 @@ The 12-case result is a regression check on self-authored, uncomplicated cases. 
 - The public demo ledger is local to one container replica and resets after scale-to-zero or revision replacement; it is demonstration trace state, not retained audit evidence.
 - F23 proves one bounded Azure portfolio deployment and named negative-route checks; it does not establish production readiness, authenticated users, durable audit retention, actual idle scale-to-zero or zero cost.
 
-## Next verified slice
+## What is not finished
 
 The next slice is adversarial and secure-delivery verification: ambiguous/injection-style inputs,
 cross-case/provider-outage paths, SAST/SCA and recovery evidence. Authentication/RBAC, Windows enterprise lab
 integration and PostgreSQL remain later stages and are not represented as completed. The live Azure demo remains
 within the enabled Student spending limit, with no subscription upgrade or claim of remaining sponsorship credit.
+
+For a real organisation to use something like this, it would also need authenticated identities and roles, a durable and independently protected audit store, connectors to its own systems, and its own approved policies in place of the demonstration policy. None of that is built.
+
+## What the project showed
+
+- A decision is only as trustworthy as the record of how it was made.
+- Putting the policy check outside the model keeps the outcome explainable whichever model is used later.
+- Labelling every figure as real or synthetic prevents a test fixture from being read as performance.
+- Keeping failed runs public costs little and makes the passing ones believable.
