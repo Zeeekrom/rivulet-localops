@@ -223,6 +223,10 @@ identity federation and New Zealand North. Its main/tag/container runs `35993932
 post-fix main run `35995184675` and successful deploy run `35995289399` are recorded in F23. Failed deploy runs
 `35994259185` and `35994416800` remain public recovery evidence.
 
+The v0.7.2 release passed hosted
+[main verify 38045635848](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045635848), [tag verify 38045637107](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637107) and [container/SBOM 38045637061](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637061).
+No Azure deployment was run for v0.7.2, so the live demo continues to serve v0.7.1.
+
 ## Reproduction
 
 ```powershell

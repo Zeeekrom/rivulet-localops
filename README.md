@@ -289,7 +289,9 @@ The v0.7.0 release passed hosted
 [tag verify 35993936061](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35993936061) and
 [container/SBOM 35993936049](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35993936049). After two retained
 deployment-recovery failures, the workflow fix passed [main verify 35995184675](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995184675)
-and the complete Azure OIDC/deploy/boundary gate passed [run 35995289399](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995289399).
+and the complete Azure OIDC/deploy/boundary gate passed [run 35995289399](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995289399). v0.7.2 passed
+[main verify 38045635848](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045635848), [tag verify 38045637107](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637107) and [container/SBOM 38045637061](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637061).
+No Azure deployment has been run for v0.7.2.
 
 Run the end-to-end review story separately with:
 
