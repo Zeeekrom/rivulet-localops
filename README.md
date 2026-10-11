@@ -32,6 +32,7 @@ The v0.7.2 console after a synthetic request passes the policy check. Every figu
 - [API surface](#api-surface)
 - [Verify](#verify)
 - [Security and data boundary](#security-and-data-boundary)
+- [Poster](#poster)
 - [What is not finished](#what-is-not-finished)
 - [What the project showed](#what-the-project-showed)
 
@@ -331,6 +332,12 @@ The 12-case result is a regression check on self-authored, uncomplicated cases. 
 - Every D6 decision, review, actor, time and operational metric is fixed-seed synthetic data. Its rates exercise calculations and are not council performance or model-accuracy evidence.
 - The public demo ledger is local to one container replica and resets after scale-to-zero or revision replacement; it is demonstration trace state, not retained audit evidence.
 - F23 proves one bounded Azure portfolio deployment and named negative-route checks; it does not establish production readiness, authenticated users, durable audit retention, actual idle scale-to-zero or zero cost.
+
+## Poster
+
+<img src="docs/poster.jpg" alt="Project poster" width="520">
+
+A one-page summary of the project, made in October 2026. The screen on it is the v0.7.2 console, and the figures are the ones reported in this README.
 
 ## What is not finished
 
