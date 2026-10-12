@@ -1,7 +1,7 @@
 # Technical Architecture
 
-Status: release v0.7.1 is container-verified locally and deployed as a bounded Azure portfolio demo. F23 records the
-live endpoint, hosted deployment gate and limitations.
+Status: release v0.8.0 is locally verified. The live bounded Azure portfolio demo remains v0.7.1 until the v0.8.0
+hosted image, deployment gate and rollback drill complete; F23 records the previously accepted live deployment.
 
 ## 1. System boundary
 
@@ -9,7 +9,8 @@ Rivulet LocalOps has two intentionally separate FastAPI entry points. The intern
 
 1. decision support: request validation, deterministic classification, priority and asset match;
 2. governance: versioned policy pack, deterministic Gate, decision/review ledger and replay;
-3. operations: health, ledger-integrity verification and provider kill switch.
+3. operations: component health, ledger-integrity verification, provider kill switch, redacted logs, Support Bundle,
+   incident/runbook entry points and an internal support page;
 4. agent control: server-selected identity, versioned capabilities, short-lived grants, allowlists and invocation audit.
 
 The separate `public_demo` entry point serves a React/TypeScript assurance console and only a health route, bootstrap
@@ -192,7 +193,27 @@ When disabled:
 
 The current kill switch is logically separated under `/ops/v1`, but it is not physically out-of-band because it shares the application process and SQLite file.
 
-## 9. Bounded case-agent control
+## 9. Application support and recovery
+
+The internal profile assigns safe correlation and request IDs at the HTTP boundary. Its in-memory operational records
+are bounded and allowlist-only: route template, component, policy/provider version, Gate result, ledger event ID,
+elapsed time, status and error category. Request bodies, credentials, arbitrary headers, environment dumps and internal
+paths are never fields in that record.
+
+`/ops/v1/health` reports API, database/ledger, policy, provider, configuration, dependencies and build/version as
+`healthy`, `degraded` or `unavailable`. Ledger integrity and invalid required configuration are readiness failures;
+provider kill-switch state is degraded because audited manual fallback remains available. `/ops/v1/support/bundle`
+packages these states, deployment metadata, error aggregates and recent redacted records into an allowlisted document
+with a reproducible SHA-256 checksum. `/ops/support` consumes only these internal endpoints. None is registered by the
+public demo entry point, and six negative routes now form its deploy-time boundary check.
+
+The ledger can create a SQLite-consistent backup only after verifying the source chain. Offline restore first verifies
+the backup, restores to a temporary database, verifies again and atomically replaces the requested destination. Five
+isolated application-support exercises cover API degradation, release mismatch, ledger tamper/restore, invalid
+configuration and provider kill-switch fallback. These are synthetic experiments, not production incidents. The local
+APP-002 result verifies mismatch detection only; the GitHub/Azure workflow must create the hosted rollback evidence.
+
+## 10. Bounded case-agent control
 
 The server exposes one fixed `case-agent` identity from a versioned, content-hashed synthetic capability registry. Its
 automation level is `L0_shadow_read_only`: it can read only the current synthetic case and, when coordinates are
@@ -209,7 +230,7 @@ These controls do not authenticate callers, implement real object-level authoriz
 adapter into generative AI. The registry is not signed, and a plain input SHA-256 hash is not a privacy-preserving
 commitment for personal data.
 
-## 10. Analytics contracts and mart
+## 11. Analytics contracts and mart
 
 D1 City of Hobart assets, D2 Townsville monthly request aggregates and D6 fixed-seed synthetic ledger events each
 have a machine-readable source manifest. The manifest pins publisher, URLs, licence, retrieval time, hash, row/event
@@ -225,7 +246,7 @@ hash drift, blocking source checks, primary/FK failures, count reconciliation er
 truth-class mixing. See the [data dictionary](../analytics/DATA_DICTIONARY.md) and
 [metric dictionary](../analytics/metric_dictionary.csv).
 
-## 11. Power BI project boundary
+## 12. Power BI project boundary
 
 `analytics/powerbi/RivuletAssurance.pbip` opens a two-page enhanced-PBIR report backed by a TMDL Import model. The
 provenance page exposes sources, truth classes and quality outcomes; the assurance page exposes synthetic Gate,
@@ -237,7 +258,7 @@ versioned; Desktop's local settings and data cache are ignored. After Desktop wr
 the canonical form—including PBIP/PBIR schema references required by Microsoft's validator—before commit. PBIP/PBIR
 remain preview formats, and local refresh evidence is not a Power BI Service, Fabric or gateway deployment claim.
 
-## 12. Public web and container boundary
+## 13. Public web and container boundary
 
 The production Vite build is copied into the FastAPI image and served same-origin. The container installs exact-pinned
 runtime dependencies, declares non-root `10001:10001`, writes its disposable SQLite ledger only under `/tmp`, and
@@ -251,11 +272,13 @@ F22 starts the built Linux image and checks `/docs`, `/openapi.json`, `/api/v1/s
 Azure IaC declares one New Zealand North Container Apps Consumption environment and one 0.25-vCPU/0.5-GiB app with HTTPS-only ingress,
 min replicas 0 and max replicas 1. Images are designed to come from public GHCR; GitHub Actions obtains Azure access
 through a user-assigned managed identity federated to the `azure-demo` environment, scoped as Contributor only to the
-dedicated resource group and without a client secret. F23 records successful hosted OIDC, ARM what-if/deploy, health,
-four negative-route checks and capability denial against the live endpoint. Log Analytics is not attached; the expiry
+dedicated resource group and without a client secret. The v0.8.0 workflow captures pre-deploy health, verifies exact
+release, security headers, six negative routes and capability denial, and—on failure—redeploys the previously observed
+image/release through the same Bicep template before verifying recovery. F23 records the earlier successful hosted
+OIDC, ARM what-if/deploy and live checks. Log Analytics is not attached; the expiry
 tag is governance metadata rather than automatic deletion.
 
-## 13. Technology status
+## 14. Technology status
 
 | Area | Current | Planned, not implemented |
 |---|---|---|
@@ -265,10 +288,11 @@ tag is governance metadata rather than automatic deletion.
 | Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL | Additional sources only when a report field requires them |
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
-| Security | Gate, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch and negative tests | Signed audit checkpoints, SAST/SCA, adversarial evaluation, backup/restore drill |
-| Delivery | Exact lockfiles, verification, multi-stage image, public OCI/SBOM, Bicep, resource-group-scoped OIDC and recorded live Azure endpoint | Production observability, automated expiry/teardown and multi-environment promotion |
+| Security | Gate, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, npm high-severity audit gate and negative tests | Signed audit checkpoints, SAST, container vulnerability gate and adversarial evaluation |
+| Delivery | Exact lockfiles, verification, multi-stage image, public OCI/SBOM, Bicep, resource-group-scoped OIDC, deployment smoke and rollback logic | Hosted v0.8.0 rollback evidence, production observability, automated expiry/teardown and multi-environment promotion |
+| Application support | Component health, redacted structured logs, Support Bundle, internal support UI, five runbooks and local synthetic recovery evidence | External alerting/SLA system and physically separate support control plane |
 
-## 14. Primary limitations
+## 15. Primary limitations
 
 - The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
 - Self-authored regression cases do not establish real-world accuracy.

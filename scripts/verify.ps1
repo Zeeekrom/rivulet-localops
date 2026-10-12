@@ -29,6 +29,9 @@ try {
         & npm ci --ignore-scripts
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+        & npm audit --audit-level=high
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
         & npm run build
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
@@ -36,7 +39,13 @@ try {
         Pop-Location
     }
 
+    & $python -m pip check
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
     & $python -m pytest -q
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+    & $python scripts\run_application_support_experiments.py --date 2026-10-12
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
     & $python scripts\run_eval.py

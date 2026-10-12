@@ -6,13 +6,18 @@ on:
       image_tag:
         description: "Existing public GHCR image tag"
         required: true
-        default: "v0.7.2"
+        default: "v0.8.0"
         type: string
       expires_on:
         description: "Review/teardown date (YYYY-MM-DD)"
         required: true
         default: "2026-10-24"
         type: string
+      rollback_drill:
+        description: "After all checks pass, inject a synthetic smoke failure and verify rollback"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -34,7 +39,8 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: What-if, deploy and verify public boundary
+      - name: Capture current release, what-if and deploy candidate
+        id: deploy
         uses: azure/cli@v3
         env:
           RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
@@ -45,6 +51,12 @@ jobs:
           inlineScript: |
             set -euo pipefail
             image="ghcr.io/zeeekrom/rivulet-localops:${IMAGE_TAG}"
+            previous_image=$(az containerapp show --name rivulet-demo --resource-group "${RESOURCE_GROUP}" --query 'properties.template.containers[0].image' -o tsv 2>/dev/null || true)
+            previous_release=$(az containerapp show --name rivulet-demo --resource-group "${RESOURCE_GROUP}" --query "properties.template.containers[0].env[?name=='RIVULET_RELEASE'].value | [0]" -o tsv 2>/dev/null || true)
+            previous_url=$(az containerapp show --name rivulet-demo --resource-group "${RESOURCE_GROUP}" --query 'properties.configuration.ingress.fqdn' -o tsv 2>/dev/null || true)
+            if [[ -n "${previous_url}" ]]; then
+              curl --fail --silent --show-error --max-time 30 "https://${previous_url}/healthz" > pre-deploy-health.json || true
+            fi
             az deployment group what-if \
               --resource-group "${RESOURCE_GROUP}" \
               --template-file infra/azure/main.bicep \
@@ -56,27 +68,90 @@ jobs:
               --template-file infra/azure/main.bicep \
               --parameters location="${AZURE_LOCATION}" containerImage="${image}" release="${IMAGE_TAG}" expiresOn="${EXPIRES_ON}" \
               --query properties.outputs.applicationUrl.value -o tsv)
-            for attempt in $(seq 1 18); do
-              if curl --fail --silent --show-error --max-time 20 "${url}/healthz" > health.json; then
-                break
-              fi
-              if [[ "${attempt}" == "18" ]]; then
-                echo "Health check did not pass after 18 attempts." >&2
-                exit 1
-              fi
-              sleep 10
-            done
-            jq -e '.status == "ok" and .profile == "public_demo"' health.json > /dev/null
-            for path in docs openapi.json api/v1/submit ops/v1/ledger/integrity; do
-              code=$(curl --silent --output /dev/null --write-out '%{http_code}' "${url}/${path}")
-              [[ "${code}" == "404" ]] || { echo "Boundary failure: /${path} returned ${code}" >&2; exit 1; }
-            done
-            curl --fail --silent --show-error --request POST "${url}/demo/v1/scenarios/blocked-shell/run" > deny.json
-            jq -e '.observed_outcome == "deny" and .ledger_integrity_ok == true' deny.json > /dev/null
             echo "application_url=${url}" >> "${GITHUB_OUTPUT}"
-            echo "### Azure demo verification" >> "${GITHUB_STEP_SUMMARY}"
-            echo "- Endpoint: ${url}" >> "${GITHUB_STEP_SUMMARY}"
-            echo "- Region: ${AZURE_LOCATION}" >> "${GITHUB_STEP_SUMMARY}"
-            echo "- Health: pass" >> "${GITHUB_STEP_SUMMARY}"
-            echo "- Internal/docs route boundary: pass (4/4 returned 404)" >> "${GITHUB_STEP_SUMMARY}"
-            echo "- Capability-deny path: pass" >> "${GITHUB_STEP_SUMMARY}"
+            echo "previous_image=${previous_image}" >> "${GITHUB_OUTPUT}"
+            echo "previous_release=${previous_release}" >> "${GITHUB_OUTPUT}"
+      - name: Post-deploy smoke and release verification
+        id: smoke
+        continue-on-error: true
+        shell: bash
+        env:
+          APPLICATION_URL: ${{ steps.deploy.outputs.application_url }}
+          EXPECTED_RELEASE: ${{ inputs.image_tag }}
+          ROLLBACK_DRILL: ${{ inputs.rollback_drill }}
+        run: |
+          set -euo pipefail
+          args=(--url "${APPLICATION_URL}" --expected-release "${EXPECTED_RELEASE}" --output post-deploy-smoke.json)
+          if [[ "${ROLLBACK_DRILL}" == "true" ]]; then
+            args+=(--force-failure-after-checks)
+          fi
+          for attempt in $(seq 1 18); do
+            if python scripts/verify_public_deployment.py "${args[@]}"; then
+              exit 0
+            fi
+            if [[ "${ROLLBACK_DRILL}" == "true" ]] || [[ "${attempt}" == "18" ]]; then
+              exit 1
+            fi
+            sleep 10
+          done
+      - name: Roll back to previously observed release
+        if: steps.smoke.outcome == 'failure'
+        uses: azure/cli@v3
+        env:
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+          EXPIRES_ON: ${{ inputs.expires_on }}
+          PREVIOUS_IMAGE: ${{ steps.deploy.outputs.previous_image }}
+          PREVIOUS_RELEASE: ${{ steps.deploy.outputs.previous_release }}
+        with:
+          inlineScript: |
+            set -euo pipefail
+            [[ -n "${PREVIOUS_IMAGE}" && -n "${PREVIOUS_RELEASE}" ]] || { echo "No previous release is available for rollback." >&2; exit 1; }
+            az deployment group create \
+              --name "rivulet-rollback-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+              --resource-group "${RESOURCE_GROUP}" \
+              --template-file infra/azure/main.bicep \
+              --parameters location="${AZURE_LOCATION}" containerImage="${PREVIOUS_IMAGE}" release="${PREVIOUS_RELEASE}" expiresOn="${EXPIRES_ON}" \
+              --no-pretty-print
+      - name: Verify recovered release
+        if: steps.smoke.outcome == 'failure'
+        shell: bash
+        env:
+          APPLICATION_URL: ${{ steps.deploy.outputs.application_url }}
+          PREVIOUS_RELEASE: ${{ steps.deploy.outputs.previous_release }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            if python scripts/verify_public_deployment.py --url "${APPLICATION_URL}" --expected-release "${PREVIOUS_RELEASE}" --output rollback-smoke.json; then
+              exit 0
+            fi
+            [[ "${attempt}" == "18" ]] && exit 1
+            sleep 10
+          done
+      - name: Record deployment summary
+        if: always()
+        shell: bash
+        run: |
+          echo "### Azure demo verification" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- Endpoint: ${{ steps.deploy.outputs.application_url }}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- Candidate: ${{ inputs.image_tag }}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- Candidate smoke: ${{ steps.smoke.outcome }}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- Synthetic rollback drill: ${{ inputs.rollback_drill }}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "- A failed candidate is redeployed to the previously observed image/release and verified." >> "${GITHUB_STEP_SUMMARY}"
+      - name: Upload deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-deployment-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            pre-deploy-health.json
+            post-deploy-smoke.json
+            rollback-smoke.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Fail a real bad deployment after successful recovery
+        if: steps.smoke.outcome == 'failure' && inputs.rollback_drill != true
+        shell: bash
+        run: |
+          echo "Candidate verification failed. The previous release was restored and verified." >&2
+          exit 1

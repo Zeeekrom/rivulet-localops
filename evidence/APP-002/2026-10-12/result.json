@@ -1,0 +1,12 @@
+{
+  "detected_failures": [
+    "release mismatch: expected v0.8.0, observed v0.7.2"
+  ],
+  "hosted_rollback_verified": false,
+  "incident_id": "APP-002",
+  "injection": "candidate health reports a release that differs from the expected immutable tag",
+  "passed": true,
+  "recovery_check": [],
+  "scope": "local release-verification control; Azure revision rollback requires a hosted workflow drill",
+  "truth_class": "synthetic_control_experiment"
+}

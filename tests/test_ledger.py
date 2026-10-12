@@ -205,6 +205,6 @@ def test_tamper_is_detected_and_new_writes_fail_closed(tmp_path: Path) -> None:
     assert blocked.status_code == 503
     assert blocked.json()["detail"]["reason"] == "ledger_integrity_failure"
     assert blocked_diagnosis.status_code == 503
-    assert health.json()["status"] == "degraded"
+    assert health.json()["status"] == "unavailable"
     assert health.json()["ledger_integrity_ok"] is False
     assert health.json()["provider_disabled"] is True

@@ -20,7 +20,7 @@ def test_bootstrap_keeps_public_and_synthetic_truth_classes_separate(tmp_path: P
     assert response.status_code == 200
     body = response.json()
     assert body["profile"] == "public_demo"
-    assert body["release"] == "v0.7.2"
+    assert body["release"] == "v0.8.0"
     assert {source["truth_class"] for source in body["sources"]} == {
         "real_public_reference",
         "synthetic_operational",
@@ -72,6 +72,11 @@ def test_public_profile_does_not_load_internal_api_or_documentation(tmp_path: Pa
         "/api/v1/decisions",
         "/ops/v1/ledger/integrity",
         "/ops/v1/providers/deterministic-rules/kill-switch",
+        "/ops/v1/health",
+        "/ops/v1/support/bundle",
+        "/ops/v1/operations/logs",
+        "/ops/v1/runbooks",
+        "/ops/support",
     ):
         assert client.get(path).status_code == 404
 

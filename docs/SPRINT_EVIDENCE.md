@@ -2,8 +2,8 @@
 
 | Evidence field | Value |
 |---|---|
-| Date | 2026-10-10 |
-| Release | v0.7.2 |
+| Date | 2026-10-12 |
+| Release | v0.8.0 |
 | Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0; GitHub-hosted verification; Azure Container Apps in New Zealand North |
 
 This document records implemented results verified locally, by GitHub Actions and—only for the bounded public profile—on Azure. It does not claim real-user validation, production adoption or generative-model accuracy.
@@ -186,7 +186,39 @@ Goal: make the public console readable by someone who is not an engineer, withou
 | Full local verification | 40 tests, 8/8 mart reconciliations, 88-check Power BI validation, regression and F18 pass |
 | Local container run and Azure deployment of v0.7.2 | Not performed in this slice |
 
-See [`evidence/F24/2026-10-10`](../evidence/F24/2026-10-10/README.md). The live Azure demo keeps serving v0.7.1 until a deployment is run for v0.7.2. No reader study was run, so the easier reading is a design intent and not a measured result.
+See [`evidence/F24/2026-10-10`](../evidence/F24/2026-10-10/README.md). The live Azure demo still serves v0.7.1;
+v0.7.2 was not deployed and is superseded by the v0.8.0 candidate. No reader study was run, so the easier reading is a
+design intent and not a measured result.
+
+## v0.8.0 — Application support and recovery slice
+
+Goal: make the internal application diagnosable, recoverable and handoff-ready without exposing operational details in
+the public demo or pretending to implement an ITSM/endpoint-management product.
+
+| Acceptance item | Result |
+|---|---|
+| Structured operational records | Pass; correlation/request ID, policy/provider versions, Gate/ledger context, elapsed time, component and error category |
+| Sensitive-data boundary | Pass; tests show request prose, bearer token, email-like fixture and filesystem path are absent |
+| Internal component health | Pass; API, ledger, policy, provider, configuration, dependencies and build/version with three states |
+| Support Bundle | Pass; allowlisted deployment/configuration/error/log summaries and reproducible SHA-256 checksum |
+| Internal Operations & Support page | Pass; version, health, deployment, ledger, incidents, bundle and runbook entry points |
+| Public route boundary | Pass locally; health/bundle/log/runbook/page routes all return 404 from `public_demo` |
+| APP-001 API degradation/recovery | Pass in isolated synthetic experiment |
+| APP-002 release mismatch | Local detection/recovery control passes; hosted Azure rollback is not yet verified |
+| APP-003 ledger integrity/recovery | Pass; tamper detected, writes return 503, verified backup atomically restored |
+| APP-004 invalid configuration | Pass; readiness 503 without revealing raw value, then healthy after correction |
+| APP-005 provider outage | Pass; manual fallback audited, hash chain valid, provider recovery verified |
+| Dependency controls | npm high-severity audit 0 at recorded run; `pip check` valid; existing OCI workflow emits SBOM/provenance |
+| Full local verification | 49 tests, five support exercises, 8/8 mart reconciliations, 51-file/88-check Power BI validation, regression and F18 pass |
+| v0.8.0 local container rerun | Blocked by a recorded Docker Desktop AF_UNIX runtime-socket startup failure; no reset/data deletion attempted; hosted Linux image gate required |
+
+Evidence is under [`evidence/APP-001`](../evidence/APP-001/2026-10-12/README.md) through
+[`evidence/APP-005`](../evidence/APP-005/2026-10-12/README.md). All five are explicitly labelled synthetic. APP-002
+also contains a real pre-change observation that the live endpoint was healthy on v0.7.1 with six named internal routes
+returning 404. It does not claim a hosted rollback. The deployment workflow now contains that drill and will provide
+the hosted evidence only after a v0.8.0 image exists.
+The APP-004 directory also records the separate Docker Desktop preflight failure. F22 remains the last successful local
+non-root container evidence; it is not silently carried forward as a v0.8.0 run.
 
 ## Hosted CI evidence
 

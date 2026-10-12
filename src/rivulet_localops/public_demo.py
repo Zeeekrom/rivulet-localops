@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .agent_runtime import AgentInvocationDenied, CaseAgentRunner
+from . import __version__
 from .assets import AssetRepository
 from .capabilities import load_capability_registry
 from .demo_models import (
@@ -28,6 +29,7 @@ from .ledger import LedgerIntegrityError, SQLiteEventLedger
 from .models import AgentInvocationRequest, AgentToolCallRequest, Coordinates, DecisionSubmissionRequest, DiagnoseRequest
 from .policy import load_policy_pack
 from .providers import RulesTriageProvider
+from .operations import release_label, safe_identifier
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
@@ -146,7 +148,7 @@ class SlidingWindowRateLimiter:
             return True
 
 
-def _load_bootstrap(mart_report_path: Path, case_agent: CaseAgentRunner) -> DemoBootstrap:
+def _load_bootstrap(mart_report_path: Path, case_agent: CaseAgentRunner, release: str) -> DemoBootstrap:
     report = json.loads(mart_report_path.read_text(encoding="utf-8"))
     rows = report["table_rows"]
     metrics = report["metrics"]
@@ -154,7 +156,7 @@ def _load_bootstrap(mart_report_path: Path, case_agent: CaseAgentRunner) -> Demo
     scenarios = [scenario.summary for scenario in _scenarios().values()]
     return DemoBootstrap(
         product="Rivulet LocalOps",
-        release="v0.7.2",
+        release=release,
         profile="public_demo",
         environment_note=(
             "Public portfolio sandbox. Runtime audit state is ephemeral and may reset when the container scales to zero "
@@ -250,6 +252,7 @@ def create_public_demo_app(
     ledger_path: Path = DEFAULT_LEDGER_PATH,
     static_path: Path | None = DEFAULT_STATIC_PATH,
     rate_limit: int = 30,
+    release: str | None = None,
 ) -> FastAPI:
     policy = load_policy_pack(policy_path)
     registry = load_capability_registry(capability_path)
@@ -259,10 +262,11 @@ def create_public_demo_app(
     case_agent = CaseAgentRunner(registry, provider, ledger, policy.version)
     gate = DeterministicPolicyGate(policy)
     scenarios = _scenarios()
+    resolved_release = release or release_label()
 
     application = FastAPI(
         title="Rivulet LocalOps Public Demo",
-        version="0.7.2",
+        version=__version__,
         docs_url=None,
         redoc_url=None,
         openapi_url=None,
@@ -286,6 +290,7 @@ def create_public_demo_app(
 
     @application.middleware("http")
     async def public_boundary(request: Request, call_next):
+        correlation_id = safe_identifier(request.headers.get("x-correlation-id"), "cor")
         content_length = request.headers.get("content-length")
         try:
             body_too_large = content_length is not None and int(content_length) > 1024
@@ -297,6 +302,7 @@ def create_public_demo_app(
                 request.url.path,
             )
         response = await call_next(request)
+        response.headers["X-Correlation-ID"] = correlation_id
         return add_public_headers(response, request.url.path)
 
     @application.exception_handler(LedgerIntegrityError)
@@ -309,14 +315,14 @@ def create_public_demo_app(
         return {
             "status": "ok" if integrity.ok else "degraded",
             "profile": "public_demo",
-            "release": "v0.7.2",
+            "release": resolved_release,
             "ledger_integrity_ok": integrity.ok,
             "ledger_event_count": integrity.event_count,
         }
 
     @application.get("/demo/v1/bootstrap", response_model=DemoBootstrap)
     def bootstrap() -> DemoBootstrap:
-        return _load_bootstrap(mart_report_path, case_agent)
+        return _load_bootstrap(mart_report_path, case_agent, resolved_release)
 
     @application.post("/demo/v1/scenarios/{scenario_id}/run", response_model=DemoRunResponse)
     def run_scenario(scenario_id: str, request: Request) -> DemoRunResponse:

@@ -1,0 +1,17 @@
+{
+  "checked_at_local": "2026-10-12",
+  "component": "local_docker_desktop",
+  "docker_desktop_version": "4.91.0",
+  "docker_cli_version": "29.8.0",
+  "engine_available": false,
+  "error_category": "windows_af_unix_runtime_socket_inaccessible",
+  "sanitised_detail": "Docker Desktop could not rotate a stale sailor-ingest AF_UNIX runtime socket during startup.",
+  "recovery_attempt": "Docker processes were stopped; moving the two zero-byte runtime sockets remained denied by Windows.",
+  "destructive_recovery_used": false,
+  "factory_reset_used": false,
+  "wsl_shutdown_used": false,
+  "v0_8_0_local_container_verified": false,
+  "previous_container_evidence": "F22/2026-09-16",
+  "next_verification_boundary": "GitHub-hosted Linux container build for the immutable v0.8.0 tag",
+  "truth_class": "local_environment_observation"
+}

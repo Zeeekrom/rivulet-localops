@@ -12,7 +12,7 @@ param containerImage string
 param namePrefix string = 'rivulet-demo'
 
 @description('Release label exposed to the container.')
-param release string = 'v0.7.2'
+param release string = 'v0.8.0'
 
 @description('ISO date after which the demo resources should be reviewed or removed.')
 param expiresOn string
@@ -62,6 +62,14 @@ resource app 'Microsoft.App/containerApps@2026-01-01' = {
             {
               name: 'RIVULET_RELEASE'
               value: release
+            }
+            {
+              name: 'RIVULET_ENVIRONMENT'
+              value: 'azure-portfolio-demo'
+            }
+            {
+              name: 'RIVULET_DEPLOYMENT_SOURCE'
+              value: 'github-actions-oidc'
             }
           ]
           resources: {

@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import sqlite3
 from collections.abc import Callable
 from contextlib import closing
@@ -163,6 +164,49 @@ class SQLiteEventLedger:
         with closing(self._connect()) as connection:
             row = connection.execute("SELECT COUNT(*) AS count FROM ledger_events").fetchone()
         return int(row["count"])
+
+    def backup_to(self, backup_path: Path) -> IntegrityReport:
+        """Create a consistent offline-recovery copy after verifying the source hash chain."""
+        integrity = self.verify_integrity()
+        if not integrity.ok:
+            raise LedgerIntegrityError("Refusing to back up an invalid ledger.")
+        if backup_path.resolve() == self.path.resolve():
+            raise ValueError("backup path must differ from the active ledger path")
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        if backup_path.exists():
+            raise FileExistsError(backup_path)
+        with closing(self._connect()) as source, closing(sqlite3.connect(backup_path)) as destination:
+            source.backup(destination)
+        backup = SQLiteEventLedger(backup_path)
+        backup_integrity = backup.verify_integrity()
+        if not backup_integrity.ok:
+            raise LedgerIntegrityError("Ledger backup failed integrity verification.")
+        return backup_integrity
+
+    @classmethod
+    def restore_from_backup(cls, backup_path: Path, destination_path: Path) -> IntegrityReport:
+        """Atomically replace an offline ledger with a verified SQLite backup."""
+        if backup_path.resolve() == destination_path.resolve():
+            raise ValueError("backup path must differ from the destination ledger path")
+        source = cls(backup_path)
+        source_integrity = source.verify_integrity()
+        if not source_integrity.ok:
+            raise LedgerIntegrityError("Refusing to restore an invalid ledger backup.")
+
+        destination_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path = destination_path.with_name(f".{destination_path.name}.{uuid4().hex}.restore")
+        try:
+            with closing(source._connect()) as source_connection, closing(sqlite3.connect(temporary_path)) as destination:
+                source_connection.backup(destination)
+            restored = cls(temporary_path)
+            restored_integrity = restored.verify_integrity()
+            if not restored_integrity.ok:
+                raise LedgerIntegrityError("Restored ledger failed integrity verification.")
+            os.replace(temporary_path, destination_path)
+        finally:
+            if temporary_path.exists():
+                temporary_path.unlink()
+        return cls(destination_path).verify_integrity()
 
     @staticmethod
     def _agent_audit_from_row(row: sqlite3.Row) -> AgentInvocationAuditRecord:

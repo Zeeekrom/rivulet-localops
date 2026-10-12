@@ -1,0 +1,13 @@
+{
+  "audit_event_added": true,
+  "fallback_http_status": 503,
+  "fallback_reason": "manual_fallback",
+  "incident_id": "APP-005",
+  "injection": "provider kill switch enabled",
+  "kill_switch_http_status": 200,
+  "ledger_integrity_ok": true,
+  "passed": true,
+  "recovery_http_status": 200,
+  "reenable_http_status": 200,
+  "truth_class": "synthetic_recovery_experiment"
+}

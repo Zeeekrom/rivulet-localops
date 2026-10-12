@@ -1,0 +1,35 @@
+{
+  "boundary_statuses": {
+    "api/v1/submit": 404,
+    "docs": 404,
+    "openapi.json": 404,
+    "ops/support": 404,
+    "ops/v1/ledger/integrity": 404,
+    "ops/v1/support/bundle": 404
+  },
+  "capability_deny": {
+    "http_status": 200,
+    "ledger_integrity_ok": true,
+    "observed_outcome": "deny"
+  },
+  "checked_at": "2026-10-11T23:48:30.781838+00:00",
+  "expected_release": "v0.7.1",
+  "failures": [],
+  "forced_failure": false,
+  "observed_health": {
+    "ledger_event_count": 0,
+    "ledger_integrity_ok": true,
+    "profile": "public_demo",
+    "release": "v0.7.1",
+    "status": "ok"
+  },
+  "passed": true,
+  "schema_version": "1.0",
+  "security_headers": {
+    "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY"
+  },
+  "truth_class": "deployment_observation",
+  "url": "https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io"
+}

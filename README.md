@@ -2,14 +2,15 @@
 
 [![verify](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml/badge.svg)](https://github.com/Zeeekrom/rivulet-localops/actions/workflows/ci.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.7.2-2F855A)
+![Release](https://img.shields.io/badge/release-v0.8.0-2F855A)
 
 Rivulet LocalOps turns a written service policy into decisions that can be executed, checked and traced to a named owner. Its reference scenario is a local council handling waste and litter requests. Each request is diagnosed, tested against an approved policy, recorded in a tamper-evident ledger and reviewed by a second person.
 
 This is an independent technical prototype. It is not an official City of Hobart, Tasmanian Government or council service. It contains no real resident requests and performs no real council-system writes.
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
-— five server-owned synthetic scenarios only; no visitor free text or real resident data. The live demo still serves v0.7.1, with the earlier page layout, until v0.7.2 is deployed.
+— five server-owned synthetic scenarios only; no visitor free text or real resident data. Before the v0.8.0 hosted
+deployment gate runs, the live demo remains the previously verified v0.7.1 revision.
 
 <img src="evidence/F24/2026-10-10/desktop-pass.png" alt="The overview console after a request passes the policy check" width="640">
 
@@ -22,7 +23,7 @@ The v0.7.2 console after a synthetic request passes the policy check. Every figu
 - [Who it is for](#who-it-is-for)
 - [One request, start to finish](#one-request-start-to-finish)
 - [The screens](#the-screens)
-- [What works today: v0.7.2](#what-works-today-v072)
+- [What works today: v0.8.0](#what-works-today-v080)
 - [Design principles](#design-principles)
 - [Real data and synthetic data](#real-data-and-synthetic-data)
 - [How it was built](#how-it-was-built)
@@ -44,9 +45,9 @@ The v0.7.2 console after a synthetic request passes the policy check. Every figu
 | Who it is for | Teams that handle public service requests under written policy: service managers, policy owners, reviewers, and the IT and data staff who support them |
 | The problem | Automation can classify a request. It usually cannot show which rule allowed an action, what evidence was used, or who was accountable |
 | Stack | Python 3.12, FastAPI, SQLite, React 19 and TypeScript, a Power BI project, Docker, Azure Container Apps and GitHub Actions |
-| Evidence | 40 automated tests, 19 source-quality checks, a 316-event synthetic ledger and a live Azure deployment |
+| Evidence | 49 automated tests, 19 source-quality checks, five synthetic recovery exercises, a 316-event synthetic ledger and a live Azure deployment |
 | Data | Real public reference data, and requests that are clearly labelled synthetic |
-| Status | Release v0.7.2. A portfolio prototype. It has not been validated with a council and is not production-ready |
+| Status | Release v0.8.0. A portfolio prototype. It has not been validated with a council and is not production-ready |
 
 ## The problem
 
@@ -108,7 +109,7 @@ flowchart LR
 
 The web console is shown at the top of this page. A phone-width capture of a denied path is kept in [`evidence/F24`](evidence/F24/2026-10-10/README.md).
 
-## What works today: v0.7.2
+## What works today: v0.8.0
 
 | Capability | Implemented evidence |
 |---|---|
@@ -121,7 +122,9 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Replay | Recomputes the decision and compares policy version/hash, provider version, category, priority and Gate rules |
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
-| Verification | 40 automated tests, a 12-case deterministic regression set, F18 capability, F22 container, F23 live Azure and F24 interface reviews |
+| Application support | Component health, correlation/request IDs, redacted bounded logs, checksum-protected Support Bundle, internal support page and five runbooks |
+| Recovery evidence | APP-001/003/004/005 synthetic recovery passes; APP-002 local release-mismatch control passes while hosted rollback remains separately labelled pending |
+| Verification | 49 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F22 container, F23 live Azure and APP-001–005 evidence |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
 | Data quality | 19 automated source checks: 15 pass, 4 documented warnings, 0 fail and 0 blocking |
@@ -169,6 +172,7 @@ Each public source has a manifest with its publisher, URL, licence, retrieval da
 | v0.7.0 | 16 Sep 2026 | Web console and container image |
 | v0.7.1 | 24 Sep 2026 | Live Azure deployment through OIDC, with no stored client secret |
 | v0.7.2 | 10 Oct 2026 | Web console redesigned as a plain-language overview. The API, policy and controls are unchanged |
+| v0.8.0 | 12 Oct 2026 | Internal application-support diagnostics, Support Bundle, recovery experiments and smoke-gated Azure rollback workflow |
 
 The order was deliberate: the controls came before any model, and each sprint ended with a review against recorded evidence. See [Sprint Evidence](docs/SPRINT_EVIDENCE.md).
 
@@ -195,6 +199,7 @@ The order was deliberate: the controls came before any model, and each sprint en
 - pytest and FastAPI TestClient
 - exact development and runtime lockfiles
 - GitHub Actions verification, OCI build/SBOM attestation and OIDC deployment workflow
+- npm high-severity audit gate, Python dependency-graph check and post-deploy release/boundary smoke verification
 
 See [Technical Architecture](docs/TECHNICAL_ARCHITECTURE.md) for components, data contracts, controls and limitations. See [Sprint Evidence](docs/SPRINT_EVIDENCE.md) for the completed acceptance checks and claim boundaries.
 
@@ -257,6 +262,10 @@ Send it to `POST /api/v1/submit`. The response includes the original Gate result
 | `GET /ops/v1/agents/{id}/capabilities` | Inspect the server-selected read-only capability profile |
 | `POST /api/v1/agents/case-agent/invoke` | Run one bounded synthetic-case diagnosis without Gate or connector execution |
 | `GET /ops/v1/agents/invocations` | Query completed, denied and failed agent audit records |
+| `GET /ops/v1/health` | Inspect API, ledger, policy, provider, configuration, dependency and build/version health |
+| `GET /ops/v1/support/bundle` | Export allowlisted diagnostics with redacted logs and a SHA-256 checksum |
+| `GET /ops/v1/operations/logs` | Read the bounded allowlist-only operational log buffer |
+| `GET /ops/support` | Open the internal Operations & Support page |
 
 The separately deployed public profile exposes only `GET /healthz`, `GET /demo/v1/bootstrap`, predefined scenario
 execution under `POST /demo/v1/scenarios/{scenario_id}/run`, and static web assets. It accepts no visitor free text.
@@ -274,7 +283,9 @@ Expected release evidence:
 - analytics mart: 14 tables and 8 successful reconciliations
 - Power BI project: 51 controlled files, 88 structural checks and Microsoft validator 0 errors / 0 warnings
 - Power BI Desktop: 7 of 7 Import partitions refreshed and 13 of 13 DAX reference values reconciled
-- `40 passed`
+- `49 passed`
+- npm audit: 0 vulnerabilities at the recorded v0.8.0 verification; Python installed dependency graph valid
+- APP-001 through APP-005 local synthetic controls: 5 of 5 pass, with APP-002 explicitly not counted as hosted rollback
 - 12 deterministic regression cases with zero category/priority differences
 - F18: 12 of 12 capability checks; 7 invocations = 1 completed, 5 denied and 1 failed before execution
 - the Sprint 2 review runner completes on Windows without retaining the disposable SQLite files
@@ -292,7 +303,7 @@ The v0.7.0 release passed hosted
 deployment-recovery failures, the workflow fix passed [main verify 35995184675](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995184675)
 and the complete Azure OIDC/deploy/boundary gate passed [run 35995289399](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995289399). v0.7.2 passed
 [main verify 38045635848](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045635848), [tag verify 38045637107](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637107) and [container/SBOM 38045637061](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637061).
-No Azure deployment has been run for v0.7.2.
+No Azure deployment has yet been run for v0.8.0 at this documentation checkpoint.
 
 Run the end-to-end review story separately with:
 
@@ -310,6 +321,9 @@ reconciliation, screenshots and Desktop round-trip evidence are in
 evidence is in [`F18`](evidence/F18/2026-09-12/README.md). The v0.7.0 cloud-safe frontend, real-container negative-route
 checks and rendered desktop/mobile screenshots are in [`F22`](evidence/F22/2026-09-16/README.md). The v0.7.2 interface redesign, with its local checks and screenshots, is in [`F24`](evidence/F24/2026-10-10/README.md). The v0.7.1 live
 Azure endpoint, OIDC, scale, negative-route and recovery evidence is in [`F23`](evidence/F23/2026-09-24/README.md).
+Application-support runbooks and synthetic incident reports are in [`docs/application-support`](docs/application-support/README.md),
+with machine evidence under `evidence/APP-001` through `evidence/APP-005`. APP-002 also records a real pre-change
+observation of the still-live v0.7.1 endpoint; that observation is not a hosted rollback result.
 
 To open the report, run the normal verification first, then open
 `analytics/powerbi/RivuletAssurance.pbip` in Power BI Desktop and refresh. PBIP/PBIR are preview formats. After any
@@ -342,7 +356,7 @@ A one-page summary of the project, made in October 2026. The screen on it is the
 ## What is not finished
 
 The next slice is adversarial and secure-delivery verification: ambiguous/injection-style inputs,
-cross-case/provider-outage paths, SAST/SCA and recovery evidence. Authentication/RBAC, Windows enterprise lab
+cross-case paths, SAST and container vulnerability gating. Authentication/RBAC, Windows enterprise lab
 integration and PostgreSQL remain later stages and are not represented as completed. The live Azure demo remains
 within the enabled Student spending limit, with no subscription upgrade or claim of remaining sponsorship credit.
 

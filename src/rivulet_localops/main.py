@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Mapping
 
-from fastapi import FastAPI, HTTPException, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException, Query, Request, Response
+from fastapi.responses import HTMLResponse, JSONResponse
 
+from . import __version__
 from .agent_runtime import AgentInvocationDenied, CaseAgentRunner
 from .assets import AssetRepository
 from .capabilities import load_capability_registry
@@ -29,6 +30,19 @@ from .models import (
 )
 from .policy import load_policy_pack
 from .providers import RulesTriageProvider
+from .operations import (
+    ApplicationOperations,
+    ComponentStatus,
+    InternalHealthReport,
+    OperationalLogBuffer,
+    OperationalLogRecord,
+    SupportBundle,
+    elapsed_ms,
+    error_category,
+    operation_timer,
+    safe_identifier,
+)
+from .ops_ui import operations_support_html
 
 
 DEFAULT_ASSET_PATH = Path(__file__).resolve().parents[2] / "data" / "hobart_litter_bins.geojson"
@@ -43,6 +57,9 @@ def create_app(
     policy_path: Path | None = None,
     ledger_path: Path | None = None,
     capability_path: Path | None = None,
+    operational_log: OperationalLogBuffer | None = None,
+    environment: Mapping[str, str] | None = None,
+    health_overrides: Mapping[str, ComponentStatus] | None = None,
 ) -> FastAPI:
     resolved_path = asset_path or Path(os.getenv("RIVULET_ASSET_PATH", DEFAULT_ASSET_PATH))
     resolved_policy_path = policy_path or Path(os.getenv("RIVULET_POLICY_PATH", DEFAULT_POLICY_PATH))
@@ -55,17 +72,91 @@ def create_app(
     gate = DeterministicPolicyGate(policy)
     ledger = SQLiteEventLedger(resolved_ledger_path)
     case_agent = CaseAgentRunner(capability_registry, provider, ledger, policy.version)
+    runtime_environment = dict(environment if environment is not None else os.environ)
+    log_buffer = operational_log or OperationalLogBuffer()
+    operations = ApplicationOperations(
+        ledger=ledger,
+        policy_version=policy.version,
+        provider_reference=provider.reference,
+        operational_log=log_buffer,
+        asset_count=assets.count,
+        environment=runtime_environment,
+        health_overrides=health_overrides,
+    )
 
     application = FastAPI(
         title="Rivulet LocalOps",
-        version="0.7.2",
+        version=__version__,
         description="Explainable and accountable service-request decision support for small Tasmanian councils.",
     )
     application.state.ledger = ledger
     application.state.case_agent = case_agent
+    application.state.operations = operations
+    application.state.operational_log = log_buffer
+
+    @application.middleware("http")
+    async def operational_logging(request: Request, call_next):
+        started_at = operation_timer()
+        correlation_id = safe_identifier(request.headers.get("x-correlation-id"), "cor")
+        request_id = safe_identifier(request.headers.get("x-request-id"), "req")
+        request.state.correlation_id = correlation_id
+        request.state.request_id = request_id
+        request.state.operation_context = {}
+        try:
+            response = await call_next(request)
+        except Exception as error:
+            route = getattr(request.scope.get("route"), "path", "unmatched")
+            log_buffer.append(
+                level="error",
+                event_name="http_request_failed",
+                component_name="api",
+                correlation_id=correlation_id,
+                request_id=request_id,
+                route=route,
+                method=request.method,
+                status_code=500,
+                elapsed_ms=elapsed_ms(started_at),
+                policy_version=policy.version,
+                provider=provider.reference.provider,
+                provider_version=provider.reference.version,
+                error_category=error_category(error),
+            )
+            raise
+
+        context = request.state.operation_context
+        route = getattr(request.scope.get("route"), "path", "unmatched")
+        response.headers["X-Correlation-ID"] = correlation_id
+        response.headers["X-Request-ID"] = request_id
+        log_buffer.append(
+            level="error" if response.status_code >= 500 else "warning" if response.status_code >= 400 else "info",
+            event_name=context.get("event_name", "http_request_completed"),
+            component_name=context.get("component_name", "api"),
+            correlation_id=context.get("correlation_id", correlation_id),
+            request_id=context.get("request_id", request_id),
+            route=route,
+            method=request.method,
+            status_code=response.status_code,
+            elapsed_ms=elapsed_ms(started_at),
+            policy_version=context.get("policy_version", policy.version),
+            provider=context.get("provider", provider.reference.provider),
+            provider_version=context.get("provider_version", provider.reference.version),
+            gate_result=context.get("gate_result"),
+            ledger_event_id=context.get("ledger_event_id"),
+            error_category=context.get("error_category") or ("http_5xx" if response.status_code >= 500 else None),
+        )
+        return response
+
+    def _mark_operation(request: Request, **fields: str | None) -> None:
+        request.state.operation_context.update({key: value for key, value in fields.items() if value is not None})
 
     @application.exception_handler(LedgerIntegrityError)
-    async def ledger_integrity_failure(_: Request, error: LedgerIntegrityError) -> JSONResponse:
+    async def ledger_integrity_failure(request: Request, error: LedgerIntegrityError) -> JSONResponse:
+        _mark_operation(
+            request,
+            event_name="ledger_integrity_failure",
+            component_name="database_ledger",
+            error_category="ledger_integrity",
+        )
         return JSONResponse(
             status_code=503,
             content={
@@ -89,24 +180,65 @@ def create_app(
 
     @application.get("/health")
     def health() -> dict[str, str | int | bool]:
-        integrity = ledger.verify_integrity()
-        provider_status = _provider_status() if integrity.ok else None
+        report = operations.health()
+        integrity = next(item for item in report.components if item.component == "database_ledger")
+        provider_component = next(item for item in report.components if item.component == "provider")
         return {
-            "status": "ok" if integrity.ok else "degraded",
+            "status": report.status,
             "engine": PROVIDER_ID,
-            "provider_disabled": provider_status.disabled if provider_status else True,
+            "provider_disabled": bool(provider_component.details.get("manual_fallback", True)),
             "asset_count": assets.count,
             "policy_id": policy.policy_id,
             "policy_version": policy.version,
             "policy_is_synthetic": policy.is_synthetic,
-            "ledger_event_count": integrity.event_count,
-            "ledger_integrity_ok": integrity.ok,
+            "ledger_event_count": int(integrity.details.get("event_count", 0)),
+            "ledger_integrity_ok": bool(integrity.details.get("integrity_ok", False)),
         }
 
+    @application.get("/ops/v1/health", response_model=InternalHealthReport)
+    def internal_health(response: Response) -> InternalHealthReport:
+        report = operations.health()
+        if report.status == "unavailable":
+            response.status_code = 503
+        return report
+
+    @application.get("/ops/v1/support/bundle", response_model=SupportBundle)
+    def support_bundle(request: Request) -> SupportBundle:
+        _mark_operation(request, event_name="support_bundle_exported", component_name="operations_support")
+        return operations.support_bundle()
+
+    @application.get("/ops/v1/operations/logs", response_model=list[OperationalLogRecord])
+    def operational_logs(limit: int = Query(default=100, ge=1, le=200)) -> list[OperationalLogRecord]:
+        return log_buffer.recent(limit)
+
+    @application.get("/ops/v1/runbooks")
+    def runbooks() -> dict[str, list[dict[str, str]]]:
+        return {
+            "items": [
+                {
+                    "incident_id": incident.incident_id,
+                    "title": incident.title,
+                    "document": f"docs/application-support/runbooks/{incident.incident_id.lower()}.md",
+                }
+                for incident in operations.incidents()
+            ]
+        }
+
+    @application.get("/ops/support", response_class=HTMLResponse)
+    def operations_support_page() -> str:
+        return operations_support_html()
+
     @application.post("/api/v1/diagnose", response_model=DiagnoseResponse)
-    def diagnose(request: DiagnoseRequest) -> DiagnoseResponse:
+    def diagnose(payload: DiagnoseRequest, request: Request) -> DiagnoseResponse:
         _require_ledger_integrity()
         if _provider_status().disabled:
+            _mark_operation(
+                request,
+                event_name="diagnosis_manual_fallback",
+                component_name="provider",
+                gate_result="manual_fallback",
+                error_category="provider_disabled",
+            )
             raise HTTPException(
                 status_code=503,
                 detail={
@@ -115,13 +247,24 @@ def create_app(
                     "message": "Provider is disabled by kill switch; route the request to manual handling.",
                 },
             )
-        return provider.diagnose(request)
+        result = provider.diagnose(payload)
+        _mark_operation(request, event_name="diagnosis_completed", component_name="provider")
+        return result
 
     @application.post("/api/v1/submit", response_model=DecisionRecord)
-    def submit(submission: DecisionSubmissionRequest) -> DecisionRecord:
+    def submit(submission: DecisionSubmissionRequest, request: Request) -> DecisionRecord:
         _require_ledger_integrity()
         if _provider_status().disabled:
             fallback_event = ledger.record_manual_fallback(submission, PROVIDER_ID)
+            _mark_operation(
+                request,
+                event_name="decision_manual_fallback",
+                component_name="provider",
+                correlation_id=submission.correlation_id,
+                gate_result="manual_fallback",
+                ledger_event_id=fallback_event["event_id"],
+                error_category="provider_disabled",
+            )
             raise HTTPException(
                 status_code=503,
                 detail={
@@ -134,7 +277,16 @@ def create_app(
             )
         diagnosis = provider.diagnose(submission.request)
         gate_decision = gate.evaluate(submission, diagnosis)
-        return ledger.record_decision(submission, gate_decision)
+        record = ledger.record_decision(submission, gate_decision)
+        _mark_operation(
+            request,
+            event_name="decision_recorded",
+            component_name="policy_gate",
+            correlation_id=submission.correlation_id,
+            gate_result=gate_decision.status,
+            ledger_event_id=record.ledger_event_id,
+        )
+        return record
 
     @application.get("/ops/v1/agents/{agent_id}/capabilities", response_model=AgentCapabilityProfile)
     def get_agent_capabilities(agent_id: str) -> AgentCapabilityProfile:
@@ -144,11 +296,31 @@ def create_app(
         return case_agent.profile
 
     @application.post("/api/v1/agents/case-agent/invoke", response_model=AgentInvocationResponse)
-    def invoke_case_agent(invocation: AgentInvocationRequest) -> AgentInvocationResponse:
+    def invoke_case_agent(invocation: AgentInvocationRequest, request: Request) -> AgentInvocationResponse:
         _require_ledger_integrity()
         try:
-            return case_agent.invoke(invocation, provider_disabled=_provider_status().disabled)
+            result = case_agent.invoke(invocation, provider_disabled=_provider_status().disabled)
+            _mark_operation(
+                request,
+                event_name="agent_invocation_completed",
+                component_name="case_agent",
+                correlation_id=invocation.correlation_id,
+                request_id=invocation.request_id,
+                gate_result=result.audit.gate_result,
+                ledger_event_id=result.audit.ledger_event_id,
+            )
+            return result
         except AgentInvocationDenied as error:
+            _mark_operation(
+                request,
+                event_name="agent_invocation_denied",
+                component_name="case_agent",
+                correlation_id=invocation.correlation_id,
+                request_id=invocation.request_id,
+                gate_result=error.audit.status,
+                ledger_event_id=error.audit.ledger_event_id,
+                error_category="capability_denied" if error.status_code == 403 else "provider_disabled",
+            )
             raise HTTPException(
                 status_code=error.status_code,
                 detail={
