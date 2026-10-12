@@ -1,7 +1,7 @@
 # Technical Architecture
 
-Status: release v0.8.0 is locally verified. The live bounded Azure portfolio demo remains v0.7.1 until the v0.8.0
-hosted image, deployment gate and rollback drill complete; F23 records the previously accepted live deployment.
+Status: release v0.8.0 is locally and hosted verified. The bounded Azure portfolio demo serves v0.8.0; its corrected
+rollback drill redeployed the captured v0.8.0 image/release after a controlled candidate failure and verified recovery.
 
 ## 1. System boundary
 
@@ -211,7 +211,9 @@ The ledger can create a SQLite-consistent backup only after verifying the source
 the backup, restores to a temporary database, verifies again and atomically replaces the requested destination. Five
 isolated application-support exercises cover API degradation, release mismatch, ledger tamper/restore, invalid
 configuration and provider kill-switch fallback. These are synthetic experiments, not production incidents. The local
-APP-002 result verifies mismatch detection only; the GitHub/Azure workflow must create the hosted rollback evidence.
+APP-002's local result verifies mismatch detection only. Separate GitHub/Azure artifacts record the failed first drill,
+safety recovery and successful corrected hosted rollback; these hosted observations do not turn the other fixtures into
+production incidents.
 
 ## 10. Bounded case-agent control
 
@@ -274,8 +276,9 @@ min replicas 0 and max replicas 1. Images are designed to come from public GHCR;
 through a user-assigned managed identity federated to the `azure-demo` environment, scoped as Contributor only to the
 dedicated resource group and without a client secret. The v0.8.0 workflow captures pre-deploy health, verifies exact
 release, security headers, six negative routes and capability denial, and—on failure—redeploys the previously observed
-image/release through the same Bicep template before verifying recovery. F23 records the earlier successful hosted
-OIDC, ARM what-if/deploy and live checks. Log Analytics is not attached; the expiry
+image/release through the same Bicep template before verifying recovery. Run `38206163289` exercises that full rollback
+path; failed run `38205693603` is retained because it exposed an unsupported CLI argument. F23 records the earlier
+v0.7.1 deployment evidence. Log Analytics is not attached; the expiry
 tag is governance metadata rather than automatic deletion.
 
 ## 14. Technology status
@@ -289,7 +292,7 @@ tag is governance metadata rather than automatic deletion.
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
 | Security | Gate, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, npm high-severity audit gate and negative tests | Signed audit checkpoints, SAST, container vulnerability gate and adversarial evaluation |
-| Delivery | Exact lockfiles, verification, multi-stage image, public OCI/SBOM, Bicep, resource-group-scoped OIDC, deployment smoke and rollback logic | Hosted v0.8.0 rollback evidence, production observability, automated expiry/teardown and multi-environment promotion |
+| Delivery | Exact lockfiles, verification, multi-stage image, public OCI/SBOM, Bicep, resource-group-scoped OIDC, deployment smoke and verified hosted rollback | Production observability, automated expiry/teardown and multi-environment promotion |
 | Application support | Component health, redacted structured logs, Support Bundle, internal support UI, five runbooks and local synthetic recovery evidence | External alerting/SLA system and physically separate support control plane |
 
 ## 15. Primary limitations

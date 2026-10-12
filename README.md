@@ -9,8 +9,8 @@ Rivulet LocalOps turns a written service policy into decisions that can be execu
 This is an independent technical prototype. It is not an official City of Hobart, Tasmanian Government or council service. It contains no real resident requests and performs no real council-system writes.
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
-— five server-owned synthetic scenarios only; no visitor free text or real resident data. Before the v0.8.0 hosted
-deployment gate runs, the live demo remains the previously verified v0.7.1 revision.
+— five server-owned synthetic scenarios only; no visitor free text or real resident data. The live bounded profile is
+release v0.8.0; internal support routes remain absent from that profile.
 
 <img src="evidence/F24/2026-10-10/desktop-pass.png" alt="The overview console after a request passes the policy check" width="640">
 
@@ -123,7 +123,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Safety control | Persistent provider kill switch, manual fallback event, integrity failure that stops automated processing |
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
 | Application support | Component health, correlation/request IDs, redacted bounded logs, checksum-protected Support Bundle, internal support page and five runbooks |
-| Recovery evidence | APP-001/003/004/005 synthetic recovery passes; APP-002 local release-mismatch control passes while hosted rollback remains separately labelled pending |
+| Recovery evidence | APP-001/003/004/005 synthetic recovery passes; APP-002 local mismatch detection plus a hosted Azure rollback drill pass, with the first failed drill retained |
 | Verification | 49 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F22 container, F23 live Azure and APP-001–005 evidence |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
@@ -285,7 +285,7 @@ Expected release evidence:
 - Power BI Desktop: 7 of 7 Import partitions refreshed and 13 of 13 DAX reference values reconciled
 - `49 passed`
 - npm audit: 0 vulnerabilities at the recorded v0.8.0 verification; Python installed dependency graph valid
-- APP-001 through APP-005 local synthetic controls: 5 of 5 pass, with APP-002 explicitly not counted as hosted rollback
+- APP-001 through APP-005 local synthetic controls: 5 of 5 pass; APP-002 hosted Azure rollback independently verified
 - 12 deterministic regression cases with zero category/priority differences
 - F18: 12 of 12 capability checks; 7 invocations = 1 completed, 5 denied and 1 failed before execution
 - the Sprint 2 review runner completes on Windows without retaining the disposable SQLite files
@@ -303,7 +303,14 @@ The v0.7.0 release passed hosted
 deployment-recovery failures, the workflow fix passed [main verify 35995184675](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995184675)
 and the complete Azure OIDC/deploy/boundary gate passed [run 35995289399](https://github.com/Zeeekrom/rivulet-localops/actions/runs/35995289399). v0.7.2 passed
 [main verify 38045635848](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045635848), [tag verify 38045637107](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637107) and [container/SBOM 38045637061](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637061).
-No Azure deployment has yet been run for v0.8.0 at this documentation checkpoint.
+v0.8.0 then passed [main verify 38205266531](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38205266531),
+[tag verify 38205268239](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38205268239),
+[container/SBOM 38205268224](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38205268224) and
+[Azure deployment 38205416715](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38205416715). The first
+rollback drill [38205693603](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38205693603) exposed an invalid
+Azure CLI argument and is retained as failed evidence. Safety recovery [38205872737](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38205872737)
+restored v0.8.0; the corrected hosted drill [38206163289](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38206163289)
+then passed candidate detection, redeployment of the captured image/release and recovery verification.
 
 Run the end-to-end review story separately with:
 
@@ -322,8 +329,8 @@ evidence is in [`F18`](evidence/F18/2026-09-12/README.md). The v0.7.0 cloud-safe
 checks and rendered desktop/mobile screenshots are in [`F22`](evidence/F22/2026-09-16/README.md). The v0.7.2 interface redesign, with its local checks and screenshots, is in [`F24`](evidence/F24/2026-10-10/README.md). The v0.7.1 live
 Azure endpoint, OIDC, scale, negative-route and recovery evidence is in [`F23`](evidence/F23/2026-09-24/README.md).
 Application-support runbooks and synthetic incident reports are in [`docs/application-support`](docs/application-support/README.md),
-with machine evidence under `evidence/APP-001` through `evidence/APP-005`. APP-002 also records a real pre-change
-observation of the still-live v0.7.1 endpoint; that observation is not a hosted rollback result.
+with machine evidence under `evidence/APP-001` through `evidence/APP-005`. APP-002 separates the local mismatch fixture,
+pre-change v0.7.1 observation, failed first drill, safety recovery and successful corrected hosted rollback.
 
 To open the report, run the normal verification first, then open
 `analytics/powerbi/RivuletAssurance.pbip` in Power BI Desktop and refresh. PBIP/PBIR are preview formats. After any

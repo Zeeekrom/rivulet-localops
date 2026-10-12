@@ -204,7 +204,7 @@ the public demo or pretending to implement an ITSM/endpoint-management product.
 | Internal Operations & Support page | Pass; version, health, deployment, ledger, incidents, bundle and runbook entry points |
 | Public route boundary | Pass locally; health/bundle/log/runbook/page routes all return 404 from `public_demo` |
 | APP-001 API degradation/recovery | Pass in isolated synthetic experiment |
-| APP-002 release mismatch | Local detection/recovery control passes; hosted Azure rollback is not yet verified |
+| APP-002 release mismatch | Local detection passes; corrected hosted Azure drill redeployed and re-verified captured v0.8.0 |
 | APP-003 ledger integrity/recovery | Pass; tamper detected, writes return 503, verified backup atomically restored |
 | APP-004 invalid configuration | Pass; readiness 503 without revealing raw value, then healthy after correction |
 | APP-005 provider outage | Pass; manual fallback audited, hash chain valid, provider recovery verified |
@@ -213,10 +213,12 @@ the public demo or pretending to implement an ITSM/endpoint-management product.
 | v0.8.0 local container rerun | Blocked by a recorded Docker Desktop AF_UNIX runtime-socket startup failure; no reset/data deletion attempted; hosted Linux image gate required |
 
 Evidence is under [`evidence/APP-001`](../evidence/APP-001/2026-10-12/README.md) through
-[`evidence/APP-005`](../evidence/APP-005/2026-10-12/README.md). All five are explicitly labelled synthetic. APP-002
-also contains a real pre-change observation that the live endpoint was healthy on v0.7.1 with six named internal routes
-returning 404. It does not claim a hosted rollback. The deployment workflow now contains that drill and will provide
-the hosted evidence only after a v0.8.0 image exists.
+[`evidence/APP-005`](../evidence/APP-005/2026-10-12/README.md). All five local fixtures are explicitly labelled synthetic.
+APP-002 additionally contains real deployment observations and GitHub Actions artifacts: v0.8.0 deploy run
+`38205416715`; failed first rollback drill `38205693603`; safety recovery `38205872737`; and corrected hosted rollback
+drill `38206163289`. The successful drill deliberately injected failure only after the v0.7.2 candidate passed its
+checks, then redeployed the captured v0.8.0 image/release and verified recovery. The failed drill remains part of the
+evidence rather than being rewritten as success.
 The APP-004 directory also records the separate Docker Desktop preflight failure. F22 remains the last successful local
 non-root container evidence; it is not silently carried forward as a v0.8.0 run.
 
@@ -257,7 +259,11 @@ post-fix main run `35995184675` and successful deploy run `35995289399` are reco
 
 The v0.7.2 release passed hosted
 [main verify 38045635848](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045635848), [tag verify 38045637107](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637107) and [container/SBOM 38045637061](https://github.com/Zeeekrom/rivulet-localops/actions/runs/38045637061).
-No Azure deployment was run for v0.7.2, so the live demo continues to serve v0.7.1.
+It was later used only as the valid candidate in the v0.8.0 synthetic rollback drill; the final live release is v0.8.0.
+
+The v0.8.0 release passed hosted main/tag verification (`38205266531`/`38205268239`), container/SBOM
+(`38205268224`), Azure deployment (`38205416715`) and the corrected rollback drill (`38206163289`). Failed drill
+`38205693603` and safety-recovery run `38205872737` document the defect and recovery path.
 
 ## Reproduction
 
@@ -305,10 +311,10 @@ The word “accuracy” in the evaluator's JSON field is retained for compatibil
 | Identities are authenticated and authorised | No | IDs are asserted fields only |
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
-| The bounded public profile is deployed to Azure | Yes | One New Zealand North Container Apps revision; F23, not a production-readiness claim |
+| The bounded public profile is deployed to Azure | Yes | New Zealand North Container Apps, live v0.8.0; bounded portfolio evidence, not production readiness |
 | The system is deployed to an enterprise Windows environment | No | Windows lab remains a later slice |
-| The v0.7.2 interface is live on Azure | No | The live demo serves v0.7.1 until a v0.7.2 deployment is run |
-| The public profile excludes tested internal routes | Yes | Local container and live Azure endpoint; four named negative routes, not a general penetration test |
+| The v0.7.2 interface is live on Azure | No | It was a temporary drill candidate; the recovered live release is v0.8.0 |
+| The public profile excludes tested internal routes | Yes | Live v0.8.0 endpoint; six named negative routes, not a general penetration test |
 | Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
 
 ## Known verification warning
