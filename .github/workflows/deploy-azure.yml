@@ -111,8 +111,7 @@ jobs:
               --name "rivulet-rollback-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
               --resource-group "${RESOURCE_GROUP}" \
               --template-file infra/azure/main.bicep \
-              --parameters location="${AZURE_LOCATION}" containerImage="${PREVIOUS_IMAGE}" release="${PREVIOUS_RELEASE}" expiresOn="${EXPIRES_ON}" \
-              --no-pretty-print
+              --parameters location="${AZURE_LOCATION}" containerImage="${PREVIOUS_IMAGE}" release="${PREVIOUS_RELEASE}" expiresOn="${EXPIRES_ON}"
       - name: Verify recovered release
         if: steps.smoke.outcome == 'failure'
         shell: bash
