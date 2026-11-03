@@ -282,9 +282,10 @@ F22 starts the built Linux image and checks `/docs`, `/openapi.json`, `/api/v1/s
 `/ops/v1/ledger/integrity` all return 404. The ledger resets whenever the single replica is replaced or scales to zero.
 
 Azure IaC declares one New Zealand North Container Apps Consumption environment and one 0.25-vCPU/0.5-GiB app with HTTPS-only ingress,
-min replicas 0 and max replicas 1. Images are designed to come from public GHCR; GitHub Actions obtains Azure access
+min replicas 0 and max replicas 1. Since November 2026 the image comes from a private GHCR package, which the app pulls
+with a read-only registry token held as a Container App secret. GitHub Actions obtains Azure access
 through a user-assigned managed identity federated to the `azure-demo` environment, scoped as Contributor only to the
-dedicated resource group and without a client secret. The v0.8.0 workflow captures pre-deploy health, verifies exact
+dedicated resource group and without an Azure client secret. The v0.8.0 workflow captures pre-deploy health, verifies exact
 release, security headers, six negative routes and capability denial, and—on failure—redeploys the previously observed
 image/release through the same Bicep template before verifying recovery. Run `38206163289` exercises that full rollback
 path; failed run `38205693603` is retained because it exposed an unsupported CLI argument. F23 records the earlier

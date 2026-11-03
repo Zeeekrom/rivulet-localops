@@ -139,7 +139,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Power BI assurance | Deterministically generated two-page PBIP/PBIR/TMDL project: 7 Import tables, 29 measures, 8 relationships, 27 visuals, visible truth boundaries and versioned Desktop evidence |
 | Cloud-safe web console | React/TypeScript overview console in plain language, backed by a separate FastAPI profile; visitors can run only six server-owned synthetic scenarios, including an instruction hidden in a request |
 | Container delivery | Multi-stage Linux image, exact runtime lock, non-root UID/GID 10001, health probe, same-origin assets and public/internal route separation |
-| Azure deployment | Live New Zealand North Container Apps Consumption revision: 0.25 vCPU/0.5 GiB, scale 0–1, public GHCR image and resource-group-scoped managed-identity OIDC with no client secret |
+| Azure deployment | Live New Zealand North Container Apps Consumption revision: 0.25 vCPU/0.5 GiB, scale 0–1, private GHCR image pulled with a read-only registry token held as a Container App secret, and resource-group-scoped managed-identity OIDC with no Azure client secret |
 
 The current diagnosis engine and agent adapter are deliberately rules-based. They form a transparent control baseline for later model comparison and are not presented as generative AI.
 
