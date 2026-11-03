@@ -1,0 +1,6 @@
+Experiment date (Australia/Hobart): 2026-11-03
+Image: ghcr.io/zeeekrom/rivulet-localops:v0.9.0 (sha256:71a3aadb594ad2fca67961622b992b1ff29ecbe1c538945456f2133caadfa81b)
+Docker Desktop: 4.96.3 (244472)
+Docker Engine: 29.9.2
+Python (runner): 3.12.9
+Host: Windows 11 Home 10.0.26300

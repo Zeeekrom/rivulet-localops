@@ -1,0 +1,101 @@
+{
+  "experiment_id": "F26",
+  "experiment_date_local": "2026-11-03",
+  "status": "pass",
+  "scope": "Sprint 4 SAST and dependency-audit gates with canaries; container-image scanning runs in GitHub Actions",
+  "sast": {
+    "tool": "bandit",
+    "targets": [
+      "src",
+      "scripts"
+    ],
+    "exit_code": 0,
+    "findings": [],
+    "lines_scanned": 6515
+  },
+  "sast_suppressions": [
+    {
+      "file": "src/rivulet_localops/analytics_mart.py",
+      "line": 427,
+      "tests": "B608"
+    },
+    {
+      "file": "scripts/fetch_hobart_assets.py",
+      "line": 25,
+      "tests": "B310"
+    },
+    {
+      "file": "scripts/fetch_townsville_rfs.py",
+      "line": 46,
+      "tests": "B310"
+    },
+    {
+      "file": "scripts/run_security_gates.py",
+      "line": 14,
+      "tests": "B404"
+    },
+    {
+      "file": "scripts/run_security_gates.py",
+      "line": 35,
+      "tests": "B603"
+    },
+    {
+      "file": "scripts/verify_public_deployment.py",
+      "line": 39,
+      "tests": "B310"
+    }
+  ],
+  "sast_canary": {
+    "exit_code": 1,
+    "findings": [
+      {
+        "file": "canary.py",
+        "line": 1,
+        "test_id": "B404",
+        "severity": "LOW",
+        "confidence": "HIGH"
+      },
+      {
+        "file": "canary.py",
+        "line": 5,
+        "test_id": "B602",
+        "severity": "HIGH",
+        "confidence": "HIGH"
+      }
+    ],
+    "lines_scanned": 3
+  },
+  "dependency_audit": {
+    "tool": "pip-audit",
+    "lock_files": [
+      "requirements-runtime.lock",
+      "requirements-dev.lock",
+      "requirements-security.lock"
+    ],
+    "exit_code": 0,
+    "packages_audited": 56,
+    "vulnerable": []
+  },
+  "dependency_audit_canary": {
+    "requirement": "PyYAML==5.3.1",
+    "exit_code": 1,
+    "packages_audited": 1,
+    "vulnerable": [
+      {
+        "name": "pyyaml",
+        "version": "5.3.1",
+        "ids": [
+          "PYSEC-2021-142"
+        ]
+      }
+    ]
+  },
+  "checks": {
+    "sast_no_unsuppressed_findings": true,
+    "sast_canary_detected_high_severity": true,
+    "dependency_audit_no_known_vulnerabilities": true,
+    "dependency_audit_canary_detected": true,
+    "every_suppression_names_a_test": true
+  },
+  "claim_boundary": "Bandit and pip-audit catch known Python anti-patterns and published advisories for pinned packages. A clean result is not a penetration test, does not cover business-logic flaws, and depends on the advisory data available on the run date."
+}

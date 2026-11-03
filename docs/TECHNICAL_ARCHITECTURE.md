@@ -1,0 +1,323 @@
+# Technical Architecture
+
+Status: release v0.8.0 is locally and hosted verified. The bounded Azure portfolio demo serves v0.8.0; its corrected
+rollback drill redeployed the captured v0.8.0 image/release after a controlled candidate failure and verified recovery.
+
+## 1. System boundary
+
+Rivulet LocalOps has two intentionally separate FastAPI entry points. The internal application contains four logical areas:
+
+1. decision support: request validation, deterministic classification, priority and asset match;
+2. governance: versioned policy pack, deterministic Gate, decision/review ledger and replay;
+3. operations: component health, ledger-integrity verification, provider kill switch, redacted logs, Support Bundle,
+   incident/runbook entry points and an internal support page;
+4. agent control: server-selected identity, versioned capabilities, short-lived grants, allowlists and invocation audit.
+
+The separate `public_demo` entry point serves a React/TypeScript assurance console and only a health route, bootstrap
+metadata and five server-owned synthetic scenarios. It does not register internal `/api/v1/*`, `/ops/*`, OpenAPI or
+documentation routes and accepts no visitor free text.
+
+SQLite is the current event store. D1/D2 public snapshots and the D6 synthetic event export feed a reproducible
+SQLite/CSV analytics mart. There is no authenticated identity provider, external business connector, PostgreSQL
+service, Power BI Service/Fabric deployment or generative-model provider in this release. The public profile has one
+recorded Azure deployment; its SQLite trace remains ephemeral. A local, version-controlled Power BI Project reads
+seven mart tables through deterministic Import partitions.
+
+```mermaid
+flowchart TB
+    subgraph API[FastAPI application]
+        V[Pydantic request validation]
+        T[RulesTriageProvider]
+        A[AssetRepository]
+        G[DeterministicPolicyGate]
+        E[SQLiteEventLedger]
+    C[Capability registry]
+    B[Read-only case-agent]
+    R[Review and replay API]
+    O[Operations API]
+    M[Analytics mart builder]
+    end
+
+    P[Power BI provenance and assurance]
+
+    J[Versioned JSON policy] --> G
+    H[Hobart GeoJSON snapshot] --> A
+    V --> T
+    C --> B
+    B --> T
+    B --> E
+    T --> A
+    T --> G
+    G --> E
+    E --> R
+    O --> E
+    O --> T
+    E --> M
+    H --> M
+    X[Townsville aggregate CSV] --> M
+    M --> P
+```
+
+## 2. Submission sequence
+
+```mermaid
+sequenceDiagram
+    participant C as API client
+    participant O as Provider control
+    participant T as Triage provider
+    participant G as Policy Gate
+    participant L as Event ledger
+    participant H as Human reviewer
+
+    C->>O: submit synthetic request + owner
+    alt provider disabled or ledger invalid
+        O->>L: append manual-fallback event when safe
+        O-->>C: 503 manual fallback
+    else controls healthy
+        O->>T: diagnose
+        T-->>G: category, priority, evidence, confidence
+        G-->>L: pass / reject / escalate + rule results
+        L-->>C: decision record + hashes
+        H->>L: append accept / override / escalate
+        L-->>H: original decision + complete review history
+    end
+```
+
+## 3. Policy and deterministic Gate
+
+The active pack is `data/policies/waste_litter_demo_v0.2.0.json` (schema 1.1). `v0.1.0` (schema 1.0) is kept
+unchanged because the D6 synthetic ledger is generated against it, and its content hash is unchanged. The schema requires:
+
+- explicit `approved_for_demo` state;
+- `is_synthetic: true`;
+- human product-owner authority metadata;
+- policy ID, version and timezone-aware approval time;
+- category scope, permitted actions, evidence rules and thresholds;
+- from schema 1.1, an `input_integrity` section listing the signals that escalate and the stuffing thresholds.
+
+The Gate evaluates eight visible rules under v0.2.0 (the first seven under v0.1.0):
+
+| Rule | Check | Failure effect |
+|---|---|---|
+| `POL-SCOPE-001` | Category is `waste_litter` | Escalate |
+| `POL-ACTION-001` | Action is `create_draft_work_order` | Reject |
+| `POL-LOCATION-001` | Latitude and longitude supplied | Reject |
+| `POL-ASSET-001` | Eligible public litter-bin asset within policy radius | Escalate |
+| `POL-SAFETY-001` | Priority does not require emergency escalation | Escalate |
+| `POL-CONFIDENCE-001` | Category confidence meets threshold | Escalate |
+| `POL-REVIEW-001` | Diagnosis has no human-review flag | Escalate |
+| `POL-INPUT-001` | Request text raises no input-integrity signal | Escalate |
+
+Escalation takes precedence when a request has both rejection and escalation reasons. A passing result means only that the proposed draft action satisfies this demonstration policy. It does not execute the action.
+
+`POL-INPUT-001` reads the raw request text independently of the provider, so a future model provider cannot talk its
+way past it. It normalises the text (NFKC, invisible characters removed, letter-split words rejoined) and reports
+signal codes: instruction override, role impersonation, addressing the model, decision manipulation, tool invocation,
+data exfiltration, hidden or bidirectional characters, mixed-script homoglyphs, encoded payloads, catalogue
+stuffing, negated scope terms and competing service phrases. Matched text is never returned, so injected wording
+is not reflected into Gate messages, logs or the console. It is a deterministic screen, not a classifier.
+
+The policy reference includes a SHA-256 hash of its canonical parsed content. This exposes a same-version content change during replay instead of trusting the version label alone.
+
+## 4. Event ledger
+
+The ledger uses one append-only `ledger_events` table. Event types currently include:
+
+- `decision.created`
+- `decision.reviewed`
+- `decision.replayed`
+- `decision.manual_fallback`
+- `provider.control_changed`
+- `agent.invocation.completed`
+- `agent.invocation.denied`
+- `agent.invocation.failed`
+
+Every event stores:
+
+| Envelope field | Purpose |
+|---|---|
+| `sequence` | Monotonic local ordering |
+| `event_id` | Unique event identity |
+| `event_type` | Immutable event meaning |
+| `occurred_at` | UTC event time |
+| `actor_id` | System, reviewer or operator assertion |
+| `correlation_id` | Workflow trace key |
+| `entity_id` | Decision or provider-control identity |
+| `payload_json` | Canonical event data |
+| `previous_event_hash` | Link to preceding global event |
+| `event_hash` | SHA-256 of the complete canonical envelope |
+
+The event hash is calculated over the sequence, IDs, type, time, actor, correlation, entity, parsed payload and previous hash. Before an append, the existing chain is verified inside an immediate SQLite transaction. A failure blocks the append. Automated diagnosis and decision APIs also fail closed when chain verification fails; `/health` reports `degraded` and the integrity endpoint remains available for investigation.
+
+This mechanism is tamper-evident, not immutable. An operator with filesystem control could replace the whole database and application. A production design would add access controls, signed checkpoints, protected backup/retention and an independently secured audit destination.
+
+## 5. Decision record
+
+A `decision.created` payload includes:
+
+- synthetic request snapshot and request hash;
+- accountable owner assertion;
+- data truth class, source and environment;
+- proposed action;
+- policy ID, version and content hash;
+- provider, provider version and execution mode;
+- matched terms and public asset evidence;
+- explicit tool-call list, currently empty;
+- complete Gate decision, explanations and rule outcomes.
+
+Review events never update that payload. The API assembles the original decision with ordered review history at read time.
+
+## 6. Human review boundary
+
+The review API accepts `accept`, `override` or `escalate` with a reviewer ID and reason. An override must include a corrected category, corrected priority or replacement action. It records human judgement but does not execute the replacement.
+
+Two deterministic separation controls apply:
+
+- the accountable owner cannot review the same decision;
+- a Gate-rejected or Gate-escalated decision cannot be directly accepted—reviewers must override or escalate with an explicit reason.
+
+These are application controls, not identity assurance. The IDs are not authenticated in v0.7.1.
+
+## 7. Replay
+
+Replay reconstructs the original request and proposed action, runs the current provider and Gate, and compares:
+
+- policy version and canonical content hash;
+- provider version;
+- Gate status;
+- category and priority;
+- ordered rule IDs, outcomes and effects.
+
+The comparison itself is appended as a `decision.replayed` event. Replay demonstrates deterministic reproducibility under the currently loaded code and data; it is not proof that every external dependency or future software version is reproducible.
+
+## 8. Kill switch and manual fallback
+
+Provider-control changes are append-only events containing the operator assertion, reason, time and disabled state. The latest valid event determines current state and survives application restart.
+
+When disabled:
+
+- `/api/v1/diagnose` returns HTTP 503 with a manual-fallback response;
+- `/api/v1/submit` does not invoke automated diagnosis and records a hashed manual-fallback event;
+- replay is unavailable;
+- historical review remains possible while ledger integrity is valid.
+
+The current kill switch is logically separated under `/ops/v1`, but it is not physically out-of-band because it shares the application process and SQLite file.
+
+## 9. Application support and recovery
+
+The internal profile assigns safe correlation and request IDs at the HTTP boundary. Its in-memory operational records
+are bounded and allowlist-only: route template, component, policy/provider version, Gate result, ledger event ID,
+elapsed time, status and error category. Request bodies, credentials, arbitrary headers, environment dumps and internal
+paths are never fields in that record.
+
+`/ops/v1/health` reports API, database/ledger, policy, provider, configuration, dependencies and build/version as
+`healthy`, `degraded` or `unavailable`. Ledger integrity and invalid required configuration are readiness failures;
+provider kill-switch state is degraded because audited manual fallback remains available. `/ops/v1/support/bundle`
+packages these states, deployment metadata, error aggregates and recent redacted records into an allowlisted document
+with a reproducible SHA-256 checksum. `/ops/support` consumes only these internal endpoints. None is registered by the
+public demo entry point, and six negative routes now form its deploy-time boundary check.
+
+The ledger can create a SQLite-consistent backup only after verifying the source chain. Offline restore first verifies
+the backup, restores to a temporary database, verifies again and atomically replaces the requested destination. Five
+isolated application-support exercises cover API degradation, release mismatch, ledger tamper/restore, invalid
+configuration and provider kill-switch fallback. These are synthetic experiments, not production incidents. The local
+APP-002's local result verifies mismatch detection only. Separate GitHub/Azure artifacts record the failed first drill,
+safety recovery and successful corrected hosted rollback; these hosted observations do not turn the other fixtures into
+production incidents.
+
+## 10. Bounded case-agent control
+
+The server exposes one fixed `case-agent` identity from a versioned, content-hashed synthetic capability registry. Its
+automation level is `L0_shadow_read_only`: it can read only the current synthetic case and, when coordinates are
+present, the approved Hobart public-asset reference. A five-minute invocation grant and a four-call budget limit each
+run. Shell, package installation, arbitrary internet access, case search, policy publication, decision submission and
+connector write are explicitly denied; every other undeclared capability is denied by default.
+
+Provider identity, version and mode must match the registry before diagnosis executes. Completed, denied and failed
+invocations append agent/owner/purpose IDs, registry/policy/provider versions, grant times, tool receipts, content
+hashes, latency and termination reason to the existing ledger. Raw request prose is omitted from the agent audit
+payload. The agent never runs the deterministic Gate, records a human decision or writes to an external connector.
+
+These controls do not authenticate callers, implement real object-level authorization or turn the deterministic-rules
+adapter into generative AI. The registry is not signed, and a plain input SHA-256 hash is not a privacy-preserving
+commitment for personal data.
+
+## 11. Analytics contracts and mart
+
+D1 City of Hobart assets, D2 Townsville monthly request aggregates and D6 fixed-seed synthetic ledger events each
+have a machine-readable source manifest. The manifest pins publisher, URLs, licence, retrieval time, hash, row/event
+count, grain, schema, encoding/CRS, truth class and limitations.
+
+The build creates 14 tables. Primary facts are one D2 publisher row, one synthetic decision, one decision × Gate rule,
+one synthetic review, one synthetic manual fallback and one source-quality check. D2 categories use a code-plus-label
+variant key because historical codes do not map consistently to one label. A source-row key preserves the one
+case-normalized business-key collision rather than silently merging its counts.
+
+`real_public_reference` and `synthetic_operational` are separate fact-level truth classes. The build fails on manifest
+hash drift, blocking source checks, primary/FK failures, count reconciliation errors, non-contiguous D6 sequence or
+truth-class mixing. See the data dictionary and
+metric dictionary.
+
+## 12. Power BI project boundary
+
+`analytics/powerbi/RivuletAssurance.pbip` opens a two-page enhanced-PBIR report backed by a TMDL Import model. The
+provenance page exposes sources, truth classes and quality outcomes; the assurance page exposes synthetic Gate,
+review, override, fallback and lag fixtures. Thirteen reference measures are reconciled against versioned mart values.
+
+The project is deterministically regenerated from seven CSV tables; generated CSV bytes are normalized to LF before
+embedding so Windows generation and fresh Git checkouts produce identical TMDL. Portable editor, culture and diagram metadata are
+versioned; Desktop's local settings and data cache are ignored. After Desktop writes the project, the generator restores
+the canonical form—including PBIP/PBIR schema references required by Microsoft's validator—before commit. PBIP/PBIR
+remain preview formats, and local refresh evidence is not a Power BI Service, Fabric or gateway deployment claim.
+
+## 13. Public web and container boundary
+
+The production Vite build is copied into the FastAPI image and served same-origin. The container installs exact-pinned
+runtime dependencies, declares non-root `10001:10001`, writes its disposable SQLite ledger only under `/tmp`, and
+exposes port 8000 with an HTTP health check. Browser responses receive CSP, frame, content-type, referrer and permissions
+headers; oversized bodies and a small in-memory execution-rate limit reduce accidental abuse.
+
+The predefined cases cover Gate `pass`, `reject`, `escalate`, explicit shell-capability denial and cross-case denial.
+F22 starts the built Linux image and checks `/docs`, `/openapi.json`, `/api/v1/submit` and
+`/ops/v1/ledger/integrity` all return 404. The ledger resets whenever the single replica is replaced or scales to zero.
+
+Azure IaC declares one New Zealand North Container Apps Consumption environment and one 0.25-vCPU/0.5-GiB app with HTTPS-only ingress,
+min replicas 0 and max replicas 1. Images are designed to come from public GHCR; GitHub Actions obtains Azure access
+through a user-assigned managed identity federated to the `azure-demo` environment, scoped as Contributor only to the
+dedicated resource group and without a client secret. The v0.8.0 workflow captures pre-deploy health, verifies exact
+release, security headers, six negative routes and capability denial, and—on failure—redeploys the previously observed
+image/release through the same Bicep template before verifying recovery. Run `38206163289` exercises that full rollback
+path; failed run `38205693603` is retained because it exposed an unsupported CLI argument. F23 records the earlier
+v0.7.1 deployment evidence. Log Analytics is not attached; the expiry
+tag is governance metadata rather than automatic deletion.
+
+## 14. Technology status
+
+| Area | Current | Planned, not implemented |
+|---|---|---|
+| Application | Python 3.12, FastAPI/Pydantic plus React 19/TypeScript/Vite cloud-safe console | Authenticated review experience |
+| Decision engine | Deterministic rules provider behind a bounded read-only agent adapter | Model-provider comparison after security evaluation |
+| Operational store | SQLite append-only events | PostgreSQL, migrations and retention controls |
+| Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL | Additional sources only when a report field requires them |
+| Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
+| Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
+| Security | Gate with untrusted-input rule, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, Bandit/pip-audit/npm audit/Trivy gates with canaries, commit-pinned third-party actions, frozen adversarial evaluation and negative tests | Signed audit checkpoints, TypeScript SAST, multi-intent splitting and a locality gazetteer for text-versus-coordinate checks |
+| Delivery | Exact lockfiles, verification, multi-stage image, public OCI/SBOM, Bicep, resource-group-scoped OIDC, deployment smoke and verified hosted rollback | Production observability, automated expiry/teardown and multi-environment promotion |
+| Application support | Component health, redacted structured logs, Support Bundle, internal support UI, five runbooks and local synthetic recovery evidence | External alerting/SLA system and physically separate support control plane |
+
+## 15. Primary limitations
+
+- The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
+- Self-authored regression cases do not establish real-world accuracy.
+- The untrusted-input rule is a pattern screen designed after seeing its own test set's failures; it cannot recognise every phrasing, and two known cases still pass.
+- SQLite is suitable for the current local demonstrator, not a multi-node production service.
+- Asserted identity fields do not prevent impersonation.
+- Agent capability checks are local contract controls, not authorization against a multi-user case store; the registry is hashed but not signed.
+- No generative model is connected, and the current agent cannot execute the Gate, a human decision or a connector.
+- No connector means no action is executed and no downstream receipt exists.
+- No real council has validated the policy, workflow or operational fit.
+- D2 is Townsville aggregate context, not Hobart operational demand; D6 metrics are designed fixtures, not measured performance.
+- PBIP/PBIR are preview formats; local Desktop refresh and screenshots do not establish a governed Power BI Service deployment.
+- The public-demo rate limiter is per process, and its SQLite trace resets with the container; neither is a distributed production control.
+- F23 covers one public revision and named boundary checks, not general penetration testing, production security,
+  actual idle scale-to-zero, zero cost or a billing/availability SLO.

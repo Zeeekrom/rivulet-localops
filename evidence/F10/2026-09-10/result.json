@@ -1,0 +1,70 @@
+{
+  "experiment_id": "F10",
+  "experiment_date_local": "2026-09-10",
+  "status": "pass",
+  "scope": "Sprint 2.5B Power BI provenance and Gate/decision assurance thin slice",
+  "build": {
+    "project": "analytics/powerbi/RivuletAssurance.pbip",
+    "generated_files": 48,
+    "pages": 2,
+    "visuals": 27,
+    "semantic_tables": 7,
+    "measures": 29,
+    "relationships": 8,
+    "inactive_relationships": [
+      "Review.decision_key -> Decision.decision_key"
+    ]
+  },
+  "validation": {
+    "deterministic_build_check": "pass",
+    "internal_structural_checks": 77,
+    "internal_structural_failures": 0,
+    "microsoft_report_validator_errors": 0,
+    "microsoft_report_validator_warnings": 0,
+    "desktop_bridge_status": "ready",
+    "desktop_unsaved_changes": false,
+    "import_partitions_refreshed": 7,
+    "import_partition_failures": 0,
+    "pytest_passed": 26,
+    "pytest_warnings": 2,
+    "self_authored_regression_cases": 12,
+    "self_authored_regression_failures": 0
+  },
+  "dax_reconciliation": {
+    "status": "pass",
+    "reference_metrics_compared": 13,
+    "public_source_count": 2,
+    "d1_asset_rows": 727,
+    "d2_aggregate_rows": 24197,
+    "quality_check_count": 19,
+    "warning_check_count": 4,
+    "blocking_failure_count": 0,
+    "decision_count": 180,
+    "pass_rate": 0.4,
+    "review_rate": 0.6666666666666666,
+    "override_rate_of_reviewed": 0.20833333333333334,
+    "manual_fallback_count": 8,
+    "median_review_lag_minutes": 450,
+    "eligible_asset_decisions": 126,
+    "asset_matched_decisions": 108,
+    "asset_match_rate": 0.8571428571428571
+  },
+  "screenshots": [
+    {
+      "file": "screenshots/Data provenance & quality.png",
+      "sha256": "4EFAE3C3EB768EC695E35CB8F31C462800C6230CB3638D9A925720937A1F4F7F"
+    },
+    {
+      "file": "screenshots/Gate & decision assurance.png",
+      "sha256": "7604C6A62CAFA3FA4763AB622C11C2FF33E37718912AF95F749DDCFDF547466F"
+    }
+  ],
+  "claim_boundary": "D1/D2 are real public reference data with different grains. D2 is Townsville aggregate context, not Hobart demand. D6 and all decision, Gate, review, fallback, rate and lag values are fixed-seed synthetic operational regression fixtures, not council performance or model-accuracy evidence.",
+  "not_verified": [
+    "Power BI Service or Fabric deployment",
+    "scheduled or gateway refresh",
+    "PostgreSQL connector",
+    "real council workflow or user validation",
+    "production performance, security or availability"
+  ]
+}

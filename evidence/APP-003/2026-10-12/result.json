@@ -1,0 +1,13 @@
+{
+  "backup_integrity_ok": true,
+  "blocked_write_http_status": 503,
+  "first_invalid_sequence": 1,
+  "incident_id": "APP-003",
+  "initial_write_http_status": 200,
+  "injection": "tampered payload_json in an isolated SQLite copy",
+  "passed": true,
+  "recovery_health_status": "healthy",
+  "restored_integrity_ok": true,
+  "tamper_detected": true,
+  "truth_class": "synthetic_recovery_experiment"
+}

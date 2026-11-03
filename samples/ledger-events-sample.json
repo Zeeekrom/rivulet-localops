@@ -1,0 +1,637 @@
+{
+  "truth_class": "synthetic",
+  "note": "First events of the fixed-seed synthetic ledger (D6).",
+  "events": [
+    {
+      "actor_id": "system:rivulet-api",
+      "correlation_id": "synthetic-0001",
+      "entity_id": "9e43efab-0475-5541-96c4-dde79841379c",
+      "event_hash": "d037569d910e45f7fda3661a8b4287714131010efa850b5cf8f80ce6e973c18b",
+      "event_id": "d0d6a1aa-d6cf-5939-b7ca-a668c87a7f01",
+      "event_type": "decision.created",
+      "occurred_at": "2025-09-01T09:00:00+00:00",
+      "payload": {
+        "accountable_owner_id": "owner:1",
+        "data_truth_class": "synthetic",
+        "environment": "local",
+        "evidence": {
+          "asset_match": {
+            "asset_type": "litter_bin",
+            "description": "25lt Drop Plastic",
+            "distance_metres": 0.0,
+            "latitude": -42.8867512572958,
+            "longitude": 147.319119003722,
+            "source": "City of Hobart ASSET Litter Bins public ArcGIS layer",
+            "source_id": "d3efe887-9624-46db-8418-f0ec53580d79"
+          },
+          "matched_terms": [
+            "overflowing bin",
+            "bin"
+          ]
+        },
+        "gate_decision": {
+          "can_execute": true,
+          "diagnosis": {
+            "asset_match": {
+              "asset_type": "litter_bin",
+              "description": "25lt Drop Plastic",
+              "distance_metres": 0.0,
+              "latitude": -42.8867512572958,
+              "longitude": 147.319119003722,
+              "source": "City of Hobart ASSET Litter Bins public ArcGIS layer",
+              "source_id": "d3efe887-9624-46db-8418-f0ec53580d79"
+            },
+            "category": {
+              "code": "waste_litter",
+              "confidence": 0.95,
+              "label": "Waste and litter",
+              "matched_terms": [
+                "overflowing bin",
+                "bin"
+              ]
+            },
+            "diagnosis_id": "8980a6b6-ad6a-5035-887b-6d9c3a27a2f3",
+            "disclaimer": "Decision support only. A council officer must confirm emergency, enforcement and ambiguous cases.",
+            "engine": {
+              "mode": "baseline",
+              "provider": "deterministic-rules",
+              "version": "0.1.0"
+            },
+            "explanation": [
+              "Category evidence: overflowing bin, bin",
+              "Priority evidence: Urgent hazard phrase detected: 'overflowing bin'",
+              "Nearest public litter-bin asset is 0.0 metres from the supplied point"
+            ],
+            "human_review_required": false,
+            "missing_information": [],
+            "priority": {
+              "code": "P2",
+              "label": "Urgent",
+              "policy_rule": "Urgent hazard phrase detected: 'overflowing bin'",
+              "target_hours": 8
+            }
+          },
+          "escalation_reasons": [],
+          "evaluated_at": "2025-09-01T09:00:00Z",
+          "gate_event_id": "384a4ed7-df4c-567d-bd6a-4c92d7bc7445",
+          "missing_information": [],
+          "policy": {
+            "content_hash": "3a48e5aa6e76209d706dfb694db34b477fb8f640e0c002bdfdf3dbc9a85e7581",
+            "is_synthetic": true,
+            "policy_id": "rivulet.synthetic.waste-litter",
+            "title": "Waste and litter draft-action demonstration policy",
+            "version": "0.1.0"
+          },
+          "proposed_action": "create_draft_work_order",
+          "rejection_reasons": [],
+          "rule_results": [
+            {
+              "effect": "allow",
+              "message": "Category 'waste_litter' is within the demonstration policy scope.",
+              "outcome": "pass",
+              "rule_id": "POL-SCOPE-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Action 'create_draft_work_order' is permitted as a draft-only action.",
+              "outcome": "pass",
+              "rule_id": "POL-ACTION-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Required latitude and longitude were supplied.",
+              "outcome": "pass",
+              "rule_id": "POL-LOCATION-001"
+            },
+            {
+              "effect": "allow",
+              "message": "The supplied point matched a public litter-bin asset.",
+              "outcome": "pass",
+              "rule_id": "POL-ASSET-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Priority P2 does not trigger the emergency escalation rule.",
+              "outcome": "pass",
+              "rule_id": "POL-SAFETY-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Category confidence 0.95 meets the 0.70 threshold.",
+              "outcome": "pass",
+              "rule_id": "POL-CONFIDENCE-001"
+            },
+            {
+              "effect": "allow",
+              "message": "The diagnosis contains no human-review flag.",
+              "outcome": "pass",
+              "rule_id": "POL-REVIEW-001"
+            }
+          ],
+          "status": "pass"
+        },
+        "policy": {
+          "content_hash": "3a48e5aa6e76209d706dfb694db34b477fb8f640e0c002bdfdf3dbc9a85e7581",
+          "is_synthetic": true,
+          "policy_id": "rivulet.synthetic.waste-litter",
+          "title": "Waste and litter draft-action demonstration policy",
+          "version": "0.1.0"
+        },
+        "proposed_action": "create_draft_work_order",
+        "provider": {
+          "mode": "baseline",
+          "provider": "deterministic-rules",
+          "version": "0.1.0"
+        },
+        "request": {
+          "coordinates": {
+            "latitude": -42.8867512572958,
+            "longitude": 147.319119003722
+          },
+          "text": "Synthetic report: overflowing bin beside the public asset."
+        },
+        "request_hash": "5a36aa53104899039ea4ac736b6d20d5b18ae8b96a90a1d8661fadac4201b21e",
+        "schema_version": "1.0",
+        "source": "portfolio_demo",
+        "tool_calls": []
+      },
+      "previous_event_hash": null,
+      "sequence": 1
+    },
+    {
+      "actor_id": "reviewer:1",
+      "correlation_id": "synthetic-0001",
+      "entity_id": "9e43efab-0475-5541-96c4-dde79841379c",
+      "event_hash": "926374451257d4288b28b37a5a405fa200b46baa019d5b3e9e3f08db8641efc8",
+      "event_id": "92449c55-ca0f-5980-8842-c8ff7725684c",
+      "event_type": "decision.reviewed",
+      "occurred_at": "2025-09-01T13:00:00+00:00",
+      "payload": {
+        "action": "override",
+        "corrected_category": null,
+        "corrected_priority": "P2",
+        "reason": "Synthetic independent review adjusted the priority for demonstration.",
+        "replacement_action": null,
+        "schema_version": "1.0"
+      },
+      "previous_event_hash": "d037569d910e45f7fda3661a8b4287714131010efa850b5cf8f80ce6e973c18b",
+      "sequence": 2
+    },
+    {
+      "actor_id": "system:rivulet-api",
+      "correlation_id": "synthetic-0002",
+      "entity_id": "22290104-16a8-5891-b802-24e1b6348e1c",
+      "event_hash": "0a31752fc42bf2b1a8fbda3cecf28d53f3ab96df4c10991499be4a4c82e1a274",
+      "event_id": "526bcb9a-7ee0-54db-8701-f8ce6027b95c",
+      "event_type": "decision.created",
+      "occurred_at": "2025-09-02T09:00:00+00:00",
+      "payload": {
+        "accountable_owner_id": "owner:2",
+        "data_truth_class": "synthetic",
+        "environment": "local",
+        "evidence": {
+          "asset_match": {
+            "asset_type": "litter_bin",
+            "description": "25lt Drop Plastic",
+            "distance_metres": 0.0,
+            "latitude": -42.8673756891636,
+            "longitude": 147.331009259969,
+            "source": "City of Hobart ASSET Litter Bins public ArcGIS layer",
+            "source_id": "b501c2c5-dd5d-460b-a987-2c2b1aebfe5e"
+          },
+          "matched_terms": [
+            "dumped rubbish",
+            "bin",
+            "rubbish",
+            "litter"
+          ]
+        },
+        "gate_decision": {
+          "can_execute": true,
+          "diagnosis": {
+            "asset_match": {
+              "asset_type": "litter_bin",
+              "description": "25lt Drop Plastic",
+              "distance_metres": 0.0,
+              "latitude": -42.8673756891636,
+              "longitude": 147.331009259969,
+              "source": "City of Hobart ASSET Litter Bins public ArcGIS layer",
+              "source_id": "b501c2c5-dd5d-460b-a987-2c2b1aebfe5e"
+            },
+            "category": {
+              "code": "waste_litter",
+              "confidence": 0.95,
+              "label": "Waste and litter",
+              "matched_terms": [
+                "dumped rubbish",
+                "bin",
+                "rubbish",
+                "litter"
+              ]
+            },
+            "diagnosis_id": "762f23ed-8f01-5932-b827-5fa97a11bd9b",
+            "disclaimer": "Decision support only. A council officer must confirm emergency, enforcement and ambiguous cases.",
+            "engine": {
+              "mode": "baseline",
+              "provider": "deterministic-rules",
+              "version": "0.1.0"
+            },
+            "explanation": [
+              "Category evidence: dumped rubbish, bin, rubbish, litter",
+              "Priority evidence: Operational issue identified with no explicit urgent hazard phrase",
+              "Nearest public litter-bin asset is 0.0 metres from the supplied point"
+            ],
+            "human_review_required": false,
+            "missing_information": [],
+            "priority": {
+              "code": "P3",
+              "label": "Standard",
+              "policy_rule": "Operational issue identified with no explicit urgent hazard phrase",
+              "target_hours": 72
+            }
+          },
+          "escalation_reasons": [],
+          "evaluated_at": "2025-09-02T09:00:00Z",
+          "gate_event_id": "a4157908-270e-578d-a64a-4eb551672209",
+          "missing_information": [],
+          "policy": {
+            "content_hash": "3a48e5aa6e76209d706dfb694db34b477fb8f640e0c002bdfdf3dbc9a85e7581",
+            "is_synthetic": true,
+            "policy_id": "rivulet.synthetic.waste-litter",
+            "title": "Waste and litter draft-action demonstration policy",
+            "version": "0.1.0"
+          },
+          "proposed_action": "create_draft_work_order",
+          "rejection_reasons": [],
+          "rule_results": [
+            {
+              "effect": "allow",
+              "message": "Category 'waste_litter' is within the demonstration policy scope.",
+              "outcome": "pass",
+              "rule_id": "POL-SCOPE-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Action 'create_draft_work_order' is permitted as a draft-only action.",
+              "outcome": "pass",
+              "rule_id": "POL-ACTION-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Required latitude and longitude were supplied.",
+              "outcome": "pass",
+              "rule_id": "POL-LOCATION-001"
+            },
+            {
+              "effect": "allow",
+              "message": "The supplied point matched a public litter-bin asset.",
+              "outcome": "pass",
+              "rule_id": "POL-ASSET-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Priority P3 does not trigger the emergency escalation rule.",
+              "outcome": "pass",
+              "rule_id": "POL-SAFETY-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Category confidence 0.95 meets the 0.70 threshold.",
+              "outcome": "pass",
+              "rule_id": "POL-CONFIDENCE-001"
+            },
+            {
+              "effect": "allow",
+              "message": "The diagnosis contains no human-review flag.",
+              "outcome": "pass",
+              "rule_id": "POL-REVIEW-001"
+            }
+          ],
+          "status": "pass"
+        },
+        "policy": {
+          "content_hash": "3a48e5aa6e76209d706dfb694db34b477fb8f640e0c002bdfdf3dbc9a85e7581",
+          "is_synthetic": true,
+          "policy_id": "rivulet.synthetic.waste-litter",
+          "title": "Waste and litter draft-action demonstration policy",
+          "version": "0.1.0"
+        },
+        "proposed_action": "create_draft_work_order",
+        "provider": {
+          "mode": "baseline",
+          "provider": "deterministic-rules",
+          "version": "0.1.0"
+        },
+        "request": {
+          "coordinates": {
+            "latitude": -42.8673756891636,
+            "longitude": 147.331009259969
+          },
+          "text": "Synthetic report: dumped rubbish beside the litter bin."
+        },
+        "request_hash": "d0d42c5d0ba983408e448621cc1d1ab574b05c62eafa3649848d07303daa4b63",
+        "schema_version": "1.0",
+        "source": "portfolio_demo",
+        "tool_calls": []
+      },
+      "previous_event_hash": "926374451257d4288b28b37a5a405fa200b46baa019d5b3e9e3f08db8641efc8",
+      "sequence": 3
+    },
+    {
+      "actor_id": "reviewer:2",
+      "correlation_id": "synthetic-0002",
+      "entity_id": "22290104-16a8-5891-b802-24e1b6348e1c",
+      "event_hash": "17d01dd5a0dba7c756b06f88c7f6cbac98b5874051379972f00dcaf153f6984a",
+      "event_id": "5aa0c8ab-5675-5bb3-86a5-1f8fc38abcf0",
+      "event_type": "decision.reviewed",
+      "occurred_at": "2025-09-02T14:00:00+00:00",
+      "payload": {
+        "action": "accept",
+        "corrected_category": null,
+        "corrected_priority": null,
+        "reason": "Synthetic independent review accepted the evidence and Gate outcome.",
+        "replacement_action": null,
+        "schema_version": "1.0"
+      },
+      "previous_event_hash": "0a31752fc42bf2b1a8fbda3cecf28d53f3ab96df4c10991499be4a4c82e1a274",
+      "sequence": 4
+    },
+    {
+      "actor_id": "system:rivulet-api",
+      "correlation_id": "synthetic-0003",
+      "entity_id": "ed2ef7d3-7ba6-5136-88ac-d5ce6b52fcc5",
+      "event_hash": "8b86ad1b3c9ac01a9493589ec8dc386a20bd7c9a07ba6c1d0b062684e21c60d7",
+      "event_id": "a070e81c-121e-5c2e-8d48-7cf364852fe6",
+      "event_type": "decision.created",
+      "occurred_at": "2025-09-03T09:00:00+00:00",
+      "payload": {
+        "accountable_owner_id": "owner:3",
+        "data_truth_class": "synthetic",
+        "environment": "local",
+        "evidence": {
+          "asset_match": null,
+          "matched_terms": [
+            "missed collection"
+          ]
+        },
+        "gate_decision": {
+          "can_execute": false,
+          "diagnosis": {
+            "asset_match": null,
+            "category": {
+              "code": "waste_litter",
+              "confidence": 0.95,
+              "label": "Waste and litter",
+              "matched_terms": [
+                "missed collection"
+              ]
+            },
+            "diagnosis_id": "fdec85ca-7d42-5103-8490-51d37d5c80e3",
+            "disclaimer": "Decision support only. A council officer must confirm emergency, enforcement and ambiguous cases.",
+            "engine": {
+              "mode": "baseline",
+              "provider": "deterministic-rules",
+              "version": "0.1.0"
+            },
+            "explanation": [
+              "Category evidence: missed collection",
+              "Priority evidence: Operational issue identified with no explicit urgent hazard phrase"
+            ],
+            "human_review_required": false,
+            "missing_information": [
+              "Exact location or nearby landmark"
+            ],
+            "priority": {
+              "code": "P3",
+              "label": "Standard",
+              "policy_rule": "Operational issue identified with no explicit urgent hazard phrase",
+              "target_hours": 72
+            }
+          },
+          "escalation_reasons": [],
+          "evaluated_at": "2025-09-03T09:00:00Z",
+          "gate_event_id": "2f81adeb-5691-5d54-b49d-f00779b706a3",
+          "missing_information": [
+            "coordinates.latitude and coordinates.longitude"
+          ],
+          "policy": {
+            "content_hash": "3a48e5aa6e76209d706dfb694db34b477fb8f640e0c002bdfdf3dbc9a85e7581",
+            "is_synthetic": true,
+            "policy_id": "rivulet.synthetic.waste-litter",
+            "title": "Waste and litter draft-action demonstration policy",
+            "version": "0.1.0"
+          },
+          "proposed_action": "create_draft_work_order",
+          "rejection_reasons": [
+            "Required location coordinates are missing"
+          ],
+          "rule_results": [
+            {
+              "effect": "allow",
+              "message": "Category 'waste_litter' is within the demonstration policy scope.",
+              "outcome": "pass",
+              "rule_id": "POL-SCOPE-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Action 'create_draft_work_order' is permitted as a draft-only action.",
+              "outcome": "pass",
+              "rule_id": "POL-ACTION-001"
+            },
+            {
+              "effect": "reject",
+              "message": "Latitude and longitude are required for a waste/litter draft action.",
+              "outcome": "fail",
+              "rule_id": "POL-LOCATION-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Asset matching cannot be evaluated until coordinates are supplied.",
+              "outcome": "not_applicable",
+              "rule_id": "POL-ASSET-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Priority P3 does not trigger the emergency escalation rule.",
+              "outcome": "pass",
+              "rule_id": "POL-SAFETY-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Category confidence 0.95 meets the 0.70 threshold.",
+              "outcome": "pass",
+              "rule_id": "POL-CONFIDENCE-001"
+            },
+            {
+              "effect": "allow",
+              "message": "The diagnosis contains no human-review flag.",
+              "outcome": "pass",
+              "rule_id": "POL-REVIEW-001"
+            }
+          ],
+          "status": "reject"
+        },
+        "policy": {
+          "content_hash": "3a48e5aa6e76209d706dfb694db34b477fb8f640e0c002bdfdf3dbc9a85e7581",
+          "is_synthetic": true,
+          "policy_id": "rivulet.synthetic.waste-litter",
+          "title": "Waste and litter draft-action demonstration policy",
+          "version": "0.1.0"
+        },
+        "proposed_action": "create_draft_work_order",
+        "provider": {
+          "mode": "baseline",
+          "provider": "deterministic-rules",
+          "version": "0.1.0"
+        },
+        "request": {
+          "coordinates": null,
+          "text": "Synthetic report: a missed collection requires follow-up."
+        },
+        "request_hash": "87c8ef3e60c90785243fb7c72ffe9135bd058324289c43dbbdca661708699500",
+        "schema_version": "1.0",
+        "source": "portfolio_demo",
+        "tool_calls": []
+      },
+      "previous_event_hash": "17d01dd5a0dba7c756b06f88c7f6cbac98b5874051379972f00dcaf153f6984a",
+      "sequence": 5
+    },
+    {
+      "actor_id": "system:rivulet-api",
+      "correlation_id": "synthetic-0004",
+      "entity_id": "669589fa-2b0d-53b9-a5fc-cbf56fd2fa7c",
+      "event_hash": "bf84757945ac9d7b192a3c19b455a3783506849bcc7b41aa497511d8031abbf6",
+      "event_id": "71000e47-fc3d-50a5-86d5-264278b91dfe",
+      "event_type": "decision.created",
+      "occurred_at": "2025-09-04T09:00:00+00:00",
+      "payload": {
+        "accountable_owner_id": "owner:4",
+        "data_truth_class": "synthetic",
+        "environment": "local",
+        "evidence": {
+          "asset_match": null,
+          "matched_terms": []
+        },
+        "gate_decision": {
+          "can_execute": false,
+          "diagnosis": {
+            "asset_match": null,
+            "category": {
+              "code": "general_enquiry",
+              "confidence": 0.3,
+              "label": "General enquiry",
+              "matched_terms": []
+            },
+            "diagnosis_id": "5442c737-12a8-5239-b08d-3f59ec78206d",
+            "disclaimer": "Decision support only. A council officer must confirm emergency, enforcement and ambiguous cases.",
+            "engine": {
+              "mode": "baseline",
+              "provider": "deterministic-rules",
+              "version": "0.1.0"
+            },
+            "explanation": [
+              "No category term passed the baseline matching threshold",
+              "Priority evidence: No operational fault or hazard was confidently identified"
+            ],
+            "human_review_required": true,
+            "missing_information": [
+              "Exact location or nearby landmark",
+              "A clearer description of the affected council service"
+            ],
+            "priority": {
+              "code": "P4",
+              "label": "Routine enquiry",
+              "policy_rule": "No operational fault or hazard was confidently identified",
+              "target_hours": 120
+            }
+          },
+          "escalation_reasons": [
+            "Category 'general_enquiry' is outside the approved demonstration scope",
+            "Category confidence is below the policy threshold",
+            "The diagnosis requires human review"
+          ],
+          "evaluated_at": "2025-09-04T09:00:00Z",
+          "gate_event_id": "3c128c14-7ae7-569d-a93f-88b4b4a93da0",
+          "missing_information": [],
+          "policy": {
+            "content_hash": "3a48e5aa6e76209d706dfb694db34b477fb8f640e0c002bdfdf3dbc9a85e7581",
+            "is_synthetic": true,
+            "policy_id": "rivulet.synthetic.waste-litter",
+            "title": "Waste and litter draft-action demonstration policy",
+            "version": "0.1.0"
+          },
+          "proposed_action": "create_draft_work_order",
+          "rejection_reasons": [],
+          "rule_results": [
+            {
+              "effect": "escalate",
+              "message": "Category 'general_enquiry' is outside policy scope and requires human routing.",
+              "outcome": "fail",
+              "rule_id": "POL-SCOPE-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Action 'create_draft_work_order' is permitted as a draft-only action.",
+              "outcome": "pass",
+              "rule_id": "POL-ACTION-001"
+            },
+            {
+              "effect": "allow",
+              "message": "The policy has no coordinate rule for category 'general_enquiry'.",
+              "outcome": "not_applicable",
+              "rule_id": "POL-LOCATION-001"
+            },
+            {
+              "effect": "allow",
+              "message": "The policy has no asset-match rule for category 'general_enquiry'.",
+              "outcome": "not_applicable",
+              "rule_id": "POL-ASSET-001"
+            },
+            {
+              "effect": "allow",
+              "message": "Priority P4 does not trigger the emergency escalation rule.",
+              "outcome": "pass",
+              "rule_id": "POL-SAFETY-001"
+            },
+            {
+              "effect": "escalate",
+              "message": "Category confidence 0.30 is below the 0.70 threshold.",
+              "outcome": "fail",
+              "rule_id": "POL-CONFIDENCE-001"
+            },
+            {
+              "effect": "escalate",
+              "message": "The diagnosis contains a human-review flag.",
+              "outcome": "fail",
+              "rule_id": "POL-REVIEW-001"
+            }
+          ],
+          "status": "escalate"
+        },
+        "policy": {
+          "content_hash": "3a48e5aa6e76209d706dfb694db34b477fb8f640e0c002bdfdf3dbc9a85e7581",
+          "is_synthetic": true,
+          "policy_id": "rivulet.synthetic.waste-litter",
+          "title": "Waste and litter draft-action demonstration policy",
+          "version": "0.1.0"
+        },
+        "proposed_action": "create_draft_work_order",
+        "provider": {
+          "mode": "baseline",
+          "provider": "deterministic-rules",
+          "version": "0.1.0"
+        },
+        "request": {
+          "coordinates": null,
+          "text": "Synthetic report: please advise about a council service."
+        },
+        "request_hash": "4f398074a178885f272f60829f67f12afb8f7bb5ff168b09277bdb776ad8b10b",
+        "schema_version": "1.0",
+        "source": "portfolio_demo",
+        "tool_calls": []
+      },
+      "previous_event_hash": "8b86ad1b3c9ac01a9493589ec8dc386a20bd7c9a07ba6c1d0b062684e21c60d7",
+      "sequence": 6
+    }
+  ]
+}

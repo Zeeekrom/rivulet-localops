@@ -1,0 +1,98 @@
+{
+  "experiment_id": "F22",
+  "experiment_date_local": "2026-11-03",
+  "image": "ghcr.io/zeeekrom/rivulet-localops:v0.9.0",
+  "status": "pass",
+  "checks": {
+    "image_pulled": true,
+    "digest_matches_release": true,
+    "image_declares_non_root_user": true,
+    "container_started": true,
+    "container_healthy": true,
+    "process_runs_as_uid_10001": true,
+    "healthz_ok_with_expected_release": true,
+    "console_root_200": true,
+    "root_security_headers": true,
+    "every_scenario_matches_fixture": true,
+    "instruction_in_request_escalated_by_input_rule": true,
+    "oversized_body_413_with_headers": true,
+    "internal_and_docs_routes_404": true,
+    "container_removed": true
+  },
+  "observed": {
+    "repo_digests": [
+      "ghcr.io/zeeekrom/rivulet-localops@sha256:71a3aadb594ad2fca67961622b992b1ff29ecbe1c538945456f2133caadfa81b"
+    ],
+    "declared_user": "10001:10001",
+    "health_status": "healthy",
+    "runtime_uid": "10001",
+    "healthz": {
+      "status": "ok",
+      "profile": "public_demo",
+      "release": "v0.9.0",
+      "ledger_integrity_ok": true,
+      "ledger_event_count": 0
+    },
+    "scenario_count": 6,
+    "scenario_runs": [
+      {
+        "scenario_id": "bin-near-asset",
+        "expected": "pass",
+        "observed": "pass",
+        "failed_rules": [],
+        "ledger_integrity_ok": true
+      },
+      {
+        "scenario_id": "bin-missing-location",
+        "expected": "reject",
+        "observed": "reject",
+        "failed_rules": [
+          "POL-LOCATION-001"
+        ],
+        "ledger_integrity_ok": true
+      },
+      {
+        "scenario_id": "safety-escalation",
+        "expected": "escalate",
+        "observed": "escalate",
+        "failed_rules": [
+          "POL-SAFETY-001",
+          "POL-REVIEW-001"
+        ],
+        "ledger_integrity_ok": true
+      },
+      {
+        "scenario_id": "instruction-in-request",
+        "expected": "escalate",
+        "observed": "escalate",
+        "failed_rules": [
+          "POL-INPUT-001"
+        ],
+        "ledger_integrity_ok": true
+      },
+      {
+        "scenario_id": "blocked-shell",
+        "expected": "deny",
+        "observed": "deny",
+        "failed_rules": [],
+        "ledger_integrity_ok": true
+      },
+      {
+        "scenario_id": "cross-case-read",
+        "expected": "deny",
+        "observed": "deny",
+        "failed_rules": [],
+        "ledger_integrity_ok": true
+      }
+    ],
+    "forbidden_route_status": {
+      "docs": 404,
+      "openapi.json": 404,
+      "api/v1/submit": 404,
+      "ops/v1/ledger/integrity": 404,
+      "ops/v1/support/bundle": 404,
+      "ops/support": 404
+    }
+  },
+  "claim_boundary": "A local Docker Desktop run of the published image on loopback. It checks the container boundary and the predefined synthetic scenarios; it is not a penetration test, a production-security claim or an Azure deployment."
+}

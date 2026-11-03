@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.1",
+  "policy_id": "rivulet.synthetic.waste-litter",
+  "version": "0.2.0",
+  "title": "Waste and litter draft-action demonstration policy",
+  "status": "approved_for_demo",
+  "is_synthetic": true,
+  "authority": "human_product_owner",
+  "approved_at": "2026-11-02T00:00:00+11:00",
+  "scope_categories": [
+    "waste_litter"
+  ],
+  "permitted_actions": [
+    "create_draft_work_order"
+  ],
+  "evidence": {
+    "require_coordinates_for": [
+      "waste_litter"
+    ],
+    "require_asset_match_for": [
+      "waste_litter"
+    ],
+    "max_asset_distance_metres": 500
+  },
+  "thresholds": {
+    "minimum_category_confidence": 0.7,
+    "escalate_priorities": [
+      "P1"
+    ]
+  },
+  "input_integrity": {
+    "escalate_on_signals": [
+      "instruction_override",
+      "role_impersonation",
+      "system_addressing",
+      "decision_manipulation",
+      "tool_invocation",
+      "data_exfiltration",
+      "hidden_characters",
+      "mixed_script",
+      "encoded_payload",
+      "catalogue_stuffing",
+      "negated_scope_term",
+      "competing_service"
+    ],
+    "catalogue_density_threshold": 0.5,
+    "catalogue_density_min_tokens": 6,
+    "repeated_term_threshold": 3,
+    "distinct_scope_terms_threshold": 5
+  },
+  "source_note": "Synthetic portfolio policy approved for this technical demonstration by the human Product Owner on 2026-11-02. Version 0.2.0 keeps the 0.1.0 scope, action and evidence rules and adds POL-INPUT-001, which escalates request text that raises input-integrity signals. It is not City of Hobart, Tasmanian Government, or other council policy."
+}

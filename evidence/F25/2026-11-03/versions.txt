@@ -1,0 +1,9 @@
+Experiment date (Australia/Hobart): 2026-11-03
+Set frozen: 2026-11-02, commit da0bcef
+rivulet-localops: 0.9.0
+Python: 3.12.9
+FastAPI: 0.141.1
+Pydantic: 2.13.5
+Git: 2.50.1.windows.1
+Provider: deterministic-rules 0.1.0 (local baseline; no external model API)
+Policies: rivulet.synthetic.waste-litter 0.1.0 (3a48e5aa…7581) and 0.2.0 (972d6040…9301)

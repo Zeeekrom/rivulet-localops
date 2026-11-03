@@ -1,0 +1,9 @@
+{
+  "detected_status": "degraded",
+  "incident_id": "APP-001",
+  "injection": "create_app health override set API component to degraded",
+  "passed": true,
+  "recovered_status": "healthy",
+  "smoke_http_status": 200,
+  "truth_class": "synthetic_recovery_experiment"
+}

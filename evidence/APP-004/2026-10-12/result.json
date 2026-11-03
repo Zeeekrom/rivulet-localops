@@ -1,0 +1,9 @@
+{
+  "configuration_status": "unavailable",
+  "detected_http_status": 503,
+  "fixed_status": "healthy",
+  "incident_id": "APP-004",
+  "injection": "invalid release-label environment value",
+  "passed": true,
+  "truth_class": "synthetic_recovery_experiment"
+}

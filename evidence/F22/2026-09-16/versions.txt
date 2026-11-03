@@ -1,0 +1,11 @@
+Rivulet LocalOps: 0.7.0 candidate
+Python: 3.12.9 (local test environment)
+Container Python base: 3.12-slim / Python 3.12.14
+Node.js: 24.18.1
+npm: 11.16.0
+Docker Desktop: 4.91.0 (239619)
+Docker Engine: 29.8.0
+Azure CLI: 2.80.0
+Bicep CLI: 0.47.16
+FastAPI: 0.141.1
+Uvicorn: 0.52.4

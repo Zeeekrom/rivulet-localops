@@ -1,0 +1,81 @@
+{
+  "experiment_id": "F23",
+  "experiment_date_local": "2026-09-24",
+  "status": "pass_with_retained_recovery_failures",
+  "scope": "Sprint 3.5 Azure cloud-safe public demo deployment and boundary acceptance",
+  "endpoint": "https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/",
+  "release": "v0.7.1",
+  "region": "New Zealand North",
+  "image": "ghcr.io/zeeekrom/rivulet-localops:v0.7.1",
+  "image_index_digest": "sha256:f4bd35081e6ab751792138fc93f55fddcd48a0cfae7dcf25b6870f85efe7a225",
+  "successful_runs": {
+    "release_main_verify": 35993932294,
+    "release_tag_verify": 35993936061,
+    "container_publish": 35993936049,
+    "workflow_fix_main_verify": 35995184675,
+    "azure_deploy_acceptance": 35995289399
+  },
+  "retained_failures": [
+    {
+      "run": 35994259185,
+      "stage": "azure_oidc_login",
+      "reason": "federated credential used a name-based subject while GitHub emitted the repository's custom ID-bound subject",
+      "resolution": "updated the existing federated credential subject; no secret, identity or wider role was added"
+    },
+    {
+      "run": 35994416800,
+      "stage": "post_deployment_assertion",
+      "reason": "the azure/cli action container did not provide a python command",
+      "resolution": "replaced both JSON assertions with jq -e and passed a new hosted deployment run"
+    }
+  ],
+  "azure": {
+    "app_provisioning_state": "Succeeded",
+    "app_running_status": "Running",
+    "environment_provisioning_state": "Succeeded",
+    "latest_revision": "rivulet-demo--latest",
+    "external_https_ingress": true,
+    "allow_insecure_http": false,
+    "cpu": 0.25,
+    "memory": "0.5Gi",
+    "min_replicas": 0,
+    "max_replicas": 1,
+    "log_analytics_attached": false,
+    "expires_on_tag": "2026-10-24",
+    "github_oidc_no_client_secret": true,
+    "identity_role_scope": "dedicated_resource_group_only"
+  },
+  "checks": {
+    "ghcr_anonymous_pull": true,
+    "hosted_oidc_login": true,
+    "hosted_what_if": true,
+    "hosted_idempotent_deployment": true,
+    "health_status_ok": true,
+    "public_demo_profile": true,
+    "release_matches": true,
+    "bootstrap_scenario_count_5": true,
+    "pass_scenario": true,
+    "blocked_shell_denied": true,
+    "deny_ledger_integrity": true,
+    "docs_404": true,
+    "openapi_404": true,
+    "internal_submit_404": true,
+    "ops_ledger_404": true,
+    "oversized_body_413": true,
+    "content_security_policy_present": true,
+    "x_frame_options_deny": true,
+    "x_content_type_options_nosniff": true,
+    "desktop_visual_review": true,
+    "mobile_390x844_visual_review": true,
+    "controlled_path_visual_review": true
+  },
+  "not_proven": [
+    "actual scale-to-zero idle transition",
+    "zero cost or remaining Student credit",
+    "production security or durable audit retention",
+    "authenticated users or object-level RBAC",
+    "real council adoption, performance or model accuracy",
+    "generative AI provider integration"
+  ],
+  "claim_boundary": "Public portfolio sandbox only: real public reference snapshots plus fixed synthetic operational fixtures; the deployment does not establish production readiness or real council outcomes."
+}

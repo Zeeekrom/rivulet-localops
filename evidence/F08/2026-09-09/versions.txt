@@ -1,0 +1,4 @@
+Rivulet LocalOps: 0.3.0
+Python: 3.12
+Ledger schema user_version: 1
+Review environment: local Windows portfolio environment

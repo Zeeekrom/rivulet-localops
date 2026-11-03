@@ -1,0 +1,32 @@
+{
+  "mart_version": "1.0.0",
+  "status": "pass",
+  "ledger": {
+    "event_count": 316,
+    "decision_count": 180,
+    "review_count": 120,
+    "manual_fallback_count": 8,
+    "integrity_ok": true,
+    "head_hash": "9ae577691e89e2d31b2ebb22688e3f162762a2433a803177037a4b5b4b08e199",
+    "jsonl_sha256": "796e8bd0542402da475bd878e2956a4fc157884c34b2d4ac3bb572b81ddcbf2c"
+  },
+  "table_rows": {
+    "dim_source": 3,
+    "dim_asset": 727,
+    "dim_townsville_category_variant": 524,
+    "dim_environment": 1,
+    "fact_reference_request_volume": 24197,
+    "fact_quality_check": 19,
+    "dim_category": 3,
+    "dim_policy": 1,
+    "dim_provider": 1,
+    "fact_decision": 180,
+    "fact_gate_rule": 1260,
+    "fact_review": 120,
+    "fact_manual_fallback": 8,
+    "dim_date": 270
+  },
+  "reconciliation_count": 8,
+  "reconciliation_failures": 0,
+  "tests": "25 passed; 2 upstream deprecation warnings"
+}

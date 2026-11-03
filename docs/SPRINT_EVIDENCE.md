@@ -1,0 +1,353 @@
+# Sprint Evidence
+
+| Evidence field | Value |
+|---|---|
+| Date | 2026-10-12 |
+| Release | v0.8.0 |
+| Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0; GitHub-hosted verification; Azure Container Apps in New Zealand North |
+
+This document records implemented results verified locally, by GitHub Actions and—only for the bounded public profile—on Azure. It does not claim real-user validation, production adoption or generative-model accuracy.
+
+## Foundation / Sprint 0
+
+Goal: establish a runnable, explainable service-request diagnosis baseline.
+
+| Acceptance item | Result | Evidence |
+|---|---|---|
+| Health and diagnosis API | Pass | `GET /health`, `POST /api/v1/diagnose` |
+| Deterministic service taxonomy | Pass | Eight categories plus general fallback |
+| Explainable priority and missing information | Pass | Response contains matched terms, policy rule, confidence and review flag |
+| Public asset integration | Pass | 727-feature Hobart litter-bin GeoJSON snapshot with metadata and EPSG:4326 output |
+| Baseline automated tests | Pass | Three original tests |
+| Repeatable labelled cases | Pass with claim restriction | 12 self-authored uncomplicated cases; regression only |
+
+## Sprint 1 — Policy Gate
+
+Goal: ensure that a proposed waste/litter draft action cannot proceed unless it satisfies an explicitly approved demonstration policy.
+
+| Acceptance item | Result |
+|---|---|
+| Versioned, machine-readable policy pack | Pass |
+| Policy is impossible to load as unlabelled non-synthetic content | Pass |
+| Valid in-scope draft action with location and asset evidence | `pass` |
+| Missing coordinates | `reject` with specific missing fields |
+| Emergency/high-risk request | `escalate` |
+| Out-of-scope category | `escalate` |
+| Low category confidence | `escalate` |
+| Unapproved real-submission action | `reject` |
+| Policy/version/hash and rule-level reasons returned | Pass |
+| External business-system write | Intentionally absent |
+
+Sprint 1 verification brought the suite to 11 passing tests. The policy is a synthetic portfolio policy, not adopted council policy.
+
+## Sprint 2 — Accountable decision history
+
+Goal: make every submitted automated suggestion traceable, reviewable, replayable and stoppable.
+
+| Acceptance item | Result |
+|---|---|
+| Submission creates a queryable event record | Pass |
+| Request, policy and event hashes recorded | Pass |
+| Provider version, evidence, owner and event context recorded | Pass |
+| Pending/reviewed queue | Pass |
+| Accept/override/escalate creates a new event | Pass |
+| Original Gate result remains unchanged after review | Pass |
+| Accountable owner cannot self-review | Pass |
+| Rejected/escalated Gate result cannot be directly accepted | Pass |
+| Replay compares policy hash/version, provider and rule outcomes | Pass |
+| In-place ledger modification is detected | Pass |
+| New automated processing stops when integrity fails | Pass |
+| Provider kill switch survives application restart | Pass |
+| Disabled provider routes submission to a recorded manual fallback | Pass |
+
+Sprint 2 verification brought the suite to 18 passing tests.
+
+### Sprint 2 review finding and patch
+
+The disposable Windows review run initially failed during cleanup because several read-only SQLite connections used
+transaction context managers without being explicitly closed. Python's SQLite context manager commits or rolls back a
+transaction but does not close the connection. Release `v0.3.1` closes those connections explicitly and adds a reusable
+runner covering query, append-only override, replay, kill switch, manual fallback, tamper detection and fail-closed writes.
+
+The rerun passed all review checks and successfully cleaned up both disposable databases. See
+[`evidence/F08/2026-09-09`](../evidence/F08/2026-09-09/README.md).
+
+## Sprint 2.5A — Contracted sources and analytics mart
+
+Goal: turn the governed ledger and public reference data into a repeatable, truth-labelled analytical model.
+
+| Acceptance item | Result |
+|---|---|
+| D1/D2/D6 source manifests and SHA-256 verification | Pass |
+| D2 dated official raw snapshot and explicit Windows-1252 decoding | Pass |
+| Completeness/uniqueness/validity/consistency/integrity/timeliness/volume/shape profile | 15 pass, 4 warn, 0 fail |
+| Normalized D2 key collision preserved rather than silently merged | Pass; pinned by test |
+| Fixed-seed D6 generated through provider → Gate → ledger | 316 events; stable hash; integrity pass |
+| Star-schema mart | 14 non-empty tables |
+| Source/event/count/FK/truth-class reconciliations | 8 of 8 pass |
+| KPI numerator/denominator/grain/filter/null/truth caveats | Defined; no invented targets |
+| Full local verification | 25 tests passed; 12-case regression unchanged |
+
+See [`evidence/F06/2026-09-09`](../evidence/F06/2026-09-09/README.md) and
+[`evidence/F09/2026-09-09`](../evidence/F09/2026-09-09/README.md). The D6 Gate mix and review timing are deliberately
+generated regression fixtures. They are not real workload, effectiveness, service-level or productivity evidence.
+
+## Sprint 2.5B — Power BI provenance and assurance thin slice
+
+Goal: make data provenance, quality, Gate outcomes and human-control paths inspectable without mixing public reference
+data with synthetic operational fixtures.
+
+| Acceptance item | Result |
+|---|---|
+| Deterministic PBIP/PBIR/TMDL project | 51 controlled files; build check passes |
+| Report/model structure | 2 pages, 27 visuals, 7 Import tables, 29 measures, 8 relationships |
+| Microsoft report validation | 0 errors, 0 warnings |
+| Desktop Import refresh | 7 of 7 partitions succeeded |
+| Live DAX/reference reconciliation | 13 of 13 exact; eligible/matched asset decisions 126/108 |
+| Truth and claim boundaries | Visible on both pages; public reference and synthetic operational facts remain distinct |
+| Desktop round-trip | Portable editor/culture/layout metadata generated; local cache/settings ignored; repository schemas restored before validation |
+| Full local verification | 28 tests passed; 12-case regression unchanged; 8 of 8 mart reconciliations pass |
+
+The first attempt to accept Desktop's normalized files was intentionally retained as a failed finding: Desktop removed
+the PBIR `$schema`, causing `PBIR_JSON_FILE_NO_SCHEMA`. The generator is now the canonical serialization gate after
+every Desktop edit or refresh. See [`F10 initial Review`](../evidence/F10/2026-09-10/README.md) and
+[`F10 round-trip`](../evidence/F10/2026-09-12/README.md).
+
+## Sprint 3 — Bounded read-only case-agent
+
+Goal: prove that agent identity, provider, tool, data and resource permissions can fail closed independently of a
+generative model.
+
+| Acceptance item | Result |
+|---|---|
+| Server-selected agent identity and named demo owner | Pass |
+| Versioned capability registry with canonical content hash | Pass |
+| Five-minute invocation grant and four-call budget | Pass |
+| Minimal allowlist | `case.read` for the current synthetic case; `asset.lookup` for the Hobart public reference |
+| Shell and unlisted tool request | Denied and audited |
+| Cross-case resource request | Denied and audited |
+| Restricted data-class request | Denied and audited |
+| Excess tool-call budget | Denied before provider execution |
+| Provider identity/version mismatch | Failed closed before provider execution |
+| Provider kill switch | HTTP 503 manual fallback and denied audit |
+| Raw request text in agent audit payload | Absent |
+| Full local verification | 35 tests passed; F18 12 of 12 checks; ledger integrity pass |
+
+The disposable F18 review produced seven agent invocations: one completed, five denied and one failed before
+execution. Along with one provider-control event, all eight ledger events formed a valid hash chain. See
+[`evidence/F18/2026-09-12`](../evidence/F18/2026-09-12/README.md).
+
+This is an L0 local control harness over the deterministic-rules provider, with credential mode `none`. It does not
+authenticate callers, prove real object-level authorization, use a generative model, run the Gate, make a human
+decision or execute a connector.
+
+## Sprint 3.5 — Cloud-safe web demo (Review accepted)
+
+Goal: turn the accepted controls into a public-facing portfolio console without exposing the internal application.
+
+| Acceptance item | Result |
+|---|---|
+| React/TypeScript production build | Pass; 17 modules, 238.71 kB JS / 73.37 kB gzip, 22.21 kB CSS / 5.81 kB gzip |
+| Separate public FastAPI profile | Pass; health/bootstrap/predefined scenario routes only |
+| Visitor free text or arbitrary tool call | Intentionally absent |
+| Scenario coverage | `pass`, `reject`, `escalate`, shell deny and cross-case deny |
+| Internal/docs route boundary | 4 of 4 tested routes return 404 from the running container |
+| Container identity and health | Pass; `10001:10001`, healthy |
+| Oversized request | 413 with browser security headers |
+| Bicep build | Pass with Bicep 0.47.16 |
+| Azure policy-aware deployment | Pass; New Zealand North, HTTPS-only, 0.25 CPU/0.5 GiB, min 0/max 1, no client secret |
+| Full local verification | 40 tests, 8/8 mart reconciliations, 51-file/88-check Power BI validation, regression and F18 pass |
+| Live Azure endpoint | Pass; health/bootstrap/pass/deny, 4 negative routes, 413/security headers and desktop/mobile rendering |
+
+See [`evidence/F22/2026-09-16`](../evidence/F22/2026-09-16/README.md). Docker Desktop 4.54.0 first failed
+on its Windows AF_UNIX inference/secrets listener; it was updated in place to 4.91.0 without a factory reset. The first
+reproducible-image build then exposed a missing runtime-lock allow-list entry, which was fixed before acceptance. Both
+failed attempts are retained in F22 rather than overwritten by the successful run.
+
+See [`evidence/F23/2026-09-24`](../evidence/F23/2026-09-24/README.md) for the live endpoint and the complete recovery
+chain. The first deploy run failed closed on a custom GitHub OIDC subject mismatch. The second created the app but its
+post-deploy assertion used a missing `python` command in the Azure CLI action image. The default-branch workflow now
+uses `jq`; the third hosted run passed OIDC, what-if, idempotent deployment, health, four route denials and blocked-shell
+denial. F23 does not prove production readiness, actual idle scale-to-zero, zero cost or remaining Student credit.
+
+## v0.7.2 — Plain-language overview console
+
+Goal: make the public console readable by someone who is not an engineer, without removing any control or truth label.
+
+| Acceptance item | Result |
+|---|---|
+| React/TypeScript production build | Pass; 17 modules |
+| API, policy, capability registry and ledger | Unchanged; only the front-end and the release label differ from v0.7.1 |
+| Source class on every figure | Kept; D1 and D2 as real public data, D6 as synthetic test data |
+| Policy rules, agent receipts and record hashes | Kept on the page, behind two disclosure controls |
+| Scenario outcomes on the local public profile | `pass`, `escalate` and `deny` each match their fixture |
+| Internal/docs route boundary on the local public profile | 4 of 4 tested routes return 404 |
+| Phone-width layout | Pass; single column at 390 px |
+| Full local verification | 40 tests, 8/8 mart reconciliations, 88-check Power BI validation, regression and F18 pass |
+| Local container run and Azure deployment of v0.7.2 | Not performed in this slice |
+
+See [`evidence/F24/2026-10-10`](../evidence/F24/2026-10-10/README.md). The live Azure demo still serves v0.7.1;
+v0.7.2 was not deployed and is superseded by the v0.8.0 candidate. No reader study was run, so the easier reading is a
+design intent and not a measured result.
+
+## v0.8.0 — Application support and recovery slice
+
+Goal: make the internal application diagnosable, recoverable and handoff-ready without exposing operational details in
+the public demo or pretending to implement an ITSM/endpoint-management product.
+
+| Acceptance item | Result |
+|---|---|
+| Structured operational records | Pass; correlation/request ID, policy/provider versions, Gate/ledger context, elapsed time, component and error category |
+| Sensitive-data boundary | Pass; tests show request prose, bearer token, email-like fixture and filesystem path are absent |
+| Internal component health | Pass; API, ledger, policy, provider, configuration, dependencies and build/version with three states |
+| Support Bundle | Pass; allowlisted deployment/configuration/error/log summaries and reproducible SHA-256 checksum |
+| Internal Operations & Support page | Pass; version, health, deployment, ledger, incidents, bundle and runbook entry points |
+| Public route boundary | Pass locally; health/bundle/log/runbook/page routes all return 404 from `public_demo` |
+| APP-001 API degradation/recovery | Pass in isolated synthetic experiment |
+| APP-002 release mismatch | Local detection passes; corrected hosted Azure drill redeployed and re-verified captured v0.8.0 |
+| APP-003 ledger integrity/recovery | Pass; tamper detected, writes return 503, verified backup atomically restored |
+| APP-004 invalid configuration | Pass; readiness 503 without revealing raw value, then healthy after correction |
+| APP-005 provider outage | Pass; manual fallback audited, hash chain valid, provider recovery verified |
+| Dependency controls | npm high-severity audit 0 at recorded run; `pip check` valid; existing OCI workflow emits SBOM/provenance |
+| Full local verification | 49 tests, five support exercises, 8/8 mart reconciliations, 51-file/88-check Power BI validation, regression and F18 pass |
+| v0.8.0 local container rerun | Blocked by a recorded Docker Desktop AF_UNIX runtime-socket startup failure; no reset/data deletion attempted; hosted Linux image gate required |
+
+Evidence is under [`evidence/APP-001`](../evidence/APP-001/2026-10-12/README.md) through
+[`evidence/APP-005`](../evidence/APP-005/2026-10-12/README.md). All five local fixtures are explicitly labelled synthetic.
+APP-002 additionally contains real deployment observations and GitHub Actions artifacts: v0.8.0 deploy run
+`38205416715`; failed first rollback drill `38205693603`; safety recovery `38205872737`; and corrected hosted rollback
+drill `38206163289`. The successful drill deliberately injected failure only after the v0.7.2 candidate passed its
+checks, then redeployed the captured v0.8.0 image/release and verified recovery. The failed drill remains part of the
+evidence rather than being rewritten as success.
+The APP-004 directory also records the separate Docker Desktop preflight failure. F22 remains the last successful local
+non-root container evidence; it is not silently carried forward as a v0.8.0 run.
+
+## Sprint 4 — Adversarial evaluation and secure delivery gates (v0.9.0)
+
+Goal: show that the system can find its own failure modes, and that a known-vulnerable dependency or image cannot
+reach a release unnoticed.
+
+| Acceptance item | Result |
+|---|---|
+| Frozen adversarial set | 59 Gate cases in ten families, 16 capability-bypass cases and 2 text-tool cases, committed before any mitigation; the test suite pins its SHA-256 |
+| Baseline finding | Policy v0.1.0 let 20 `must_not_pass` cases through, including all five indirect injections, keyword stuffing that turned a dog attack into a litter draft, negated waste terms and four of five obfuscations |
+| Mitigation | Policy v0.2.0 (schema 1.1, approved for the demo on 2026-11-02) adds `POL-INPUT-001`; signal codes only, no echo of the matched text |
+| Result on the same set | 2 unsafe passes remain, both registered with reasons (multi-issue request; place name contradicting coordinates); 0 clean-control over-blocks |
+| Unchanged history | v0.1.0 keeps its content hash and seven rules; D6, the mart, Power BI and the dated APP evidence regenerate byte-identically |
+| Capability bypass | 16 of 16 as expected: traversal, wildcard, case and whitespace variants, URL encoding, list injection, homoglyph IDs, wrong data class and denied tools are refused; schema-invalid tool names rejected |
+| Text cannot call tools | Tool names written inside request text never appear in the agent's tool receipts |
+| API negative probes | 13 of 13: SQL-shaped input stored as data, length and pattern limits, self-review and escalation-acceptance blocked, client-supplied Gate fields ignored, NUL byte and malformed JSON handled without a server error |
+| SAST | Bandit over `src/` and `scripts/`: 0 unsuppressed findings after fixing a URL-scheme check, a shared-`/tmp` default path, SQL identifier validation and a false positive; 6 named suppressions |
+| Dependency audit | pip-audit over runtime, dev and security locks (56 packages): 0 after upgrading certifi and pytest; npm audit 0 after upgrading vite 8.3.0 to 8.3.5 |
+| Container image gate | Trivy v0.76.1 on every push and before GHCR publication; 0 fixable HIGH/CRITICAL on the Debian 13.7 image at first run |
+| Gates can fail | Canaries: `shell=True` flagged HIGH by Bandit; `PyYAML==5.3.1` flagged by pip-audit and as CRITICAL by Trivy |
+| Supply chain | `trivy-action` pinned to the signed v0.36.0 commit after the March 2026 tag compromise; Trivy set above the GHSA-mcj4-mphf-j9ff range; `docker/*` and `azure/*` actions pinned by commit |
+| Full local verification | 82 tests, regression, F18, F25 9/9, F26 5/5, mart and Power BI checks pass |
+| Local container run | 2026-11-03: the published v0.9.0 image (matching digest) passed 14 of 14 checks under Docker Desktop: uid 10001, healthy, six scenarios, `POL-INPUT-001` escalation, 413 with headers and six 404 routes. This closes the local gap recorded for v0.8.0 |
+
+Evidence is in [`evidence/F25`](../evidence/F25/2026-11-03/README.md) and
+[`evidence/F26`](../evidence/F26/2026-11-03/README.md). Both are self-authored regression checks: the input rule was
+designed after the baseline failures were seen, and the scans depend on the advisories published on the run date.
+Neither is a penetration test, a generative-model evaluation or evidence of robustness to unseen attacks.
+
+## Hosted CI evidence
+
+Run numbers below refer to GitHub Actions runs in the private release repository.
+
+Prior v0.3.x locked installs and checks completed successfully in GitHub Actions. The first v0.4.0 hosted run failed
+because Git line-ending normalization changed D1/D2 snapshot bytes after their manifest hashes were created. v0.4.1
+marks byte-hashed upstream snapshots as non-text so fresh checkouts preserve exact bytes. The failed run remains public
+evidence and the v0.4.0 tag was not rewritten. Public commit `901358e9e468` passed both the main workflow
+(run 34479182180) and the `v0.4.1` tag workflow
+(run 34479185154). A hosted workflow runs on a
+disposable runner; it does not deploy the API or prove production operations.
+
+The v0.5.0 main and tag workflows both failed in a fresh Windows checkout because seven TMDL partitions embedded CRLF
+CSV bytes while Git supplied LF CSV bytes: main run 34673442580
+and tag run 34673442408. The tag remains
+unchanged. v0.5.1 canonicalizes embedded generated CSV to LF, hashes and checks that same representation, and adds a
+CRLF/LF equivalence test. The staged-tree fresh-checkout preflight passed before release; v0.5.1 then passed
+main run 34673725103 and immutable
+tag run 34673726741. Local Desktop
+refresh/DAX/screenshots cannot run on the hosted runner and remain separately versioned F10 evidence.
+
+The v0.6.0 Sprint 3 release commit `d29260d3c3ecde57e2dfd2a7015ec56006594d48` passed both
+main run 34688891241 and immutable
+tag run 34688892353. Those hosted runs
+reproduced the 35-test suite and deterministic evaluation in fresh Windows checkouts; they are not application
+deployment or production-security evidence.
+
+The v0.7.0 release passed hosted
+main verify 35092219320,
+tag verify 35092221720 and
+container/SBOM 35092221757. The immutable tag
+is retained. Azure preflight then showed the Student policy rejects Australia East, tenant users cannot register Entra
+apps, and the API requires an omitted logging block rather than `destination: 'none'`. v0.7.1 uses an exact-RG managed
+identity federation and New Zealand North. Its main/tag/container runs `35993932294`/`35993936061`/`35993936049`,
+post-fix main run `35995184675` and successful deploy run `35995289399` are recorded in F23. Failed deploy runs
+`35994259185` and `35994416800` remain public recovery evidence.
+
+The v0.7.2 release passed hosted
+main verify 38045635848, tag verify 38045637107 and container/SBOM 38045637061.
+It was later used only as the valid candidate in the v0.8.0 synthetic rollback drill; the final live release is v0.8.0.
+
+The v0.8.0 release passed hosted main/tag verification (`38205266531`/`38205268239`), container/SBOM
+(`38205268224`), Azure deployment (`38205416715`) and the corrected rollback drill (`38206163289`). Failed drill
+`38205693603` and safety-recovery run `38205872737` document the defect and recovery path.
+
+The v0.9.0 release (commit `c9ed08d`) passed hosted
+main verify 41532906065 and
+tag verify 41532909133, each running the
+Windows test job and the new Linux security job (SAST and dependency audit with canaries, image build, Trivy scan and
+Trivy canary). The container workflow 41532909073
+scanned the candidate image before publication and found 0 fixable HIGH/CRITICAL vulnerabilities; GHCR `v0.9.0` has
+index digest `sha256:71a3aadb594ad2fca67961622b992b1ff29ecbe1c538945456f2133caadfa81b`.
+Azure deployment 41533300647 passed its
+post-deploy smoke without rollback. An independent live check then saw release v0.9.0, six scenarios, the
+`instruction-in-request` escalation under policy 0.2.0 and six internal or documentation routes returning 404.
+
+## Reproduction
+
+The reproduction commands run against the private source repository and are not published here. The results
+they produce are under [`evidence`](../evidence).
+
+## Data provenance
+
+| Data | Truth status | Public claim |
+|---|---|---|
+| Hobart litter-bin asset snapshot | Real public reference data | Feature count, retrieval timestamp, endpoint and CRS are recorded in metadata |
+| Townsville request-for-service snapshot | Real public aggregate reference data | Monthly aggregate context only; not Hobart demand or individual requests |
+| Request and review events | Synthetic demonstration data | Never described as resident or council operational history |
+| Gate policy | Synthetic demonstration policy | Never described as official or council-approved policy |
+| Agent capability registry | Synthetic control configuration | Demo identity, owner, provider binding and allowlists; not an external identity or signed policy system |
+| Priority targets | Demonstration rules | Never described as observed service performance |
+
+## Claim ledger
+
+| Claim | Supported now? | Boundary |
+|---|---|---|
+| The local workflow is reproducible | Yes | Clean Python environment and automated checks |
+| The Gate blocks defined unsafe or incomplete cases | Yes | Only the coded synthetic policy and fixtures |
+| Decision/review history is append-only through the application API | Yes | Local SQLite implementation |
+| The hash chain detects tested in-place modification | Yes | Not an immutable external audit store |
+| Provider automation can be stopped and manually routed | Yes | Same-process local operations control |
+| The bounded agent rejects the tested unauthorized capabilities | Yes | Local synthetic-case contract and deterministic provider only |
+| Request text that tries to instruct the system is escalated | Yes | Deterministic pattern screen measured on a frozen self-authored set; two registered residuals |
+| The system resists unseen prompt-injection attacks | No | F25 is self-authored and the rule was designed after the baseline failures were seen |
+| Known-vulnerable dependencies and images are blocked before release | Yes | Advisories published on the run date; fixable HIGH/CRITICAL only for the image |
+| Identities are authenticated and authorised | No | IDs are asserted fields only |
+| The classifier is effective on real council requests | No | No real requests or independent labels |
+| The system is production-ready or council-approved | No | Independent portfolio prototype |
+| The bounded public profile is deployed to Azure | Yes | New Zealand North Container Apps, live v0.9.0 since 2026-11-03; bounded portfolio evidence, not production readiness |
+| The system is deployed to an enterprise Windows environment | No | Windows lab remains a later slice |
+| The v0.7.2 interface is live on Azure | No | It was a temporary drill candidate in the v0.8.0 rollback drill; v0.9.0 is live now |
+| The public profile excludes tested internal routes | Yes | Live v0.9.0 endpoint; six named negative routes, not a general penetration test |
+| Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
+
+## Known verification warning
+
+Resolved on 2026-11-03. The two upstream deprecation warnings from the FastAPI/Starlette TestClient layer came from
+the deprecated `httpx` test client and an old anyio alias inside Starlette 1.6.0. The dev dependency moved to
+`httpx2` 2.16.0 and Starlette moved to 1.10.0 (allowed by the pinned FastAPI); the suite now runs with no warnings.
+This maintenance change is on `main` after the v0.9.0 tag. The live demo and the v0.9.0 image keep Starlette 1.6.0
+until the next release; a local image built with 1.10.0 passed the same container checks.
