@@ -1,0 +1,59 @@
+{
+  "experiment_id": "F17-live-smoke",
+  "experiment_date_local": "2026-11-04",
+  "model_id": "au.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "region": "ap-southeast-2",
+  "effort": null,
+  "max_tokens": 4096,
+  "limits": {
+    "max_calls": 1,
+    "budget_usd": 0.25,
+    "worst_case_call_usd": 0.0269
+  },
+  "planned_calls": 1,
+  "calls_made": 1,
+  "stopped_early": false,
+  "stopped_reason": null,
+  "outcomes": {
+    "ok": 1
+  },
+  "tokens": {
+    "input": 1038,
+    "output_including_thinking": 153
+  },
+  "estimated_cost_usd": 0.002,
+  "latency_ms": {
+    "p50": 3641.7,
+    "p95": 3641.7
+  },
+  "calls": [
+    {
+      "case": "REG-01",
+      "region": "ap-southeast-2",
+      "outcome": "ok",
+      "stop_reason": "end_turn",
+      "request_id": null,
+      "latency_ms": 3641.7,
+      "input_tokens": 1038,
+      "output_tokens": 153,
+      "injection_suspected": false,
+      "error_detail": null
+    }
+  ],
+  "regression": {
+    "cases": 1,
+    "model_category_hits": 1,
+    "model_priority_hits": 0,
+    "baseline_category_hits": 1,
+    "baseline_priority_hits": 1
+  },
+  "checks": {
+    "exactly_one_call": true,
+    "call_succeeded": true,
+    "request_id_recorded": false,
+    "tokens_reported": true,
+    "within_budget": true
+  },
+  "status": "fail",
+  "claim_boundary": "Self-authored synthetic cases compared with the rules baseline: a regression comparison, not accuracy, safety or certification evidence. Only model inference ran in Australia; the hosted demo runs elsewhere. Costs are planning estimates from token counts; the AWS bill is authoritative."
+}
