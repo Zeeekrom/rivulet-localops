@@ -142,6 +142,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Azure deployment | Live New Zealand North Container Apps Consumption revision: 0.25 vCPU/0.5 GiB, scale 0–1, private GHCR image pulled with a read-only registry token held as a Container App secret, and resource-group-scoped managed-identity OIDC with no Azure client secret |
 
 The current diagnosis engine and agent adapter are deliberately rules-based. They form a transparent control baseline for later model comparison and are not presented as generative AI.
+After v0.9.0, an AU-resident model provider (Claude on Amazon Bedrock, through inference profiles that route only between Sydney and Melbourne) was wired in behind the same interface. Live calls are locked off in code, so only its offline checks have run ([F17](evidence/F17/2026-11-03/README.md)).
 
 ## Design principles
 
@@ -253,6 +254,7 @@ the commands that reproduce them, live in the private repositories; the results 
 - F22 local container acceptance of the published v0.9.0 image: 14 of 14 checks
 - F23 live Azure deployment and APP-002 hosted rollback drill, with the failed first drill retained
 - APP-001 to APP-005 synthetic support and recovery exercises: 5 of 5
+- F17 AU model-provider offline slice (after v0.9.0): 8 of 8 checks with no live model call; every model failure mode sends all 59 frozen cases to a person
 
 Each experiment has its own folder under [`evidence`](evidence) with a README, the machine-readable result and,
 where relevant, screenshots. Start with [F25](evidence/F25/2026-11-03/README.md),
@@ -297,8 +299,8 @@ A historical one-page summary made in October 2026 for release v0.7.2. Its scree
 
 Sprint 4 is complete. Two adversarial residuals are registered rather than fixed: a request that reports two issues
 becomes a single draft, and a place name that contradicts the coordinates is not detected. Both need capabilities
-the project does not have yet (multi-intent extraction and a locality gazetteer). No model provider is connected,
-so the rules-versus-model comparison is still open. Authentication/RBAC, Windows enterprise lab integration and
+the project does not have yet (multi-intent extraction and a locality gazetteer). A model provider is wired in but
+locked off in code (F17, offline checks only), so the rules-versus-model comparison is still open. Authentication/RBAC, Windows enterprise lab integration and
 PostgreSQL remain later stages and are not represented as completed. The live Azure demo remains
 within the enabled Student spending limit, with no subscription upgrade or claim of remaining sponsorship credit.
 
