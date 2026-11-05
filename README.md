@@ -117,8 +117,9 @@ The web console is shown at the top of this page. A phone-width capture of a den
 |---|---|
 | Explainable diagnosis | Eight operational categories, general fallback, priority rule, confidence, matched terms and missing-information list |
 | Public asset context | Nearest-bin matching against a 727-feature City of Hobart public ArcGIS snapshot |
-| Policy Gate | Versioned synthetic policy (v0.2.0 at runtime); deterministic `pass`, `reject` and `escalate`; eight rule-level reasons and policy hash |
+| Policy Gate | Versioned synthetic policy (v0.3.0 in the code; the live demo runs v0.2.0 until its next deployment); deterministic `pass`, `reject` and `escalate`; ten rule-level reasons and policy hash |
 | Untrusted-input control | `POL-INPUT-001` escalates instruction override, role impersonation, addressing the model, decision manipulation, tool names, data-exfiltration requests, hidden or bidirectional characters, mixed-script homoglyphs, encoded payloads, keyword stuffing, negated scope terms and competing service phrases; it reports signal codes only and never echoes the text |
+| Location and jurisdiction control | `POL-JURISDICTION-001` checks the point against official Tasmanian municipal boundaries: a point in another municipality is rejected with a referral to that council, and a point outside Tasmania goes to a person. `POL-PLACE-001` sends the request to a person when an official place named in the text lies in another municipality more than 2 km from the point |
 | Action boundary | Only `create_draft_work_order` can pass; no connector or external write exists |
 | Decision ledger | SQLite append-only events with request, policy and event hashes; provider/evidence/owner/time metadata |
 | Human control | Pending queue; separate owner and reviewer; append-only accept/override/escalate history |
@@ -127,8 +128,8 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
 | Application support | Component health, correlation/request IDs, redacted bounded logs, checksum-protected Support Bundle, internal support page and five runbooks |
 | Recovery evidence | APP-001/003/004/005 synthetic recovery passes; APP-002 local mismatch detection plus a hosted Azure rollback drill pass, with the first failed drill retained |
-| Verification | 82 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F22 container, F23 live Azure and APP-001–005 evidence |
-| Adversarial evaluation | A frozen 59-case set committed before the fix: unsafe passes fall from 20 under policy v0.1.0 to 2 registered residuals under v0.2.0, with no clean-control over-blocking; 16 capability-bypass variants are denied and 13 API negative probes hold |
+| Verification | 163 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F22 container, F23 live Azure and APP-001–005 evidence |
+| Adversarial evaluation | A frozen 59-case set committed before the fix: unsafe passes fall from 20 under policy v0.1.0 to 2 registered residuals under v0.2.0 and 1 under v0.3.0, with no clean-control over-blocking; 16 capability-bypass variants are denied and 13 API negative probes hold |
 | Secure delivery gates | Bandit SAST, pip-audit over three lock files, npm audit and a Trivy image scan on every push; release images are scanned before they can be pushed; every gate has a canary that proves it can fail; third-party actions are pinned by commit |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
@@ -164,7 +165,8 @@ After v0.9.0, an AU-resident model provider (Claude on Amazon Bedrock, through i
 | D1 | City of Hobart public litter-bin assets, 727 features | Real public reference |
 | D2 | Townsville request-for-service counts, monthly aggregates | Real public reference. Context only, not Hobart demand |
 | D6 | 316 hash-chained events from a fixed seed: 180 decisions, 120 reviews, 8 manual fallbacks and 8 provider-control changes | Synthetic operations |
-| Policy | Two versioned waste and litter policies written for the demonstration: v0.1.0 generates the D6 fixture; v0.2.0 adds the untrusted-input rule and runs the console | Synthetic. Not a council policy |
+| D7, D8 | Tasmanian municipal boundaries (29) and official localities (777) from the LIST, © State of Tasmania, CC BY 3.0 AU, snapshot on 5 Nov 2026 | Real public reference |
+| Policy | Three versioned waste and litter policies written for the demonstration: v0.1.0 generates the D6 fixture; v0.2.0 adds the untrusted-input rule; v0.3.0 adds the location rules and runs the console in the code | Synthetic. Not a council policy |
 
 Each public source has a manifest with its publisher, URL, licence, retrieval date, hash, schema, grain and limitations; the datasets themselves stay in the private repository. Rates calculated from D6 exercise the calculations. They say nothing about council performance or model accuracy.
 
@@ -193,6 +195,7 @@ The order was deliberate: the controls came before any model, and each sprint en
 | The v0.5.0 workflows failed on a fresh Windows checkout because generated report partitions embedded CRLF | v0.5.1 writes one canonical form, hashes that form and tests CRLF and LF equivalence |
 | Two Azure deployment attempts failed before v0.7.1 was accepted | Both runs are kept as evidence beside the run that passed |
 | The first adversarial run let 20 of 59 manipulated requests through as draft work orders, including all five indirect injections | v0.9.0 adds `POL-INPUT-001`; the test set was frozen before the fix, and the two cases it still misses are registered rather than hidden |
+| A request naming Launceston with a Hobart point still passed as a draft (registered residual LOC-002) | Rather than a one-off word list, F27 adds official municipal and locality boundaries and two location rules, following how council forms, FixMyStreet and Open311 handle location. On the frozen set only that case changes |
 | The new scanners failed on their first runs: advisories in certifi, pytest and vite, and four Bandit findings | Packages were upgraded and code fixed; every suppression must name the rule and give a reason |
 | The verification script rewrote dated recovery evidence once the version number changed | It now writes those regression runs to a temporary folder, so dated evidence stays as recorded |
 
@@ -256,6 +259,7 @@ the commands that reproduce them, live in the private repositories; the results 
 - APP-001 to APP-005 synthetic support and recovery exercises: 5 of 5
 - F17 AU model-provider offline slice (after v0.9.0): 8 of 8 checks with no live model call; every model failure mode sends all 59 frozen cases to a person
 - F17 first live run (Claude Haiku 4.5, AU profile, approved and capped): 73 of 73 calls answered; 2 category errors on the 59 adversarial cases against 11 for the rules baseline; 1 unsafe pass under policy v0.2.0 (a registered residual) against 2; 8 of 12 regression priorities against 12. An unpaced first attempt was throttled on 40 calls, and every throttled case went to a person
+- F27 location and jurisdiction layer (after v0.9.0): 10 of 10 checks; the point lookup agrees with the LIST service on 14 of 14 sample points; on the frozen set only LOC-002 changes (pass to escalate), leaving one registered residual
 
 Each experiment has its own folder under [`evidence`](evidence) with a README, the machine-readable result and,
 where relevant, screenshots. Start with [F25](evidence/F25/2026-11-03/README.md),
@@ -284,6 +288,7 @@ adversarial examples with their outcomes before and after the input-integrity ru
 - The operations endpoint is logically separate but runs in the same application process; it is not yet an out-of-band control plane.
 - No endpoint writes to a real business system.
 - `POL-INPUT-001` is a deterministic pattern screen. It reduces exposure to instruction-like or obfuscated text but cannot recognise every phrasing; a clean screen does not prove a request is benign, and every passing draft still waits for a person.
+- The location rules use official boundaries simplified to about 20-30 m and recognise only official locality and municipality names. They do not verify street addresses or route requests about state roads or utility assets.
 - The security gates (run in the private repositories) cover Python code, pinned Python and npm dependencies and the container image, using advisories published on the run date. They are not a penetration test, and unfixed image vulnerabilities are reported but do not block.
 - Townsville data is monthly aggregate reference context, not Hobart demand or individual requests.
 - Every D6 decision, review, actor, time and operational metric is fixed-seed synthetic data. Its rates exercise calculations and are not council performance or model-accuracy evidence.
@@ -298,9 +303,9 @@ A historical one-page summary made in October 2026 for release v0.7.2. Its scree
 
 ## What is not finished
 
-Sprint 4 is complete. Two adversarial residuals are registered rather than fixed: a request that reports two issues
-becomes a single draft, and a place name that contradicts the coordinates is not detected. Both need capabilities
-the project does not have yet (multi-intent extraction and a locality gazetteer). A model provider is wired in and has
+Sprint 4 is complete. One adversarial residual is registered rather than fixed: a request that reports two issues
+becomes a single draft, which needs multi-intent extraction. The other, a place name that contradicts the coordinates,
+was closed by the F27 location layer; the live demo still runs v0.9.0 and receives it at its next deployment. A model provider is wired in and has
 had one approved live comparison (F17, Claude Haiku 4.5, synthetic cases only). Its priority choices still trail the
 rules baseline, and live calls stay locked off between approved runs. Authentication/RBAC, Windows enterprise lab integration and
 PostgreSQL remain later stages and are not represented as completed. The live Azure demo remains

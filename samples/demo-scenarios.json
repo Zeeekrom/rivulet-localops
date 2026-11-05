@@ -17,7 +17,7 @@
       "gate": {
         "status": "pass",
         "can_execute": true,
-        "policy_version": "0.2.0",
+        "policy_version": "0.3.0",
         "rules": [
           {
             "rule_id": "POL-SCOPE-001",
@@ -66,6 +66,18 @@
             "outcome": "pass",
             "effect": "allow",
             "message": "Request text raised no input-integrity signal."
+          },
+          {
+            "rule_id": "POL-JURISDICTION-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The point lies in West Hobart, Hobart municipality (official LIST boundaries)."
+          },
+          {
+            "rule_id": "POL-PLACE-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The text names no official Tasmanian place."
           }
         ],
         "escalation_reasons": [],
@@ -103,7 +115,7 @@
       "gate": {
         "status": "reject",
         "can_execute": false,
-        "policy_version": "0.2.0",
+        "policy_version": "0.3.0",
         "rules": [
           {
             "rule_id": "POL-SCOPE-001",
@@ -152,6 +164,18 @@
             "outcome": "pass",
             "effect": "allow",
             "message": "Request text raised no input-integrity signal."
+          },
+          {
+            "rule_id": "POL-JURISDICTION-001",
+            "outcome": "not_applicable",
+            "effect": "allow",
+            "message": "The municipality cannot be checked until coordinates are supplied."
+          },
+          {
+            "rule_id": "POL-PLACE-001",
+            "outcome": "not_applicable",
+            "effect": "allow",
+            "message": "Place names cannot be compared with a location until coordinates are supplied."
           }
         ],
         "escalation_reasons": [],
@@ -185,7 +209,7 @@
       "gate": {
         "status": "escalate",
         "can_execute": false,
-        "policy_version": "0.2.0",
+        "policy_version": "0.3.0",
         "rules": [
           {
             "rule_id": "POL-SCOPE-001",
@@ -234,6 +258,18 @@
             "outcome": "pass",
             "effect": "allow",
             "message": "Request text raised no input-integrity signal."
+          },
+          {
+            "rule_id": "POL-JURISDICTION-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The point lies in West Hobart, Hobart municipality (official LIST boundaries)."
+          },
+          {
+            "rule_id": "POL-PLACE-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The text names no official Tasmanian place."
           }
         ],
         "escalation_reasons": [
@@ -274,7 +310,7 @@
       "gate": {
         "status": "escalate",
         "can_execute": false,
-        "policy_version": "0.2.0",
+        "policy_version": "0.3.0",
         "rules": [
           {
             "rule_id": "POL-SCOPE-001",
@@ -323,6 +359,18 @@
             "outcome": "fail",
             "effect": "escalate",
             "message": "Request text raised input-integrity signals (instruction_override, decision_manipulation); it is treated as untrusted data and routed to a human."
+          },
+          {
+            "rule_id": "POL-JURISDICTION-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The point lies in West Hobart, Hobart municipality (official LIST boundaries)."
+          },
+          {
+            "rule_id": "POL-PLACE-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The text names no official Tasmanian place."
           }
         ],
         "escalation_reasons": [

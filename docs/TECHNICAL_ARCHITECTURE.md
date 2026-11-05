@@ -85,17 +85,20 @@ sequenceDiagram
 
 ## 3. Policy and deterministic Gate
 
-The active pack is `data/policies/waste_litter_demo_v0.2.0.json` (schema 1.1). `v0.1.0` (schema 1.0) is kept
-unchanged because the D6 synthetic ledger is generated against it, and its content hash is unchanged. The schema requires:
+The active pack in the code is `data/policies/waste_litter_demo_v0.3.0.json` (schema 1.2); the live demo still runs
+v0.2.0 (schema 1.1) until its next deployment. `v0.1.0` (schema 1.0) is kept unchanged because the D6 synthetic ledger
+is generated against it. Earlier packs keep their content hashes. The schema requires:
 
 - explicit `approved_for_demo` state;
 - `is_synthetic: true`;
 - human product-owner authority metadata;
 - policy ID, version and timezone-aware approval time;
 - category scope, permitted actions, evidence rules and thresholds;
-- from schema 1.1, an `input_integrity` section listing the signals that escalate and the stuffing thresholds.
+- from schema 1.1, an `input_integrity` section listing the signals that escalate and the stuffing thresholds;
+- from schema 1.2, a `location_integrity` section naming the council's own municipality and how far a named place may
+  lie from the point.
 
-The Gate evaluates eight visible rules under v0.2.0 (the first seven under v0.1.0):
+The Gate evaluates ten visible rules under v0.3.0 (eight under v0.2.0, the first seven under v0.1.0):
 
 | Rule | Check | Failure effect |
 |---|---|---|
@@ -107,6 +110,15 @@ The Gate evaluates eight visible rules under v0.2.0 (the first seven under v0.1.
 | `POL-CONFIDENCE-001` | Category confidence meets threshold | Escalate |
 | `POL-REVIEW-001` | Diagnosis has no human-review flag | Escalate |
 | `POL-INPUT-001` | Request text raises no input-integrity signal | Escalate |
+| `POL-JURISDICTION-001` | The point lies in the council's municipality (official LIST boundaries) | Reject with a referral to the responsible council; escalate if the point is outside every Tasmanian municipality |
+| `POL-PLACE-001` | No official place named in the text lies in another municipality more than 2 km from the point | Escalate |
+
+The two location rules follow how working intake systems treat location: council forms that accept only suburbs in the
+municipality and refer the rest, FixMyStreet's boundary lookup (MapIt) that picks the responsible body, and Open311's
+location and jurisdiction fields. They use the LIST Local Government Areas and Locality and Postcode Areas (the LIST
+© State of Tasmania, CC BY 3.0 AU), snapshot on 5 November 2026 and simplified to about 20-30 m. Place names come from
+the same official list; a name followed by a street type is a street, and names that are also ordinary words count only
+after a location cue. The point lookup is checked against the LIST service's own answers for fixed sample points.
 
 Escalation takes precedence when a request has both rejection and escalation reasons. A passing result means only that the proposed draft action satisfies this demonstration policy. It does not execute the action.
 
