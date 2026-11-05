@@ -11,7 +11,12 @@ The application source, tests, data pipelines, infrastructure code and CI live i
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 — six server-owned synthetic scenarios only; no visitor free text or real resident data. The live bounded profile is
-release v0.9.0; internal support routes remain absent from that profile.
+release v0.9.0; internal support routes remain absent from that profile. It scales to zero when idle, so the first
+visit can take a few seconds to wake.
+
+**Always-on replay:** [Recorded replay of the same console](https://rivulet-localops-replay.pages.dev)
+— the same six scenarios, recorded from the real policy check on 5 November 2026 (current code, policy v0.3.0).
+Nothing runs live on that page. It opens instantly and stays available when the live demo is asleep, offline or moved.
 
 <img src="evidence/F25/2026-11-03/live-instruction-escalate.jpg" alt="The live v0.9.0 console sends a request that hides an instruction to a person" width="640">
 
