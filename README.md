@@ -5,6 +5,8 @@
 
 Rivulet LocalOps turns a written service policy into decisions that can be executed, checked and traced to a named owner. Its reference scenario is a local council handling waste and litter requests. Each request is diagnosed, tested against an approved policy, recorded in a tamper-evident ledger and reviewed by a second person.
 
+It is AI-assisted and policy-gated. An AI model (Claude on Amazon Bedrock, run only in Sydney and Melbourne) reads a request and suggests its type and urgency. The written policy decides what may happen: the model may raise urgency but never lower it, and a named person makes the final call.
+
 This is an independent technical prototype. It is not an official City of Hobart, Tasmanian Government or council service. It contains no real resident requests and performs no real council-system writes.
 
 The application source, tests, data pipelines, infrastructure code and CI live in private repositories. This repository is a curated showcase: documents, verified results, screenshots and synthetic samples only.
@@ -50,8 +52,9 @@ The live v0.9.0 console. The classifier is 95% confident and every earlier rule 
 | What it is | A civic workflow demonstrator: explainable triage, a policy Gate, a decision ledger, human review and assurance reporting in one reproducible workflow |
 | Who it is for | Teams that handle public service requests under written policy: service managers, policy owners, reviewers, and the IT and data staff who support them |
 | The problem | Automation can classify a request. It usually cannot show which rule allowed an action, what evidence was used, or who was accountable |
-| Stack | Python 3.12, FastAPI, SQLite, React 19 and TypeScript, a Power BI project, Docker, Azure Container Apps and GitHub Actions |
-| Evidence | 82 automated tests, a frozen 59-case adversarial evaluation, SAST, dependency and container-image scanning gates, 19 source-quality checks, five synthetic recovery exercises, a 316-event synthetic ledger and a live Azure deployment |
+| AI | Claude Haiku 4.5 on Amazon Bedrock, through an Australian inference profile (Sydney and Melbourne only), suggests category and priority behind the same interface as a rules baseline. Two approved, capped live runs on 73 synthetic cases cost about USD 0.14 each. Paid calls are locked off in code between runs, and the public demo runs the rules baseline so it stays free and repeatable |
+| Stack | Python 3.12, FastAPI, SQLite, React 19 and TypeScript, Amazon Bedrock (Claude), a Power BI project, Docker, Azure Container Apps and GitHub Actions |
+| Evidence | 202 automated tests, a frozen 59-case adversarial evaluation, SAST, dependency and container-image scanning gates, 19 source-quality checks, five synthetic recovery exercises, a 316-event synthetic ledger and a live Azure deployment |
 | Data | Real public reference data (kept in the private repository) and requests that are clearly labelled synthetic; this repository holds synthetic samples only |
 | Status | Release v0.9.0. A portfolio prototype. It has not been validated with a council and is not production-ready |
 
@@ -133,7 +136,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
 | Application support | Component health, correlation/request IDs, redacted bounded logs, checksum-protected Support Bundle, internal support page and five runbooks |
 | Recovery evidence | APP-001/003/004/005 synthetic recovery passes; APP-002 local mismatch detection plus a hosted Azure rollback drill pass, with the first failed drill retained |
-| Verification | 172 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F28 priority, F22 container, F23 live Azure and APP-001–005 evidence |
+| Verification | 202 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F28 priority, F22 container, F23 live Azure and APP-001–005 evidence |
 | Adversarial evaluation | A frozen 59-case set committed before the fix: unsafe passes fall from 20 under policy v0.1.0 to 2 registered residuals under v0.2.0 and 1 under v0.3.0, with no clean-control over-blocking; 16 capability-bypass variants are denied and 13 API negative probes hold |
 | Secure delivery gates | Bandit SAST, pip-audit over three lock files, npm audit and a Trivy image scan on every push; release images are scanned before they can be pushed; every gate has a canary that proves it can fail; third-party actions are pinned by commit |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
@@ -147,7 +150,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Container delivery | Multi-stage Linux image, exact runtime lock, non-root UID/GID 10001, health probe, same-origin assets and public/internal route separation |
 | Azure deployment | Live New Zealand North Container Apps Consumption revision: 0.25 vCPU/0.5 GiB, scale 0–1, private GHCR image pulled with a read-only registry token held as a Container App secret, and resource-group-scoped managed-identity OIDC with no Azure client secret |
 
-The current diagnosis engine and agent adapter are deliberately rules-based. They form a transparent control baseline for later model comparison and are not presented as generative AI.
+The public demo runs the deterministic rules baseline for diagnosis and the agent adapter, so it costs nothing to run and gives the same answer every time. The AI model is a second provider behind the same interface and is measured against that baseline.
 After v0.9.0, an AU-resident model provider (Claude on Amazon Bedrock, through inference profiles that route only between Sydney and Melbourne) was wired in behind the same interface. Live calls stay locked off in code; the product owner unlocks them by hand and approves each run separately. The first approved full run used Claude Haiku 4.5 on all 73 synthetic cases for about USD 0.14 ([F17 live run](evidence/F17/2026-11-04-live-full/README.md), [offline checks](evidence/F17/2026-11-03/README.md)).
 Priority was the model's weak point, and priority is a policy decision, so F28 made the written policy's priority the floor:
 the model may raise urgency but never lower it. A second approved run (about USD 0.14) compared three ways of setting the
@@ -258,7 +261,7 @@ execution under `POST /demo/v1/scenarios/{scenario_id}/run`, and static web asse
 Every release is checked by a local gate and by hosted CI, container and deployment workflows. Those runs, and
 the commands that reproduce them, live in the private repositories; the results are published here.
 
-- 82 automated tests and a 12-case deterministic regression set
+- 202 automated tests and a 12-case deterministic regression set
 - 19 source-quality checks (15 pass, 4 documented warnings, 0 fail) and 8 of 8 analytics reconciliations
 - Power BI project: 51 controlled files, 88 structural checks, Microsoft validator 0 errors / 0 warnings; 7 of 7 Desktop refreshes and 13 of 13 DAX reconciliations
 - F18 capability control: 12 of 12 checks
@@ -294,7 +297,7 @@ adversarial examples with their outcomes before and after the input-integrity ru
 - Owner, reviewer and operator IDs are asserted strings, not authenticated identities. Authentication and RBAC are not yet implemented.
 - The `case-agent` identity is selected by the server and its local capability envelope is enforced, but callers are unauthenticated. Current-case checks are a contract demonstration, not object authorization against a real case store.
 - The capability registry is versioned and hashed but not signed. Input hashes are not privacy-preserving commitments; only synthetic requests are permitted.
-- No external model API or model credential is used. The agent runs the deterministic-rules baseline and does not execute the Gate, a human decision or a connector.
+- The public demo uses no model API or model credential: its agent runs the deterministic-rules baseline and does not execute the Gate, a human decision or a connector. Model calls happen only in approved, capped runs from the private repository, through the Australian Bedrock profile, on synthetic cases.
 - The hash chain detects in-place modification, reordering and gaps. It is not an external signature, WORM store or production audit guarantee.
 - The operations endpoint is logically separate but runs in the same application process; it is not yet an out-of-band control plane.
 - No endpoint writes to a real business system.
