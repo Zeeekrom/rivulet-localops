@@ -7,6 +7,8 @@ Rivulet LocalOps is a portfolio demonstrator and must not receive real resident,
 - deterministic policy Gate before a decision record is created;
 - untrusted-input screening of request text (`POL-INPUT-001`), measured on a frozen adversarial regression set;
 - location and jurisdiction checks against official Tasmanian boundaries (`POL-JURISDICTION-001`, `POL-PLACE-001`);
+- paid model calls locked off in code; the product owner unlocks them by hand and approves each run separately;
+- on the model path, the written policy sets the priority floor: the model may raise urgency but never lower it;
 - explicit synthetic-data and synthetic-policy labels;
 - append-only application events with a SHA-256 hash chain;
 - separate accountable-owner and reviewer fields;

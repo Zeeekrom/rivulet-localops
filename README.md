@@ -128,7 +128,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
 | Application support | Component health, correlation/request IDs, redacted bounded logs, checksum-protected Support Bundle, internal support page and five runbooks |
 | Recovery evidence | APP-001/003/004/005 synthetic recovery passes; APP-002 local mismatch detection plus a hosted Azure rollback drill pass, with the first failed drill retained |
-| Verification | 163 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F22 container, F23 live Azure and APP-001–005 evidence |
+| Verification | 172 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F28 priority, F22 container, F23 live Azure and APP-001–005 evidence |
 | Adversarial evaluation | A frozen 59-case set committed before the fix: unsafe passes fall from 20 under policy v0.1.0 to 2 registered residuals under v0.2.0 and 1 under v0.3.0, with no clean-control over-blocking; 16 capability-bypass variants are denied and 13 API negative probes hold |
 | Secure delivery gates | Bandit SAST, pip-audit over three lock files, npm audit and a Trivy image scan on every push; release images are scanned before they can be pushed; every gate has a canary that proves it can fail; third-party actions are pinned by commit |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
@@ -144,6 +144,10 @@ The web console is shown at the top of this page. A phone-width capture of a den
 
 The current diagnosis engine and agent adapter are deliberately rules-based. They form a transparent control baseline for later model comparison and are not presented as generative AI.
 After v0.9.0, an AU-resident model provider (Claude on Amazon Bedrock, through inference profiles that route only between Sydney and Melbourne) was wired in behind the same interface. Live calls stay locked off in code; the product owner unlocks them by hand and approves each run separately. The first approved full run used Claude Haiku 4.5 on all 73 synthetic cases for about USD 0.14 ([F17 live run](evidence/F17/2026-11-04-live-full/README.md), [offline checks](evidence/F17/2026-11-03/README.md)).
+Priority was the model's weak point, and priority is a policy decision, so F28 made the written policy's priority the floor:
+the model may raise urgency but never lower it. A second approved run (about USD 0.14) compared three ways of setting the
+final priority from the same recorded answers, and the product owner chose the floor as the default
+([F28](evidence/F28/2026-11-05/README.md)).
 
 ## Design principles
 
@@ -196,6 +200,7 @@ The order was deliberate: the controls came before any model, and each sprint en
 | Two Azure deployment attempts failed before v0.7.1 was accepted | Both runs are kept as evidence beside the run that passed |
 | The first adversarial run let 20 of 59 manipulated requests through as draft work orders, including all five indirect injections | v0.9.0 adds `POL-INPUT-001`; the test set was frozen before the fix, and the two cases it still misses are registered rather than hidden |
 | A request naming Launceston with a Hobart point still passed as a draft (registered residual LOC-002) | Rather than a one-off word list, F27 adds official municipal and locality boundaries and two location rules, following how council forms, FixMyStreet and Open311 handle location. On the frozen set only that case changes |
+| On the first live run the model ranked an overflowing public bin below the demonstration policy (8 of 12 regression priorities) | F28 makes the policy priority the floor and lets the model only raise urgency, the one-way pattern a local UTAS ICT Expo project uses for AI marking. One recorded run compared three modes at no extra model cost |
 | The new scanners failed on their first runs: advisories in certifi, pytest and vite, and four Bandit findings | Packages were upgraded and code fixed; every suppression must name the rule and give a reason |
 | The verification script rewrote dated recovery evidence once the version number changed | It now writes those regression runs to a temporary folder, so dated evidence stays as recorded |
 
@@ -260,6 +265,7 @@ the commands that reproduce them, live in the private repositories; the results 
 - F17 AU model-provider offline slice (after v0.9.0): 8 of 8 checks with no live model call; every model failure mode sends all 59 frozen cases to a person
 - F17 first live run (Claude Haiku 4.5, AU profile, approved and capped): 73 of 73 calls answered; 2 category errors on the 59 adversarial cases against 11 for the rules baseline; 1 unsafe pass under policy v0.2.0 (a registered residual) against 2; 8 of 12 regression priorities against 12. An unpaced first attempt was throttled on 40 calls, and every throttled case went to a person
 - F27 location and jurisdiction layer (after v0.9.0): 10 of 10 checks; the point lookup agrees with the LIST service on 14 of 14 sample points; on the frozen set only LOC-002 changes (pass to escalate), leaving one registered residual
+- F28 priority floor (after v0.9.0, one approved live run of 73 calls): regression priorities 8, 9 and 12 of 12 when the model decides, when the policy sets the floor, and when the policy decides with differences sent to a person; 25, 25 and 37 human-review flags; no unexpected unsafe pass in any mode. The policy floor is now the default
 
 Each experiment has its own folder under [`evidence`](evidence) with a README, the machine-readable result and,
 where relevant, screenshots. Start with [F25](evidence/F25/2026-11-03/README.md),
@@ -306,8 +312,8 @@ A historical one-page summary made in October 2026 for release v0.7.2. Its scree
 Sprint 4 is complete. One adversarial residual is registered rather than fixed: a request that reports two issues
 becomes a single draft, which needs multi-intent extraction. The other, a place name that contradicts the coordinates,
 was closed by the F27 location layer; the live demo still runs v0.9.0 and receives it at its next deployment. A model provider is wired in and has
-had one approved live comparison (F17, Claude Haiku 4.5, synthetic cases only). Its priority choices still trail the
-rules baseline, and live calls stay locked off between approved runs. Authentication/RBAC, Windows enterprise lab integration and
+had two approved live runs (F17 and F28, Claude Haiku 4.5, synthetic cases only). Since F28 the written policy sets the
+priority floor and the model may only raise urgency; live calls stay locked off between approved runs. Authentication/RBAC, Windows enterprise lab integration and
 PostgreSQL remain later stages and are not represented as completed. The live Azure demo remains
 within the enabled Student spending limit, with no subscription upgrade or claim of remaining sponsorship credit.
 
