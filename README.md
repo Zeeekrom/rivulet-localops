@@ -13,7 +13,7 @@ The application source, tests, data pipelines, infrastructure code and CI live i
 
 <a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="Play the narrated walkthrough of Rivulet LocalOps" width="640"></a>
 
-**Narrated walkthrough:** [watch the 3:43 film](https://zeeekrom.github.io/rivulet-localops/film/) · [one-minute version](https://zeeekrom.github.io/rivulet-localops/film/1min/)
+**Narrated walkthrough:** [watch the 3:43 film](https://zeeekrom.github.io/rivulet-localops/film/)
 — one synthetic request through the ten written checks on the recorded replay, the location and jurisdiction layer on a map
 drawn for the film from the same public data, where the AI model fits and what limits it, and what the prototype is not.
 English narration (synthetic voice) with captions.
