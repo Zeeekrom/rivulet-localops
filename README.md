@@ -11,6 +11,13 @@ This is an independent technical prototype. It is not an official City of Hobart
 
 The application source, tests, data pipelines, infrastructure code and CI live in private repositories. This repository is a curated showcase: documents, verified results, screenshots and synthetic samples only.
 
+<a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="Play the narrated walkthrough of Rivulet LocalOps" width="640"></a>
+
+**Narrated walkthrough:** [watch the 3:43 film](https://zeeekrom.github.io/rivulet-localops/film/) · [one-minute version](https://zeeekrom.github.io/rivulet-localops/film/1min/)
+— one synthetic request through the ten written checks on the recorded replay, the location and jurisdiction layer on a map
+drawn for the film from the same public data, where the AI model fits and what limits it, and what the prototype is not.
+English narration (synthetic voice) with captions.
+
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 — six server-owned synthetic scenarios only; no visitor free text or real resident data. The live bounded profile is
 release v0.9.0; internal support routes remain absent from that profile. It scales to zero when idle, so the first
