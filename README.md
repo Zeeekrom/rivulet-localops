@@ -51,6 +51,7 @@ The live v0.9.0 console. The classifier is 95% confident and every earlier rule 
 - [Poster](#poster)
 - [What is not finished](#what-is-not-finished)
 - [What the project showed](#what-the-project-showed)
+- [Copyright and terms](#copyright-and-terms)
 
 ## At a glance
 
@@ -181,9 +182,9 @@ final priority from the same recorded answers, and the product owner chose the f
 
 | Set | What it is | Source class |
 |---|---|---|
-| D1 | City of Hobart public litter-bin assets, 727 features | Real public reference |
-| D2 | Townsville request-for-service counts, monthly aggregates | Real public reference. Context only, not Hobart demand |
-| D6 | 316 hash-chained events from a fixed seed: 180 decisions, 120 reviews, 8 manual fallbacks and 8 provider-control changes | Synthetic operations |
+| D1 | City of Hobart public litter-bin assets, 727 features, CC BY 4.0 | Real public reference |
+| D2 | Townsville City Council request-for-service counts, monthly aggregates, CC BY 4.0 | Real public reference. Context only, not Hobart demand |
+| D6 | 316 hash-chained events from a fixed seed: 180 decisions, 120 reviews, 8 manual fallbacks and 8 provider-control changes. All rights reserved (copies published before 13 Nov 2026 were labelled MIT and keep it) | Synthetic operations |
 | D7, D8 | Tasmanian municipal boundaries (29) and official localities (777) from the LIST, © State of Tasmania, CC BY 3.0 AU, snapshot on 5 Nov 2026 | Real public reference |
 | Policy | Three versioned waste and litter policies written for the demonstration: v0.1.0 generates the D6 fixture; v0.2.0 adds the untrusted-input rule; v0.3.0 adds the location rules and runs the console in the code | Synthetic. Not a council policy |
 
@@ -341,3 +342,10 @@ For a real organisation to use something like this, it would also need authentic
 - Labelling every figure as real or synthetic prevents a test fixture from being read as performance.
 - Keeping failed runs on the record costs little and makes the passing ones believable.
 - Writing the attack set before the fix, and keeping what it still misses on record, makes an improvement measurable instead of asserted.
+
+## Copyright and terms
+
+© 2026 Rivulet LocalOps. All rights reserved; see [LICENSE](LICENSE). The text, images, film, documents and evidence in
+this repository, and the project's code and design, may not be republished, copied or adapted without written
+permission. Sharing links is welcome. The public data credited above keeps its own licence. Terms, licences and
+privacy: [terms page](https://rivulet-localops-replay.pages.dev/terms/).

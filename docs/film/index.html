@@ -15,11 +15,18 @@
 <meta property="og:video:height" content="1080">
 <style>
   html, body { margin: 0; height: 100%; background: #111417; }
-  body { display: grid; place-items: center; }
-  video { width: 100vw; height: 100vh; max-height: 100vh; object-fit: contain; background: #111417; display: block; }
+  body { display: flex; flex-direction: column; }
+  video { width: 100vw; flex: 1; min-height: 0; object-fit: contain; background: #111417; display: block; }
+  footer { padding: 8px 16px 10px; color: #9aa3ab; font: 12px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; text-align: center; }
+  footer a { color: #c9d1d8; }
 </style>
 </head>
 <body>
 <video src="rivulet-walkthrough.mp4" poster="poster.jpg" controls playsinline preload="metadata"></video>
+<footer>
+  © 2026 Rivulet LocalOps. All rights reserved. · <a href="https://rivulet-localops-replay.pages.dev/terms/">Terms, licences and privacy</a><br>
+  Voice: Kokoro (Apache-2.0). Music: samples from VSCO 2 Community Edition and the Versilian Community Sample Library (CC0).
+  Map data: City of Hobart (CC BY 4.0); the LIST © State of Tasmania (CC BY 3.0 AU).
+</footer>
 </body>
 </html>
