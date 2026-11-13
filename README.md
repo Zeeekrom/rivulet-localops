@@ -1,7 +1,7 @@
 # Rivulet LocalOps
 
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.9.0-2F855A)
+![Release](https://img.shields.io/badge/release-v0.10.0-2F855A)
 
 Rivulet LocalOps turns a written service policy into decisions that can be executed, checked and traced to a named owner. Its reference scenario is a local council handling waste and litter requests. Each request is diagnosed, tested against an approved policy, recorded in a tamper-evident ledger and reviewed by a second person.
 
@@ -20,7 +20,7 @@ English narration (synthetic voice) with captions.
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 — six server-owned synthetic scenarios only; no visitor free text or real resident data. The live bounded profile is
-release v0.9.0; internal support routes remain absent from that profile. It scales to zero when idle, so the first
+release v0.10.0; internal support routes remain absent from that profile. It scales to zero when idle, so the first
 visit can take a few seconds to wake.
 
 **Always-on replay:** [Recorded replay of the same console](https://rivulet-localops-replay.pages.dev)
@@ -38,7 +38,7 @@ The live v0.9.0 console. The classifier is 95% confident and every earlier rule 
 - [Who it is for](#who-it-is-for)
 - [One request, start to finish](#one-request-start-to-finish)
 - [The screens](#the-screens)
-- [What works today: v0.9.0](#what-works-today-v090)
+- [What works today: v0.10.0](#what-works-today-v0100)
 - [Design principles](#design-principles)
 - [Real data and synthetic data](#real-data-and-synthetic-data)
 - [How it was built](#how-it-was-built)
@@ -62,9 +62,9 @@ The live v0.9.0 console. The classifier is 95% confident and every earlier rule 
 | The problem | Automation can classify a request. It usually cannot show which rule allowed an action, what evidence was used, or who was accountable |
 | AI | Claude Haiku 4.5 on Amazon Bedrock, through an Australian inference profile (Sydney and Melbourne only), suggests category and priority behind the same interface as a rules baseline. Two approved, capped live runs on 73 synthetic cases cost about USD 0.14 each. Paid calls are locked off in code between runs, and the public demo runs the rules baseline so it stays free and repeatable |
 | Stack | Python 3.12, FastAPI, SQLite, React 19 and TypeScript, Amazon Bedrock (Claude), a Power BI project, Docker, Azure Container Apps and GitHub Actions |
-| Evidence | 202 automated tests, a frozen 59-case adversarial evaluation, SAST, dependency and container-image scanning gates, 19 source-quality checks, five synthetic recovery exercises, a 316-event synthetic ledger and a live Azure deployment |
+| Evidence | 210 automated tests, a frozen 59-case adversarial evaluation, SAST, dependency and container-image scanning gates, 19 source-quality checks, five synthetic recovery exercises, a 316-event synthetic ledger and a live Azure deployment |
 | Data | Real public reference data (kept in the private repository) and requests that are clearly labelled synthetic; this repository holds synthetic samples only |
-| Status | Release v0.9.0. A portfolio prototype. It has not been validated with a council and is not production-ready |
+| Status | Release v0.10.0. A portfolio prototype. It has not been validated with a council and is not production-ready |
 
 ## The problem
 
@@ -127,13 +127,13 @@ flowchart LR
 
 The web console is shown at the top of this page. A phone-width capture of a denied path is kept in [`evidence/F24`](evidence/F24/2026-10-10/README.md).
 
-## What works today: v0.9.0
+## What works today: v0.10.0
 
 | Capability | Implemented evidence |
 |---|---|
 | Explainable diagnosis | Eight operational categories, general fallback, priority rule, confidence, matched terms and missing-information list |
 | Public asset context | Nearest-bin matching against a 727-feature City of Hobart public ArcGIS snapshot |
-| Policy Gate | Versioned synthetic policy (v0.3.0 in the code; the live demo runs v0.2.0 until its next deployment); deterministic `pass`, `reject` and `escalate`; ten rule-level reasons and policy hash |
+| Policy Gate | Versioned synthetic policy (v0.3.0, live since 13 Nov 2026); deterministic `pass`, `reject` and `escalate`; ten rule-level reasons and policy hash |
 | Untrusted-input control | `POL-INPUT-001` escalates instruction override, role impersonation, addressing the model, decision manipulation, tool names, data-exfiltration requests, hidden or bidirectional characters, mixed-script homoglyphs, encoded payloads, keyword stuffing, negated scope terms and competing service phrases; it reports signal codes only and never echoes the text |
 | Location and jurisdiction control | `POL-JURISDICTION-001` checks the point against official Tasmanian municipal boundaries: a point in another municipality is rejected with a referral to that council, and a point outside Tasmania goes to a person. `POL-PLACE-001` sends the request to a person when an official place named in the text lies in another municipality more than 2 km from the point |
 | Action boundary | Only `create_draft_work_order` can pass; no connector or external write exists |
@@ -144,7 +144,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
 | Application support | Component health, correlation/request IDs, redacted bounded logs, checksum-protected Support Bundle, internal support page and five runbooks |
 | Recovery evidence | APP-001/003/004/005 synthetic recovery passes; APP-002 local mismatch detection plus a hosted Azure rollback drill pass, with the first failed drill retained |
-| Verification | 202 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F28 priority, F22 container, F23 live Azure and APP-001–005 evidence |
+| Verification | 210 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F28 priority, F22 container, F23 live Azure and APP-001–005 evidence |
 | Adversarial evaluation | A frozen 59-case set committed before the fix: unsafe passes fall from 20 under policy v0.1.0 to 2 registered residuals under v0.2.0 and 1 under v0.3.0, with no clean-control over-blocking; 16 capability-bypass variants are denied and 13 API negative probes hold |
 | Secure delivery gates | Bandit SAST, pip-audit over three lock files, npm audit and a Trivy image scan on every push; release images are scanned before they can be pushed; every gate has a canary that proves it can fail; third-party actions are pinned by commit |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
@@ -159,7 +159,7 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Azure deployment | Live New Zealand North Container Apps Consumption revision: 0.25 vCPU/0.5 GiB, scale 0–1, private GHCR image pulled with a read-only registry token held as a Container App secret, and resource-group-scoped managed-identity OIDC with no Azure client secret |
 
 The public demo runs the deterministic rules baseline for diagnosis and the agent adapter, so it costs nothing to run and gives the same answer every time. The AI model is a second provider behind the same interface and is measured against that baseline.
-After v0.9.0, an AU-resident model provider (Claude on Amazon Bedrock, through inference profiles that route only between Sydney and Melbourne) was wired in behind the same interface. Live calls stay locked off in code; the product owner unlocks them by hand and approves each run separately. The first approved full run used Claude Haiku 4.5 on all 73 synthetic cases for about USD 0.14 ([F17 live run](evidence/F17/2026-11-04-live-full/README.md), [offline checks](evidence/F17/2026-11-03/README.md)).
+Release v0.10.0 includes an AU-resident model provider (Claude on Amazon Bedrock, through inference profiles that route only between Sydney and Melbourne) behind the same interface. Live calls stay locked off in code; the product owner unlocks them by hand and approves each run separately. The first approved full run used Claude Haiku 4.5 on all 73 synthetic cases for about USD 0.14 ([F17 live run](evidence/F17/2026-11-04-live-full/README.md), [offline checks](evidence/F17/2026-11-03/README.md)).
 Priority was the model's weak point, and priority is a policy decision, so F28 made the written policy's priority the floor:
 the model may raise urgency but never lower it. A second approved run (about USD 0.14) compared three ways of setting the
 final priority from the same recorded answers, and the product owner chose the floor as the default
@@ -203,6 +203,7 @@ Each public source has a manifest with its publisher, URL, licence, retrieval da
 | v0.7.2 | 10 Oct 2026 | Web console redesigned as a plain-language overview. The API, policy and controls are unchanged |
 | v0.8.0 | 12 Oct 2026 | Internal application-support diagnostics, Support Bundle, recovery experiments and smoke-gated Azure rollback workflow |
 | v0.9.0 | 3 Nov 2026 | Frozen adversarial evaluation, the untrusted-input Gate rule, and SAST, dependency and container-image gates |
+| v0.10.0 | 13 Nov 2026 | Location and jurisdiction rules on official LIST boundaries (policy v0.3.0), the policy priority floor, a locked Australian Bedrock model provider, the always-on replay page, a copyright footer and terms page with third-party notices and data credits, and security updates in the container image |
 
 The order was deliberate: the controls came before any model, and each sprint ended with a review against recorded evidence. See [Sprint Evidence](docs/SPRINT_EVIDENCE.md).
 
@@ -269,7 +270,7 @@ execution under `POST /demo/v1/scenarios/{scenario_id}/run`, and static web asse
 Every release is checked by a local gate and by hosted CI, container and deployment workflows. Those runs, and
 the commands that reproduce them, live in the private repositories; the results are published here.
 
-- 202 automated tests and a 12-case deterministic regression set
+- 210 automated tests and a 12-case deterministic regression set
 - 19 source-quality checks (15 pass, 4 documented warnings, 0 fail) and 8 of 8 analytics reconciliations
 - Power BI project: 51 controlled files, 88 structural checks, Microsoft validator 0 errors / 0 warnings; 7 of 7 Desktop refreshes and 13 of 13 DAX reconciliations
 - F18 capability control: 12 of 12 checks
@@ -278,10 +279,10 @@ the commands that reproduce them, live in the private repositories; the results 
 - F22 local container acceptance of the published v0.9.0 image: 14 of 14 checks
 - F23 live Azure deployment and APP-002 hosted rollback drill, with the failed first drill retained
 - APP-001 to APP-005 synthetic support and recovery exercises: 5 of 5
-- F17 AU model-provider offline slice (after v0.9.0): 8 of 8 checks with no live model call; every model failure mode sends all 59 frozen cases to a person
+- F17 AU model-provider offline slice (v0.10.0): 8 of 8 checks with no live model call; every model failure mode sends all 59 frozen cases to a person
 - F17 first live run (Claude Haiku 4.5, AU profile, approved and capped): 73 of 73 calls answered; 2 category errors on the 59 adversarial cases against 11 for the rules baseline; 1 unsafe pass under policy v0.2.0 (a registered residual) against 2; 8 of 12 regression priorities against 12. An unpaced first attempt was throttled on 40 calls, and every throttled case went to a person
-- F27 location and jurisdiction layer (after v0.9.0): 10 of 10 checks; the point lookup agrees with the LIST service on 14 of 14 sample points; on the frozen set only LOC-002 changes (pass to escalate), leaving one registered residual
-- F28 priority floor (after v0.9.0, one approved live run of 73 calls): regression priorities 8, 9 and 12 of 12 when the model decides, when the policy sets the floor, and when the policy decides with differences sent to a person; 25, 25 and 37 human-review flags; no unexpected unsafe pass in any mode. The policy floor is now the default
+- F27 location and jurisdiction layer (v0.10.0): 10 of 10 checks; the point lookup agrees with the LIST service on 14 of 14 sample points; on the frozen set only LOC-002 changes (pass to escalate), leaving one registered residual
+- F28 priority floor (v0.10.0, one approved live run of 73 calls): regression priorities 8, 9 and 12 of 12 when the model decides, when the policy sets the floor, and when the policy decides with differences sent to a person; 25, 25 and 37 human-review flags; no unexpected unsafe pass in any mode. The policy floor is now the default
 
 Each experiment has its own folder under [`evidence`](evidence) with a README, the machine-readable result and,
 where relevant, screenshots. Start with [F25](evidence/F25/2026-11-03/README.md),
@@ -327,7 +328,7 @@ A historical one-page summary made in October 2026 for release v0.7.2. Its scree
 
 Sprint 4 is complete. One adversarial residual is registered rather than fixed: a request that reports two issues
 becomes a single draft, which needs multi-intent extraction. The other, a place name that contradicts the coordinates,
-was closed by the F27 location layer; the live demo still runs v0.9.0 and receives it at its next deployment. A model provider is wired in and has
+was closed by the F27 location layer, which the live demo runs since v0.10.0. A model provider is wired in and has
 had two approved live runs (F17 and F28, Claude Haiku 4.5, synthetic cases only). Since F28 the written policy sets the
 priority floor and the model may only raise urgency; live calls stay locked off between approved runs. Authentication/RBAC, Windows enterprise lab integration and
 PostgreSQL remain later stages and are not represented as completed. The live Azure demo remains

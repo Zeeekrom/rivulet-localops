@@ -338,10 +338,10 @@ they produce are under [`evidence`](../evidence).
 | Identities are authenticated and authorised | No | IDs are asserted fields only |
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
-| The bounded public profile is deployed to Azure | Yes | New Zealand North Container Apps, live v0.9.0 since 2026-11-03; bounded portfolio evidence, not production readiness |
+| The bounded public profile is deployed to Azure | Yes | New Zealand North Container Apps, live v0.10.0 since 2026-11-13 (v0.9.0 from 2026-11-03); bounded portfolio evidence, not production readiness |
 | The system is deployed to an enterprise Windows environment | No | Windows lab remains a later slice |
-| The v0.7.2 interface is live on Azure | No | It was a temporary drill candidate in the v0.8.0 rollback drill; v0.9.0 is live now |
-| The public profile excludes tested internal routes | Yes | Live v0.9.0 endpoint; six named negative routes, not a general penetration test |
+| The v0.7.2 interface is live on Azure | No | It was a temporary drill candidate in the v0.8.0 rollback drill; v0.10.0 is live now |
+| The public profile excludes tested internal routes | Yes | Live v0.10.0 endpoint (checked 2026-11-13); six named negative routes, not a general penetration test |
 | Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
 
 ## Known verification warning
