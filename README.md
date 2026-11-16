@@ -1,5 +1,7 @@
 # Rivulet LocalOps
 
+**English** · [简体中文](README.zh-CN.md)
+
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
 ![Release](https://img.shields.io/badge/release-v0.10.0-2F855A)
 
@@ -24,7 +26,7 @@ release v0.10.0; internal support routes remain absent from that profile. It sca
 visit can take a few seconds to wake.
 
 **Always-on replay:** [Recorded replay of the same console](https://rivulet-localops-replay.pages.dev)
-— the same six scenarios, recorded from the real policy check on 5 November 2026 (current code, policy v0.3.0).
+— the same six scenarios, recorded from the real policy check on 13 November 2026 (release v0.10.0, policy v0.3.0).
 Nothing runs live on that page. It opens instantly and stays available when the live demo is asleep, offline or moved.
 
 <img src="evidence/F25/2026-11-03/live-instruction-escalate.jpg" alt="The live v0.9.0 console sends a request that hides an instruction to a person" width="640">
