@@ -350,7 +350,5 @@ For a real organisation to use something like this, it would also need authentic
 
 ## Copyright and terms
 
-© 2026 Rivulet LocalOps. All rights reserved; see [LICENSE](LICENSE). The text, images, film, documents and evidence in
-this repository, and the project's code and design, may not be republished, copied or adapted without written
-permission. Sharing links is welcome. The public data credited above keeps its own licence. Terms, licences and
+© 2026 Rivulet LocalOps. All rights reserved; see [LICENSE](LICENSE). Without written permission, nothing in this repository may be copied, republished or adapted, and the project's code and design may not be rebuilt, whether by hand, with automated tools or with AI cloning tools. The code may not be reverse engineered except where the law allows, and the content may not be scraped, bulk-downloaded or used to train or evaluate AI models. Uses the law already allows, such as fair dealing for review or news reporting, are not affected. Sharing links is welcome. The public data credited above keeps its own licence. Terms, licences and
 privacy: [terms page](https://rivulet-localops-replay.pages.dev/terms/).
