@@ -16,7 +16,7 @@ The application source, tests, data pipelines, infrastructure code and CI live i
 <table>
 <tr>
 <td><a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="Play the narrated walkthrough of Rivulet LocalOps" width="520"></a></td>
-<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps poster: the AI suggests, a person decides" width="234"></a></td>
+<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps one-page poster" width="207"></a></td>
 </tr>
 <tr>
 <td align="center"><a href="https://zeeekrom.github.io/rivulet-localops/film/">Narrated walkthrough, 3:43</a></td>

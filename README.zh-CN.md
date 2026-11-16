@@ -16,7 +16,7 @@ Rivulet LocalOps 把一份书面的服务政策，变成可以执行、可以检
 <table>
 <tr>
 <td><a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="播放 Rivulet LocalOps 讲解片" width="520"></a></td>
-<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps 海报：AI 建议，人来决定" width="234"></a></td>
+<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps 一页海报" width="207"></a></td>
 </tr>
 <tr>
 <td align="center"><a href="https://zeeekrom.github.io/rivulet-localops/film/">讲解片，3 分 43 秒</a></td>
