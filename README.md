@@ -13,12 +13,24 @@ This is an independent technical prototype. It is not an official City of Hobart
 
 The application source, tests, data pipelines, infrastructure code and CI live in private repositories. This repository is a curated showcase: documents, verified results, screenshots and synthetic samples only.
 
-<a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="Play the narrated walkthrough of Rivulet LocalOps" width="640"></a>
+<table>
+<tr>
+<td><a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="Play the narrated walkthrough of Rivulet LocalOps" width="520"></a></td>
+<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps one-page poster" width="207"></a></td>
+</tr>
+<tr>
+<td align="center"><a href="https://zeeekrom.github.io/rivulet-localops/film/">Narrated walkthrough, 3:43</a></td>
+<td align="center"><a href="docs/poster.jpg">Poster, October 2026</a></td>
+</tr>
+</table>
 
 **Narrated walkthrough:** [watch the 3:43 film](https://zeeekrom.github.io/rivulet-localops/film/)
 — one synthetic request through the ten written checks on the recorded replay, the location and jurisdiction layer on a map
 drawn for the film from the same public data, where the AI model fits and what limits it, and what the prototype is not.
 English narration (synthetic voice) with captions.
+
+**Poster:** a one-page summary made in October 2026 for release v0.7.2. Its screen and figures (for example 40 tests)
+are kept as they were; the current figures are the ones in this README.
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 — six server-owned synthetic scenarios only; no visitor free text or real resident data. The live bounded profile is
@@ -50,7 +62,6 @@ The live v0.9.0 console. The classifier is 95% confident and every earlier rule 
 - [Verification evidence](#verification-evidence)
 - [Synthetic samples](#synthetic-samples)
 - [Security and data boundary](#security-and-data-boundary)
-- [Poster](#poster)
 - [What is not finished](#what-is-not-finished)
 - [What the project showed](#what-the-project-showed)
 - [Copyright and terms](#copyright-and-terms)
@@ -319,12 +330,6 @@ adversarial examples with their outcomes before and after the input-integrity ru
 - Every D6 decision, review, actor, time and operational metric is fixed-seed synthetic data. Its rates exercise calculations and are not council performance or model-accuracy evidence.
 - The public demo ledger is local to one container replica and resets after scale-to-zero or revision replacement; it is demonstration trace state, not retained audit evidence.
 - F23 proves one bounded Azure portfolio deployment and named negative-route checks; it does not establish production readiness, authenticated users, durable audit retention, actual idle scale-to-zero or zero cost.
-
-## Poster
-
-<img src="docs/poster.jpg" alt="Project poster" width="520">
-
-A historical one-page summary made in October 2026 for release v0.7.2. Its screen and figures (for example 40 tests) predate v0.8.0 and v0.9.0 and are kept as they were; the current figures are the ones in this README.
 
 ## What is not finished
 

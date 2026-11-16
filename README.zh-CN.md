@@ -13,11 +13,22 @@ Rivulet LocalOps 把一份书面的服务政策，变成可以执行、可以检
 
 应用源码、测试、数据管道、基础设施代码和 CI 都在私密仓库里。这个仓库是精选的展示版，只放文档、已核实的结果、截图和合成样例。
 
-<a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="播放 Rivulet LocalOps 讲解片" width="640"></a>
+<table>
+<tr>
+<td><a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="播放 Rivulet LocalOps 讲解片" width="520"></a></td>
+<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps 一页海报" width="207"></a></td>
+</tr>
+<tr>
+<td align="center"><a href="https://zeeekrom.github.io/rivulet-localops/film/">讲解片，3 分 43 秒</a></td>
+<td align="center"><a href="docs/poster.jpg">海报，2026 年 10 月</a></td>
+</tr>
+</table>
 
 **讲解片：** [观看 3 分 43 秒的影片](https://zeeekrom.github.io/rivulet-localops/film/)
 ——在录制回放上，跟着一条合成请求走过十条书面检查；用同一批公开数据为本片画的地图，讲地点与管辖层；AI 模型放在哪里、
 受什么限制；以及这个原型不是什么。英文旁白（合成语音），带字幕。
+
+**海报：** 2026 年 10 月为 v0.7.2 做的一页总结。上面的界面和数字（比如 40 个测试）按原样保留；现在的数字以本 README 为准。
 
 **线上演示（有边界）：** [Rivulet LocalOps 保障控制台](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 ——只有服务器预设的六个合成场景；访客不能输入任何文字，也没有真实居民数据。线上版本是 v0.10.0，内部支持接口不在这个
@@ -48,7 +59,6 @@ Rivulet LocalOps 把一份书面的服务政策，变成可以执行、可以检
 - [验证证据](#验证证据)
 - [合成样例](#合成样例)
 - [安全与数据边界](#安全与数据边界)
-- [海报](#海报)
 - [还没做完的](#还没做完的)
 - [这个项目说明了什么](#这个项目说明了什么)
 - [版权与条款](#版权与条款)
@@ -313,12 +323,6 @@ v0.10.0 里有一个数据留在澳洲的模型提供方（Amazon Bedrock 上的
 - D6 里的每个决定、复核、参与人、时间和业务指标都是固定种子生成的合成数据。它的比率只用来检验计算，不能作为议会表现或模型准确度的证据。
 - 公开演示的台账只在一个容器副本里，缩到零或换新版本后就会重置；它是演示用的痕迹，不是保留的审计证据。
 - F23 证明的是一次有边界的 Azure 作品集部署和几条指定的反向路由检查；它不能说明可以用于生产、有认证用户、审计记录能长期保留、闲置时真的缩到零，或者零成本。
-
-## 海报
-
-<img src="docs/poster.jpg" alt="项目海报" width="520">
-
-2026 年 10 月为 v0.7.2 做的一页历史总结。上面的界面和数字（比如 40 个测试）早于 v0.8.0 和 v0.9.0，按原样保留；现在的数字以本 README 为准。
 
 ## 还没做完的
 
