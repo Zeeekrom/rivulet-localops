@@ -16,19 +16,17 @@ Rivulet LocalOps 把一份书面的服务政策，变成可以执行、可以检
 <table>
 <tr>
 <td><a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="播放 Rivulet LocalOps 讲解片" width="520"></a></td>
-<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps 一页海报" width="207"></a></td>
+<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps 海报：AI 建议，人来决定" width="234"></a></td>
 </tr>
 <tr>
 <td align="center"><a href="https://zeeekrom.github.io/rivulet-localops/film/">讲解片，3 分 43 秒</a></td>
-<td align="center"><a href="docs/poster.jpg">海报，2026 年 10 月</a></td>
+<td align="center"><a href="docs/poster.jpg">海报，v0.10.0</a></td>
 </tr>
 </table>
 
 **讲解片：** [观看 3 分 43 秒的影片](https://zeeekrom.github.io/rivulet-localops/film/)
 ——在录制回放上，跟着一条合成请求走过十条书面检查；用同一批公开数据为本片画的地图，讲地点与管辖层；AI 模型放在哪里、
 受什么限制；以及这个原型不是什么。英文旁白（合成语音），带字幕。
-
-**海报：** 2026 年 10 月为 v0.7.2 做的一页总结。上面的界面和数字（比如 40 个测试）按原样保留；现在的数字以本 README 为准。
 
 **线上演示（有边界）：** [Rivulet LocalOps 保障控制台](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 ——只有服务器预设的六个合成场景；访客不能输入任何文字，也没有真实居民数据。线上版本是 v0.10.0，内部支持接口不在这个

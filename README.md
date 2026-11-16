@@ -16,11 +16,11 @@ The application source, tests, data pipelines, infrastructure code and CI live i
 <table>
 <tr>
 <td><a href="https://zeeekrom.github.io/rivulet-localops/film/"><img src="docs/film/preview.jpg" alt="Play the narrated walkthrough of Rivulet LocalOps" width="520"></a></td>
-<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps one-page poster" width="207"></a></td>
+<td><a href="docs/poster.jpg"><img src="docs/poster.jpg" alt="Rivulet LocalOps poster: the AI suggests, a person decides" width="234"></a></td>
 </tr>
 <tr>
 <td align="center"><a href="https://zeeekrom.github.io/rivulet-localops/film/">Narrated walkthrough, 3:43</a></td>
-<td align="center"><a href="docs/poster.jpg">Poster, October 2026</a></td>
+<td align="center"><a href="docs/poster.jpg">Poster, v0.10.0</a></td>
 </tr>
 </table>
 
@@ -28,9 +28,6 @@ The application source, tests, data pipelines, infrastructure code and CI live i
 — one synthetic request through the ten written checks on the recorded replay, the location and jurisdiction layer on a map
 drawn for the film from the same public data, where the AI model fits and what limits it, and what the prototype is not.
 English narration (synthetic voice) with captions.
-
-**Poster:** a one-page summary made in October 2026 for release v0.7.2. Its screen and figures (for example 40 tests)
-are kept as they were; the current figures are the ones in this README.
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 — six server-owned synthetic scenarios only; no visitor free text or real resident data. The live bounded profile is
