@@ -8,6 +8,7 @@ Rivulet LocalOps is a portfolio demonstrator and must not receive real resident,
 - untrusted-input screening of request text (`POL-INPUT-001`), measured on a frozen adversarial regression set;
 - location and jurisdiction checks against official Tasmanian boundaries (`POL-JURISDICTION-001`, `POL-PLACE-001`);
 - paid model calls locked off in code; the product owner unlocks them by hand and approves each run separately;
+- model calls only through Australian inference profiles (Sydney and Melbourne) and only on synthetic cases; the public demo and the replay page make no model calls;
 - on the model path, the written policy sets the priority floor: the model may raise urgency but never lower it;
 - explicit synthetic-data and synthetic-policy labels;
 - append-only application events with a SHA-256 hash chain;
@@ -17,7 +18,9 @@ Rivulet LocalOps is a portfolio demonstrator and must not receive real resident,
 - fail-closed automated processing after ledger-integrity failure;
 - automated negative tests;
 - SAST (Bandit), dependency audits (pip-audit, npm audit) and a container-image vulnerability gate before publication, each with a canary that proves it can fail;
-- third-party CI actions pinned by commit.
+- third-party CI actions pinned by commit;
+- Debian security updates applied in the container image at build time;
+- public pages without cookies, analytics or third-party requests, under a strict content security policy (see the [terms page](https://rivulet-localops-replay.pages.dev/terms/) for privacy).
 
 ## Not yet provided
 

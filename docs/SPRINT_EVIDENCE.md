@@ -2,11 +2,11 @@
 
 | Evidence field | Value |
 |---|---|
-| Date | 2026-10-12 |
-| Release | v0.8.0 |
-| Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0; GitHub-hosted verification; Azure Container Apps in New Zealand North |
+| Date | 2026-11-13 |
+| Release | v0.10.0 |
+| Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0; GitHub-hosted verification; Azure Container Apps in New Zealand North; Cloudflare Pages for the replay; Amazon Bedrock (Australian profiles) for approved model runs |
 
-This document records implemented results verified locally, by GitHub Actions and—only for the bounded public profile—on Azure. It does not claim real-user validation, production adoption or generative-model accuracy.
+This document records implemented results verified locally, by GitHub Actions and—only for the bounded public profile—on Azure. It does not claim real-user validation, production adoption or generative-model accuracy; the model runs below are small, approved runs on synthetic cases.
 
 ## Foundation / Sprint 0
 
@@ -250,6 +250,56 @@ Evidence is in [`evidence/F25`](../evidence/F25/2026-11-03/README.md) and
 designed after the baseline failures were seen, and the scans depend on the advisories published on the run date.
 Neither is a penetration test, a generative-model evaluation or evidence of robustness to unseen attacks.
 
+## F17 — Australian model provider (in v0.10.0)
+
+Goal: add a generative model behind the existing provider interface without letting it decide, and keep inference in
+Australia.
+
+| Acceptance item | Result |
+|---|---|
+| Offline slice | 8 of 8 checks with no model call: live calls locked in code, residency guard, offline path matches the rules baseline, every failure mode sends all 59 frozen cases to a person ([evidence](../evidence/F17/2026-11-03/README.md)) |
+| Residency | Only `au.anthropic.claude-*` profiles in Sydney and Melbourne are accepted; `global.`, `us.`, `apac.` and bare profiles are refused |
+| First live run | Claude Haiku 4.5, approved and capped: 73 of 73 answered, about USD 0.14; 2 category errors on the 59 adversarial cases against 11 for the rules; 1 unsafe pass under policy v0.2.0 (a registered residual) against 2; 8 of 12 regression priorities against 12 ([evidence](../evidence/F17/2026-11-04-live-full/README.md)) |
+| Failed attempt kept | An unpaced first run was throttled on 40 calls; every throttled case went to a person, and the run is kept on record |
+| Locked again | Paid calls were locked again by hand after the runs; the verification suite runs with the lock on |
+
+## F27 — Location and jurisdiction layer (in v0.10.0)
+
+Goal: answer "where is it, whose is it, and do the words and the point agree?" from official data instead of a word list.
+
+| Acceptance item | Result |
+|---|---|
+| Reference data | The LIST municipal boundaries (29) and localities (777), © State of Tasmania, CC BY 3.0 AU, snapshot on 5 November 2026 |
+| Point lookup | Agrees with the LIST service's own answers on 14 of 14 sample points |
+| Rules | Policy v0.3.0 adds `POL-JURISDICTION-001` (other municipality: reject with referral; outside Tasmania: escalate) and `POL-PLACE-001` (a named place in another municipality more than 2 km away: escalate) |
+| Frozen set | Only LOC-002 changes, from pass to escalate; one registered residual (AMB-007) remains |
+| Checks | 10 of 10 ([evidence](../evidence/F27/2026-11-05/README.md)) |
+
+## F28 — Policy priority floor (in v0.10.0)
+
+Goal: priority is a policy decision, so the model may raise urgency but never lower it.
+
+| Acceptance item | Result |
+|---|---|
+| One approved live run | Claude Haiku 4.5, 73 of 73 answered, about USD 0.14; three priority modes replayed offline from the same answers |
+| Regression priorities | 8 of 12 (`model`), 9 of 12 (`rules_floor`), 12 of 12 (`rules_with_review`); 25, 25 and 37 human-review flags |
+| Safety | No unexpected unsafe pass in any mode; the one unsafe model disagreement (an overflowing bin ranked lower) is removed by the floor |
+| Decision | The product owner chose `rules_floor` as the default ([evidence](../evidence/F28/2026-11-05/README.md)) |
+
+## v0.10.0 — Release, replay page and terms (13 November 2026)
+
+| Item | Result |
+|---|---|
+| Release | v0.10.0 carries F17, F27 and F28 above, the F29 hosting fallback and F30 copyright work; 210 automated tests; hosted verification and the container gate pass |
+| F29 replay page | A static build of the same console from a recording that must match the code; published to Cloudflare Pages and checked live for its page, security headers and recording |
+| F29 free-grant guard | Twice-daily check of Container Apps usage against the monthly free grant (warn at 70%, turn off public access at 90%); one approved live drill passed |
+| F30 copyright and terms | Copyright footer, `/terms/`, build-generated third-party notices, AI-crawler `robots.txt`, publisher and licence for every data source |
+| Container | Debian security updates applied in the image after Trivy flagged two zlib CVEs that Debian had already fixed |
+| Deployment | Azure deploy on 13 November 2026 passed the post-deploy smoke check without rollback; the live demo and the replay page both run v0.10.0 and policy v0.3.0 |
+
+The F17 and F28 figures come from self-authored synthetic cases and say nothing about model accuracy on real requests.
+The F29 and F30 run records stay in the private repositories.
+
 ## Hosted CI evidence
 
 Run numbers below refer to GitHub Actions runs in the private release repository.
@@ -332,9 +382,13 @@ they produce are under [`evidence`](../evidence).
 | The hash chain detects tested in-place modification | Yes | Not an immutable external audit store |
 | Provider automation can be stopped and manually routed | Yes | Same-process local operations control |
 | The bounded agent rejects the tested unauthorized capabilities | Yes | Local synthetic-case contract and deterministic provider only |
-| Request text that tries to instruct the system is escalated | Yes | Deterministic pattern screen measured on a frozen self-authored set; two registered residuals |
+| Request text that tries to instruct the system is escalated | Yes | Deterministic pattern screen measured on a frozen self-authored set; one registered residual under policy v0.3.0 (two under v0.2.0) |
 | The system resists unseen prompt-injection attacks | No | F25 is self-authored and the rule was designed after the baseline failures were seen |
 | Known-vulnerable dependencies and images are blocked before release | Yes | Advisories published on the run date; fixable HIGH/CRITICAL only for the image |
+| Model inference stays in Australia | Yes | Only Australian inference profiles (Sydney and Melbourne) are accepted; the hosted demo itself runs in New Zealand North |
+| The public demo uses an AI model | No | It runs the deterministic-rules provider; model calls happen only in approved, capped runs from the private repository |
+| The model can lower a request's priority or bypass the Gate | No | `rules_floor` keeps the policy priority as the floor; the Gate runs unchanged on the model path |
+| The replay page runs the policy live | No | It shows a recording that a test keeps identical to the code's output |
 | Identities are authenticated and authorised | No | IDs are asserted fields only |
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
@@ -349,5 +403,4 @@ they produce are under [`evidence`](../evidence).
 Resolved on 2026-11-03. The two upstream deprecation warnings from the FastAPI/Starlette TestClient layer came from
 the deprecated `httpx` test client and an old anyio alias inside Starlette 1.6.0. The dev dependency moved to
 `httpx2` 2.16.0 and Starlette moved to 1.10.0 (allowed by the pinned FastAPI); the suite now runs with no warnings.
-This maintenance change is on `main` after the v0.9.0 tag. The live demo and the v0.9.0 image keep Starlette 1.6.0
-until the next release; a local image built with 1.10.0 passed the same container checks.
+The change shipped in v0.10.0, so the live demo now runs Starlette 1.10.0; the v0.9.0 image kept 1.6.0.

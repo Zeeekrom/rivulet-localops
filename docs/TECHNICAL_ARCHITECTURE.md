@@ -1,7 +1,9 @@
 # Technical Architecture
 
-Status: release v0.8.0 is locally and hosted verified. The bounded Azure portfolio demo serves v0.8.0; its corrected
-rollback drill redeployed the captured v0.8.0 image/release after a controlled candidate failure and verified recovery.
+Status: release v0.10.0 (13 November 2026) is locally and hosted verified, and the bounded Azure portfolio demo serves
+it. v0.10.0 adds the location and jurisdiction rules (policy v0.3.0), a locked Australian model provider with the
+policy priority floor, a static replay page with a free-grant guard, and the copyright footer, terms page and
+third-party notices. The deployment workflow's rollback path was verified with v0.8.0 (section 13).
 
 ## 1. System boundary
 
@@ -14,12 +16,14 @@ Rivulet LocalOps has two intentionally separate FastAPI entry points. The intern
 4. agent control: server-selected identity, versioned capabilities, short-lived grants, allowlists and invocation audit.
 
 The separate `public_demo` entry point serves a React/TypeScript assurance console and only a health route, bootstrap
-metadata and five server-owned synthetic scenarios. It does not register internal `/api/v1/*`, `/ops/*`, OpenAPI or
+metadata and six server-owned synthetic scenarios. It does not register internal `/api/v1/*`, `/ops/*`, OpenAPI or
 documentation routes and accepts no visitor free text.
 
 SQLite is the current event store. D1/D2 public snapshots and the D6 synthetic event export feed a reproducible
-SQLite/CSV analytics mart. There is no authenticated identity provider, external business connector, PostgreSQL
-service, Power BI Service/Fabric deployment or generative-model provider in this release. The public profile has one
+SQLite/CSV analytics mart; the D7/D8 LIST boundaries feed the location rules. A model provider (Claude on Amazon
+Bedrock, Australian inference profiles only) sits behind the same interface as the rules but is locked off in code
+(section 14). There is no authenticated identity provider, external business connector, PostgreSQL service or
+Power BI Service/Fabric deployment in this release. The public profile has one
 recorded Azure deployment; its SQLite trace remains ephemeral. A local, version-controlled Power BI Project reads
 seven mart tables through deterministic Import partitions.
 
@@ -42,6 +46,8 @@ flowchart TB
 
     J[Versioned JSON policy] --> G
     H[Hobart GeoJSON snapshot] --> A
+    LB[LIST boundaries and localities] --> G
+    MB[Claude on Bedrock, AU only, locked] -. same interface .-> T
     V --> T
     C --> B
     B --> T
@@ -85,8 +91,8 @@ sequenceDiagram
 
 ## 3. Policy and deterministic Gate
 
-The active pack in the code is `data/policies/waste_litter_demo_v0.3.0.json` (schema 1.2); the live demo still runs
-v0.2.0 (schema 1.1) until its next deployment. `v0.1.0` (schema 1.0) is kept unchanged because the D6 synthetic ledger
+The active pack is `data/policies/waste_litter_demo_v0.3.0.json` (schema 1.2), live since v0.10.0 on 13 November
+2026; v0.2.0 (schema 1.1) ran the live demo before that. `v0.1.0` (schema 1.0) is kept unchanged because the D6 synthetic ledger
 is generated against it. Earlier packs keep their content hashes. The schema requires:
 
 - explicit `approved_for_demo` state;
@@ -250,8 +256,8 @@ invocations append agent/owner/purpose IDs, registry/policy/provider versions, g
 hashes, latency and termination reason to the existing ledger. Raw request prose is omitted from the agent audit
 payload. The agent never runs the deterministic Gate, records a human decision or writes to an external connector.
 
-These controls do not authenticate callers, implement real object-level authorization or turn the deterministic-rules
-adapter into generative AI. The registry is not signed, and a plain input SHA-256 hash is not a privacy-preserving
+These controls do not authenticate callers or implement real object-level authorization. The public demo's agent uses
+the deterministic-rules provider; the model provider (section 14) runs only in approved runs on synthetic cases. The registry is not signed, and a plain input SHA-256 hash is not a privacy-preserving
 commitment for personal data.
 
 ## 11. Analytics contracts and mart
@@ -297,36 +303,90 @@ Azure IaC declares one New Zealand North Container Apps Consumption environment 
 min replicas 0 and max replicas 1. Since November 2026 the image comes from a private GHCR package, which the app pulls
 with a read-only registry token held as a Container App secret. GitHub Actions obtains Azure access
 through a user-assigned managed identity federated to the `azure-demo` environment, scoped as Contributor only to the
-dedicated resource group and without an Azure client secret. The v0.8.0 workflow captures pre-deploy health, verifies exact
+dedicated resource group and without an Azure client secret. Since v0.10.0 the image applies Debian security updates
+at build time, after Trivy flagged two zlib CVEs that Debian had fixed before the base image did; v0.10.0 was deployed
+on 13 November 2026 and passed the post-deploy smoke check without rollback. The workflow (since v0.8.0) captures pre-deploy health, verifies exact
 release, security headers, six negative routes and capability denial, and—on failure—redeploys the previously observed
 image/release through the same Bicep template before verifying recovery. Run `38206163289` exercises that full rollback
 path; failed run `38205693603` is retained because it exposed an unsupported CLI argument. F23 records the earlier
 v0.7.1 deployment evidence. Log Analytics is not attached; the expiry
 tag is governance metadata rather than automatic deletion.
 
-## 14. Technology status
+## 14. Model provider and priority floor (F17, F28)
+
+A second triage provider, `BedrockTriageProvider`, sits behind the same `TriageProvider` interface as the deterministic
+rules. It calls Claude on Amazon Bedrock only through Australian geographic inference profiles (`au.anthropic.claude-*`),
+which route only between Sydney (`ap-southeast-2`) and Melbourne (`ap-southeast-4`); any other profile or region is
+rejected before a client is built. Paid calls are locked off in code (`LIVE_MODEL_CALLS_LOCKED = True`). The product
+owner unlocks them by hand for one approved run, which carries a call cap and a US-dollar budget, and locks them again
+afterwards. The public demo and the replay page use the rules provider and make no model calls.
+
+The model returns a structured diagnosis: category, priority, confidence and missing information. Refusal, truncation,
+invalid JSON, a schema violation, throttling and timeouts all fail closed, so the Gate sends the request to a person.
+The Gate itself, including `POL-INPUT-001` and the location rules, runs unchanged on the model path, and the model
+is given no tools.
+
+Priority is a policy decision, so F28 offers three ways to set the final priority and makes `rules_floor` the default:
+
+| Mode | Final priority |
+|---|---|
+| `model` | The model's priority stands |
+| `rules_floor` (default) | The written policy's priority is the floor; the model may raise urgency but never lower it |
+| `rules_with_review` | The policy's priority stands; a more urgent model view sends the case to a person |
+
+Two approved runs with Claude Haiku 4.5 on 73 synthetic cases cost about USD 0.14 each. See
+[F17](../evidence/F17/2026-11-04-live-full/README.md) and [F28](../evidence/F28/2026-11-05/README.md).
+
+## 15. Static replay page and free-grant guard (F29)
+
+The same React console also builds in a replay mode that reads a recording instead of calling the API. The recording
+holds the bootstrap data and the six scenario results produced by the real policy check; a test fails when the recording
+no longer matches what the code produces, ignoring only IDs, times and hashes. The replay build makes no API requests,
+says on every page that it is a recording, and is published to Cloudflare Pages (free plan) from the private release
+repository with the same security headers as the live demo. It stays available when the live demo is asleep, offline
+or moved.
+
+A scheduled guard runs twice a day in GitHub Actions with the deployment's managed identity. It compares this month's
+Container Apps usage, read from Cost Management usage quantities, with the monthly free grant: at 70% it warns, at 90%
+it turns off public ingress and tags the app, and in the next month it restores only what it turned off. One approved
+live drill turned access off and back on at the same address. A runbook covers moving the demo to a pay-as-you-go
+subscription in Australia East.
+
+## 16. Copyright, terms and public pages (F30)
+
+The project is all rights reserved. Both console builds show a copyright footer that links a static `/terms/` page,
+marked as a draft not yet reviewed by a lawyer, covering copyright, prohibited uses, third-party parts and privacy. The
+build writes `/third-party-notices.txt` from the open-source packages actually bundled (React, React DOM, scheduler and
+helpers from Vite and Rolldown, all MIT) and fails if a bundled package has no licence file. Each data source in the
+console shows its publisher and licence. `robots.txt` asks AI training and answer crawlers to stay out while search
+engines may index. The pages set no cookies, run no analytics and load nothing from other sites; the project stores
+no request logs from the live demo and keeps only a one-minute, in-memory rate-limit count.
+
+## 17. Technology status
 
 | Area | Current | Planned, not implemented |
 |---|---|---|
 | Application | Python 3.12, FastAPI/Pydantic plus React 19/TypeScript/Vite cloud-safe console | Authenticated review experience |
-| Decision engine | Deterministic rules provider behind a bounded read-only agent adapter | Model-provider comparison after security evaluation |
+| Decision engine | Deterministic rules provider behind a bounded read-only agent adapter; a locked Claude on Bedrock provider (AU profiles) behind the same interface, with the policy priority floor | Multi-intent splitting; wider model evaluation on independent labels |
 | Operational store | SQLite append-only events | PostgreSQL, migrations and retention controls |
-| Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL | Additional sources only when a report field requires them |
+| Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL + LIST municipal boundaries and localities | LIST address points; additional sources only when a report field requires them |
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
-| Security | Gate with untrusted-input rule, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, Bandit/pip-audit/npm audit/Trivy gates with canaries, commit-pinned third-party actions, frozen adversarial evaluation and negative tests | Signed audit checkpoints, TypeScript SAST, multi-intent splitting and a locality gazetteer for text-versus-coordinate checks |
-| Delivery | Exact lockfiles, verification, multi-stage image, public OCI/SBOM, Bicep, resource-group-scoped OIDC, deployment smoke and verified hosted rollback | Production observability, automated expiry/teardown and multi-environment promotion |
+| Security | Gate with untrusted-input rule, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, Bandit/pip-audit/npm audit/Trivy gates with canaries, commit-pinned third-party actions, frozen adversarial evaluation, location and jurisdiction rules and negative tests | Signed audit checkpoints, TypeScript SAST, multi-intent splitting and street-address verification |
+| Delivery | Exact lockfiles, verification, multi-stage image, private GHCR image with SBOM attestation, Bicep, resource-group-scoped OIDC, deployment smoke, verified hosted rollback, static replay page on Cloudflare Pages and a scheduled free-grant guard | Production observability, automated expiry/teardown and multi-environment promotion |
 | Application support | Component health, redacted structured logs, Support Bundle, internal support UI, five runbooks and local synthetic recovery evidence | External alerting/SLA system and physically separate support control plane |
 
-## 15. Primary limitations
+## 18. Primary limitations
 
 - The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
 - Self-authored regression cases do not establish real-world accuracy.
-- The untrusted-input rule is a pattern screen designed after seeing its own test set's failures; it cannot recognise every phrasing, and two known cases still pass.
+- The untrusted-input rule is a pattern screen designed after seeing its own test set's failures; it cannot recognise every phrasing, and one known case (a request reporting two issues) still passes.
 - SQLite is suitable for the current local demonstrator, not a multi-node production service.
 - Asserted identity fields do not prevent impersonation.
 - Agent capability checks are local contract controls, not authorization against a multi-user case store; the registry is hashed but not signed.
-- No generative model is connected, and the current agent cannot execute the Gate, a human decision or a connector.
+- The model provider runs only in approved, capped runs on synthetic cases; two runs on 73 self-authored cases do not establish model accuracy. The agent cannot execute the Gate, a human decision or a connector.
+- The replay page shows recorded results and runs nothing; the free-grant guard sees only this resource group, while the grant is per subscription, and GitHub scheduled runs can be delayed.
+- The location rules use boundaries simplified to about 20-30 m and official locality and municipality names; they do not verify street addresses.
 - No connector means no action is executed and no downstream receipt exists.
 - No real council has validated the policy, workflow or operational fit.
 - D2 is Townsville aggregate context, not Hobart operational demand; D6 metrics are designed fixtures, not measured performance.
