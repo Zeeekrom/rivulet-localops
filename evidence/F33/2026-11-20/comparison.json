@@ -1,0 +1,174 @@
+{
+  "experiment_id": "F33",
+  "policies": {
+    "v0.4.0": "ff0816caa8cc5e64b0ab0908fe40bbca5d44d83b2a33145a1b96d89f6162633e",
+    "v0.5.0": "ddae9e99216527b1f8be3960a52891425f98f8f3db97f1962d036e7b57de868c",
+    "v0.5.0 + classifier 0.2.0": "586c253882a97996f80d0598f972e0330c937ed827992de3755d8bdb9ecb2681"
+  },
+  "sets": {
+    "eval/multi_issue_v1.json": {
+      "sha256_lf": "c83fe580905107d5b79c104e30e69e9ff17fea906188fcba8335521a7fb5cdd2",
+      "variants": {
+        "v0.4.0": {
+          "multi_passing_gate": [],
+          "single_status": {
+            "escalate": 7,
+            "pass": 7
+          },
+          "single_category_right": 10,
+          "single_cases": 14,
+          "single_category_wrong_ids": [
+            "MI-D12",
+            "MI-D14",
+            "MI-T13",
+            "MI-T14"
+          ]
+        },
+        "v0.5.0": {
+          "multi_passing_gate": [],
+          "single_status": {
+            "escalate": 8,
+            "pass": 6
+          },
+          "single_category_right": 10,
+          "single_cases": 14,
+          "single_category_wrong_ids": [
+            "MI-D12",
+            "MI-D14",
+            "MI-T13",
+            "MI-T14"
+          ]
+        },
+        "v0.5.0 + classifier 0.2.0": {
+          "multi_passing_gate": [],
+          "single_status": {
+            "escalate": 6,
+            "pass": 8
+          },
+          "single_category_right": 14,
+          "single_cases": 14,
+          "single_category_wrong_ids": []
+        }
+      }
+    },
+    "eval/multi_issue_blind_v1.json": {
+      "sha256_lf": "2bc21c25a99b159735f273dba973159c43337d578391d55e4793f63a456ebe64",
+      "variants": {
+        "v0.4.0": {
+          "multi_passing_gate": [],
+          "single_status": {
+            "escalate": 14,
+            "pass": 2
+          },
+          "single_category_right": 6,
+          "single_cases": 16,
+          "single_category_wrong_ids": [
+            "MB-17",
+            "MB-18",
+            "MB-21",
+            "MB-23",
+            "MB-24",
+            "MB-26",
+            "MB-27",
+            "MB-29",
+            "MB-30",
+            "MB-31"
+          ]
+        },
+        "v0.5.0": {
+          "multi_passing_gate": [],
+          "single_status": {
+            "escalate": 16
+          },
+          "single_category_right": 6,
+          "single_cases": 16,
+          "single_category_wrong_ids": [
+            "MB-17",
+            "MB-18",
+            "MB-21",
+            "MB-23",
+            "MB-24",
+            "MB-26",
+            "MB-27",
+            "MB-29",
+            "MB-30",
+            "MB-31"
+          ]
+        },
+        "v0.5.0 + classifier 0.2.0": {
+          "multi_passing_gate": [],
+          "single_status": {
+            "escalate": 15,
+            "pass": 1
+          },
+          "single_category_right": 14,
+          "single_cases": 16,
+          "single_category_wrong_ids": [
+            "MB-18",
+            "MB-31"
+          ]
+        }
+      }
+    },
+    "eval/multi_issue_blind_v2.json": {
+      "sha256_lf": "2f5dafb5b93f64e84557d114468b5b5306f2197b6945d146d49f395495cd4632",
+      "variants": {
+        "v0.4.0": {
+          "multi_passing_gate": [],
+          "single_status": {
+            "escalate": 20
+          },
+          "single_category_right": 11,
+          "single_cases": 20,
+          "single_category_wrong_ids": [
+            "MC-08",
+            "MC-14",
+            "MC-15",
+            "MC-18",
+            "MC-22",
+            "MC-28",
+            "MC-29",
+            "MC-36",
+            "MC-39"
+          ]
+        },
+        "v0.5.0": {
+          "multi_passing_gate": [],
+          "single_status": {
+            "escalate": 20
+          },
+          "single_category_right": 11,
+          "single_cases": 20,
+          "single_category_wrong_ids": [
+            "MC-08",
+            "MC-14",
+            "MC-15",
+            "MC-18",
+            "MC-22",
+            "MC-28",
+            "MC-29",
+            "MC-36",
+            "MC-39"
+          ]
+        },
+        "v0.5.0 + classifier 0.2.0": {
+          "multi_passing_gate": [
+            "MC-07",
+            "MC-20"
+          ],
+          "single_status": {
+            "escalate": 20
+          },
+          "single_category_right": 17,
+          "single_cases": 20,
+          "single_category_wrong_ids": [
+            "MC-04",
+            "MC-15",
+            "MC-28"
+          ]
+        }
+      }
+    }
+  },
+  "claim_boundary": "Synthetic frozen sets; the first two had been seen before classifier 0.2.0 was written, the second blind set had not. A pass means a draft would be created; a multi-issue request that passes loses its other issues."
+}

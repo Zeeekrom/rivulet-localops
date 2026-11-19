@@ -1,0 +1,181 @@
+{
+  "experiment_id": "F35",
+  "policy": {
+    "version": "0.5.0",
+    "content_hash": "ddae9e99216527b1f8be3960a52891425f98f8f3db97f1962d036e7b57de868c"
+  },
+  "source": {
+    "source_id": "D9",
+    "records": 27967,
+    "sha256": "73ace95a419924b63516c94727d9b277a7fe9a28a49841546a9bc01c9ecf08f7",
+    "retrieved_at_utc": "2026-11-19T22:11:25.357024+00:00"
+  },
+  "probes": {
+    "cases": 12,
+    "correct": 12,
+    "rows": [
+      {
+        "id": "ADR-01",
+        "text": "Overflowing bin outside 40 Elizabeth St",
+        "expected": "pass",
+        "outcome": "pass",
+        "message": "Named streets (40 Elizabeth St) are consistent with the point (official LIST address points).",
+        "gate_status": "pass",
+        "correct": true
+      },
+      {
+        "id": "ADR-02",
+        "text": "Overflowing bin outside 40 Elizabeth St",
+        "expected": "fail",
+        "outcome": "fail",
+        "message": "The text names 40 Elizabeth St (1.8 km away), beyond the 200 m (address) or 300 m (street) tolerance; a person must confirm the location.",
+        "gate_status": "escalate",
+        "correct": true
+      },
+      {
+        "id": "ADR-03",
+        "text": "Pothole on Sandy Bay Road",
+        "expected": "pass",
+        "outcome": "pass",
+        "message": "Named streets (Sandy Bay Road) are consistent with the point (official LIST address points).",
+        "gate_status": "escalate",
+        "correct": true
+      },
+      {
+        "id": "ADR-04",
+        "text": "Pothole on Sandy Bay Road",
+        "expected": "fail",
+        "outcome": "fail",
+        "message": "The text names Sandy Bay Road (2.0 km away), beyond the 200 m (address) or 300 m (street) tolerance; a person must confirm the location.",
+        "gate_status": "escalate",
+        "correct": true
+      },
+      {
+        "id": "ADR-05",
+        "text": "pothole at 3/40 sandy bay rd",
+        "expected": "pass",
+        "outcome": "pass",
+        "message": "Named streets (3/40 sandy bay rd) are consistent with the point (official LIST address points).",
+        "gate_status": "escalate",
+        "correct": true
+      },
+      {
+        "id": "ADR-06",
+        "text": "Rubbish dumped at 13 Argyle St",
+        "expected": "pass",
+        "outcome": "pass",
+        "message": "Named streets (13 Argyle St) are consistent with the point (official LIST address points).",
+        "gate_status": "escalate",
+        "correct": true
+      },
+      {
+        "id": "ADR-07",
+        "text": "Litter near the bin at 9999 Elizabeth Street",
+        "expected": "pass",
+        "outcome": "pass",
+        "message": "Named streets (9999 Elizabeth Street) are consistent with the point (official LIST address points).",
+        "gate_status": "pass",
+        "correct": true
+      },
+      {
+        "id": "ADR-08",
+        "text": "Tree down on Mt Stuart Rd",
+        "expected": "fail",
+        "outcome": "fail",
+        "message": "The text names Mt Stuart Rd (1.7 km away), beyond the 200 m (address) or 300 m (street) tolerance; a person must confirm the location.",
+        "gate_status": "escalate",
+        "correct": true
+      },
+      {
+        "id": "ADR-09",
+        "text": "Overflowing bin on Main Road",
+        "expected": "pass",
+        "outcome": "pass",
+        "message": "The text names no Hobart street.",
+        "gate_status": "pass",
+        "correct": true
+      },
+      {
+        "id": "ADR-10",
+        "text": "Elizabeth said the bin is full",
+        "expected": "pass",
+        "outcome": "pass",
+        "message": "The text names no Hobart street.",
+        "gate_status": "escalate",
+        "correct": true
+      },
+      {
+        "id": "ADR-11",
+        "text": "Overflowing bin outside 40 Elizabeth St",
+        "expected": "not_applicable",
+        "outcome": "not_applicable",
+        "message": "Street addresses are checked only for points inside Hobart, where the address reference applies.",
+        "gate_status": "escalate",
+        "correct": true
+      },
+      {
+        "id": "ADR-12",
+        "text": "Overflowing bin outside 40 Elizabeth St",
+        "expected": "not_applicable",
+        "outcome": "not_applicable",
+        "message": "Street addresses cannot be compared with a location until coordinates are supplied.",
+        "gate_status": "reject",
+        "correct": true
+      }
+    ]
+  },
+  "street_gaps": {
+    "streets": 681,
+    "street_tolerance_metres": 300.0,
+    "streets_with_a_gap_over_twice_the_tolerance": 10,
+    "share": 0.0147,
+    "those_streets_longest_gap_metres": [
+      {
+        "street": "WATERWORKS ROAD",
+        "gap_metres": 1689
+      },
+      {
+        "street": "PROCTORS ROAD",
+        "gap_metres": 1642
+      },
+      {
+        "street": "DAVIES AVENUE",
+        "gap_metres": 1358
+      },
+      {
+        "street": "PINNACLE ROAD",
+        "gap_metres": 1058
+      },
+      {
+        "street": "HUON ROAD",
+        "gap_metres": 1028
+      },
+      {
+        "street": "MCROBIES ROAD",
+        "gap_metres": 920
+      },
+      {
+        "street": "LENAH VALLEY ROAD",
+        "gap_metres": 870
+      },
+      {
+        "street": "CASCADE ROAD",
+        "gap_metres": 777
+      },
+      {
+        "street": "KALANG AVENUE",
+        "gap_metres": 657
+      },
+      {
+        "street": "POTTERY ROAD",
+        "gap_metres": 647
+      }
+    ]
+  },
+  "performance": {
+    "load_seconds": 0.1,
+    "streets": 681,
+    "mention_scan_ms_per_request": 1.05
+  },
+  "claim_boundary": "Probes are hand-written against real LIST address points; they check the rule's mechanics, not how often real residents type addresses that disagree with their pin. The street-gap measure approximates where a correct pin could be escalated; it cannot see road geometry or large parcels whose address point sits far from the frontage."
+}

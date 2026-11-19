@@ -1,7 +1,8 @@
 # Technical Architecture
 
-Status: release v0.11.1 (19 November 2026) is locally and hosted verified, and the bounded Azure portfolio demo serves
-it. v0.11 adds the one-request-one-issue rule (policy v0.4.0, section 3). v0.10.0 added the location and jurisdiction rules (policy v0.3.0), a locked Australian model provider with the
+Status: release v0.12.0 (20 November 2026) is locally and hosted verified, and the bounded Azure portfolio demo serves
+it. v0.12.0 runs policy v0.5.0: a wider multi-issue lexicon, the priority wording held in the policy, and a street-address
+check on LIST address points (section 3). v0.11 added the one-request-one-issue rule (policy v0.4.0). v0.10.0 added the location and jurisdiction rules (policy v0.3.0), a locked Australian model provider with the
 policy priority floor, a static replay page with a free-grant guard, and the copyright footer, terms page and
 third-party notices. The deployment workflow's rollback path was verified with v0.8.0 (section 13).
 
@@ -91,8 +92,8 @@ sequenceDiagram
 
 ## 3. Policy and deterministic Gate
 
-The active pack is `data/policies/waste_litter_demo_v0.4.0.json` (schema 1.3), live since v0.11.1 on 19 November
-2026; v0.3.0 (schema 1.2) ran from 13 November and v0.2.0 (schema 1.1) before that. `v0.1.0` (schema 1.0) is kept unchanged because the D6 synthetic ledger
+The active pack is `data/policies/waste_litter_demo_v0.5.0.json` (schema 1.4), live since v0.12.0 on 20 November
+2026; v0.4.0 (schema 1.3) ran from 19 November, v0.3.0 (schema 1.2) from 13 November and v0.2.0 (schema 1.1) before that. `v0.1.0` (schema 1.0) is kept unchanged because the D6 synthetic ledger
 is generated against it. Earlier packs keep their content hashes. The schema requires:
 
 - explicit `approved_for_demo` state;
@@ -104,10 +105,13 @@ is generated against it. Earlier packs keep their content hashes. The schema req
 - from schema 1.2, a `location_integrity` section naming the council's own municipality and how far a named place may
   lie from the point;
 - from schema 1.3, an `issue_integrity` section with the number of services whose problem wording sends a request to a
-  person (two) and the lexicon version.
+  person (two) and the lexicon version;
+- from schema 1.4, a `diagnosis` section naming the rules classifier version and the emergency (P1) and urgent (P2)
+  wording, and an `address_integrity` section with how far a named address (200 m) or street (300 m) may lie from the
+  point.
 
-The Gate evaluates eleven visible rules under v0.4.0 (ten under v0.3.0, eight under v0.2.0, the first seven under
-v0.1.0):
+The Gate evaluates twelve visible rules under v0.5.0 (eleven under v0.4.0, ten under v0.3.0, eight under v0.2.0, the
+first seven under v0.1.0):
 
 | Rule | Check | Failure effect |
 |---|---|---|
@@ -122,6 +126,7 @@ v0.1.0):
 | `POL-JURISDICTION-001` | The point lies in the council's municipality (official LIST boundaries) | Reject with a referral to the responsible council; escalate if the point is outside every Tasmanian municipality |
 | `POL-PLACE-001` | No official place named in the text lies in another municipality more than 2 km from the point | Escalate |
 | `POL-SINGLE-ISSUE-001` | The text reports problems for at most one council service | Escalate, naming the services so a person can split the request |
+| `POL-ADDRESS-001` | A Hobart street or street address named in the text lies near the point (LIST address points) | Escalate |
 
 `POL-SINGLE-ISSUE-001` follows the one-issue-per-request rule of real intake systems: NYC 311 defines a request as a
 report about one issue at a specific location, and FixMyStreet councils such as Bromley ask for separate issues on
@@ -130,6 +135,18 @@ against a hand-written lexicon of problem wording for each of the eight services
 drain, toilet, car park, parking meter) are not in it, and several items of the same kind count as one issue. It
 reports lexicon labels only. On a blind set written by a separate agent it flagged none of 16 single-issue requests
 but found only 5 of 16 multi-issue requests, so it is a deterministic floor rather than full multi-intent extraction.
+Policy v0.5.0 uses lexicon 1.1.1, widened by general rules (wider gaps, tenses, contractions, negation) and frozen
+before a second blind set of 40 requests was written by another agent: run once, it found 11 of 20 multi-issue
+requests and flagged 0 of 20 single-issue ones. A classifier change that let problem wording decide the category was
+measured on the same set; it named the right service for 17 of 20 single-issue requests instead of 11, but let 2 of 20
+multi-issue requests pass as single drafts, so it was not adopted.
+
+`POL-ADDRESS-001` does what council intake forms do when they geocode a typed address and compare it with the pin.
+It reads street names that exist in a snapshot of the LIST Address Points for the City of Hobart (27,967 points, 681
+streets, CC BY 3.0 AU, 20 November 2026), each followed by its street type, and a number written just before the
+street, including units and ranges. A numbered address on file must lie within 200 m of the point; otherwise the
+nearest address point of the named street must lie within 300 m. It runs only for points inside Hobart and only
+escalates; on 10 of the 681 streets, long roads with few addresses, a correct point can still be sent to a person.
 
 The two location rules follow how working intake systems treat location: council forms that accept only suburbs in the
 municipality and refer the rest, FixMyStreet's boundary lookup (MapIt) that picks the responsible body, and Open311's
@@ -320,7 +337,7 @@ at build time, after Trivy flagged two zlib CVEs that Debian had fixed before th
 on 13 November 2026 and passed the post-deploy smoke check without rollback. On 19 November the v0.11.0 image lacked
 the new policy file and never became healthy; the workflow rolled back to v0.10.0 and verified recovery on its own.
 v0.11.1 copies the file, a test checks that the image carries every data file the demo reads, and the image is started
-locally before deployment. The workflow (since v0.8.0) captures pre-deploy health, verifies exact
+locally before deployment; v0.12.0 was deployed that way on 20 November and passed without rollback. The workflow (since v0.8.0) captures pre-deploy health, verifies exact
 release, security headers, six negative routes and capability denial, and—on failure—redeploys the previously observed
 image/release through the same Bicep template before verifying recovery. Run `38206163289` exercises that full rollback
 path; failed run `38205693603` is retained because it exposed an unsupported CLI argument. F23 records the earlier
@@ -349,6 +366,11 @@ Priority is a policy decision, so F28 offers three ways to set the final priorit
 | `rules_floor` (default) | The written policy's priority is the floor; the model may raise urgency but never lower it |
 | `rules_with_review` | The policy's priority stands; a more urgent model view sends the case to a person |
 
+Since policy v0.5.0 the wording behind the policy priority lives in the policy pack, so both the rules provider and the
+model's floor read the approved version. Levels follow published service standards (Hobart's stormwater and animal
+pages, the Tasmanian Dog Control Act 2000 and noise regulations, and other Australian councils' response times): water
+across a road and a dog at large are urgent (P2), and construction noise at night stays routine (P3).
+
 Two approved runs with Claude Haiku 4.5 on 73 synthetic cases cost about USD 0.14 each. See
 [F17](../evidence/F17/2026-11-04-live-full/README.md) and [F28](../evidence/F28/2026-11-05/README.md).
 
@@ -373,8 +395,8 @@ The project is all rights reserved. Both console builds show a copyright footer 
 marked as a draft not yet reviewed by a lawyer, covering copyright, prohibited uses, third-party parts and privacy. The
 build writes `/third-party-notices.txt` from the open-source packages actually bundled (React, React DOM, scheduler and
 helpers from Vite and Rolldown, all MIT) and fails if a bundled package has no licence file. Each data source in the
-console shows its publisher and licence. `robots.txt` asks AI training and answer crawlers to stay out while search
-engines may index. The pages set no cookies, run no analytics and load nothing from other sites; the project stores
+console shows its publisher and licence. `robots.txt` asks AI training crawlers to stay out, while search engines, AI
+search and assistants fetching a page for a person may read the pages. The pages set no cookies, run no analytics and load nothing from other sites; the project stores
 no request logs from the live demo and keeps only a one-minute, in-memory rate-limit count.
 
 ## 17. Technology status
@@ -384,10 +406,10 @@ no request logs from the live demo and keeps only a one-minute, in-memory rate-l
 | Application | Python 3.12, FastAPI/Pydantic plus React 19/TypeScript/Vite cloud-safe console | Authenticated review experience |
 | Decision engine | Deterministic rules provider behind a bounded read-only agent adapter; a locked Claude on Bedrock provider (AU profiles) behind the same interface, with the policy priority floor | Multi-intent splitting; wider model evaluation on independent labels |
 | Operational store | SQLite append-only events | PostgreSQL, migrations and retention controls |
-| Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL + LIST municipal boundaries and localities | LIST address points; additional sources only when a report field requires them |
+| Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL + LIST municipal boundaries, localities and Hobart address points | Address points beyond Hobart; additional sources only when a report field requires them |
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
-| Security | Gate with untrusted-input rule, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, Bandit/pip-audit/npm audit/Trivy gates with canaries, commit-pinned third-party actions, frozen adversarial evaluation, location and jurisdiction rules, one-issue-per-request rule and negative tests | Signed audit checkpoints, TypeScript SAST, multi-intent extraction beyond the lexicon and street-address verification |
+| Security | Gate with untrusted-input rule, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, Bandit/pip-audit/npm audit/Trivy gates with canaries, commit-pinned third-party actions, frozen adversarial evaluation, location and jurisdiction rules, one-issue-per-request rule, street-address check and negative tests | Signed audit checkpoints, TypeScript SAST and multi-intent extraction beyond the lexicon |
 | Delivery | Exact lockfiles, verification, multi-stage image, private GHCR image with SBOM attestation, Bicep, resource-group-scoped OIDC, deployment smoke, verified hosted rollback, static replay page on Cloudflare Pages and a scheduled free-grant guard | Production observability, automated expiry/teardown and multi-environment promotion |
 | Application support | Component health, redacted structured logs, Support Bundle, internal support UI, five runbooks and local synthetic recovery evidence | External alerting/SLA system and physically separate support control plane |
 
@@ -396,13 +418,13 @@ no request logs from the live demo and keeps only a one-minute, in-memory rate-l
 - The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
 - Self-authored regression cases do not establish real-world accuracy.
 - The untrusted-input rule is a pattern screen designed after seeing its own test set's failures; it cannot recognise every phrasing.
-- The one-issue rule reads a hand-written lexicon: on independent wording it found 5 of 16 multi-issue requests. The others still reached a person through earlier rules, but without the reason that they need splitting.
+- The one-issue rule reads a hand-written lexicon: on independent wording it found 5 of 16 multi-issue requests, and 11 of 20 on a second blind set after v0.5.0 widened it. The others still reached a person through earlier rules, but without the reason that they need splitting.
 - SQLite is suitable for the current local demonstrator, not a multi-node production service.
 - Asserted identity fields do not prevent impersonation.
 - Agent capability checks are local contract controls, not authorization against a multi-user case store; the registry is hashed but not signed.
 - The model provider runs only in approved, capped runs on synthetic cases; two runs on 73 self-authored cases do not establish model accuracy. The agent cannot execute the Gate, a human decision or a connector.
 - The replay page shows recorded results and runs nothing; the free-grant guard sees only this resource group, while the grant is per subscription, and GitHub scheduled runs can be delayed.
-- The location rules use boundaries simplified to about 20-30 m and official locality and municipality names; they do not verify street addresses.
+- The location rules use boundaries simplified to about 20-30 m and official locality and municipality names. The address check covers Hobart only, from a dated snapshot, and a large parcel's address point can lie far from its frontage.
 - No connector means no action is executed and no downstream receipt exists.
 - No real council has validated the policy, workflow or operational fit.
 - D2 is Townsville aggregate context, not Hobart operational demand; D6 metrics are designed fixtures, not measured performance.

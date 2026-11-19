@@ -17,7 +17,7 @@
       "gate": {
         "status": "pass",
         "can_execute": true,
-        "policy_version": "0.4.0",
+        "policy_version": "0.5.0",
         "rules": [
           {
             "rule_id": "POL-SCOPE-001",
@@ -80,6 +80,12 @@
             "message": "The text names no official Tasmanian place."
           },
           {
+            "rule_id": "POL-ADDRESS-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The text names no Hobart street."
+          },
+          {
             "rule_id": "POL-SINGLE-ISSUE-001",
             "outcome": "pass",
             "effect": "allow",
@@ -121,7 +127,7 @@
       "gate": {
         "status": "reject",
         "can_execute": false,
-        "policy_version": "0.4.0",
+        "policy_version": "0.5.0",
         "rules": [
           {
             "rule_id": "POL-SCOPE-001",
@@ -184,6 +190,12 @@
             "message": "Place names cannot be compared with a location until coordinates are supplied."
           },
           {
+            "rule_id": "POL-ADDRESS-001",
+            "outcome": "not_applicable",
+            "effect": "allow",
+            "message": "Street addresses cannot be compared with a location until coordinates are supplied."
+          },
+          {
             "rule_id": "POL-SINGLE-ISSUE-001",
             "outcome": "pass",
             "effect": "allow",
@@ -221,7 +233,7 @@
       "gate": {
         "status": "escalate",
         "can_execute": false,
-        "policy_version": "0.4.0",
+        "policy_version": "0.5.0",
         "rules": [
           {
             "rule_id": "POL-SCOPE-001",
@@ -284,6 +296,12 @@
             "message": "The text names no official Tasmanian place."
           },
           {
+            "rule_id": "POL-ADDRESS-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The text names no Hobart street."
+          },
+          {
             "rule_id": "POL-SINGLE-ISSUE-001",
             "outcome": "pass",
             "effect": "allow",
@@ -328,7 +346,7 @@
       "gate": {
         "status": "escalate",
         "can_execute": false,
-        "policy_version": "0.4.0",
+        "policy_version": "0.5.0",
         "rules": [
           {
             "rule_id": "POL-SCOPE-001",
@@ -389,6 +407,12 @@
             "outcome": "pass",
             "effect": "allow",
             "message": "The text names no official Tasmanian place."
+          },
+          {
+            "rule_id": "POL-ADDRESS-001",
+            "outcome": "pass",
+            "effect": "allow",
+            "message": "The text names no Hobart street."
           },
           {
             "rule_id": "POL-SINGLE-ISSUE-001",

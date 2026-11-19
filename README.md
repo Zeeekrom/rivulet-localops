@@ -3,7 +3,7 @@
 **English** · [简体中文](README.zh-CN.md)
 
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB)
-![Release](https://img.shields.io/badge/release-v0.11.1-2F855A)
+![Release](https://img.shields.io/badge/release-v0.12.0-2F855A)
 
 Rivulet LocalOps turns a written service policy into decisions that can be executed, checked and traced to a named owner. Its reference scenario is a local council handling waste and litter requests. Each request is diagnosed, tested against an approved policy, recorded in a tamper-evident ledger and reviewed by a second person.
 
@@ -31,11 +31,11 @@ English narration (synthetic voice) with captions.
 
 **Live bounded demo:** [Rivulet LocalOps assurance console](https://rivulet-demo.ambitiousocean-bb774a66.newzealandnorth.azurecontainerapps.io/)
 — six server-owned synthetic scenarios only; no visitor free text or real resident data. The live bounded profile is
-release v0.11.1; internal support routes remain absent from that profile. It scales to zero when idle, so the first
+release v0.12.0; internal support routes remain absent from that profile. It scales to zero when idle, so the first
 visit can take a few seconds to wake.
 
 **Always-on replay:** [Recorded replay of the same console](https://rivulet-localops-replay.pages.dev)
-— the same six scenarios, recorded from the real policy check on 19 November 2026 (release v0.11.1, policy v0.4.0).
+— the same six scenarios, recorded from the real policy check on 20 November 2026 (release v0.12.0, policy v0.5.0).
 Nothing runs live on that page. It opens instantly and stays available when the live demo is asleep, offline or moved.
 
 <img src="evidence/F25/2026-11-03/live-instruction-escalate.jpg" alt="The live v0.9.0 console sends a request that hides an instruction to a person" width="640">
@@ -49,7 +49,7 @@ The live v0.9.0 console. The classifier is 95% confident and every earlier rule 
 - [Who it is for](#who-it-is-for)
 - [One request, start to finish](#one-request-start-to-finish)
 - [The screens](#the-screens)
-- [What works today: v0.11.1](#what-works-today-v0111)
+- [What works today: v0.12.0](#what-works-today-v0120)
 - [Design principles](#design-principles)
 - [Real data and synthetic data](#real-data-and-synthetic-data)
 - [How it was built](#how-it-was-built)
@@ -72,9 +72,9 @@ The live v0.9.0 console. The classifier is 95% confident and every earlier rule 
 | The problem | Automation can classify a request. It usually cannot show which rule allowed an action, what evidence was used, or who was accountable |
 | AI | Claude Haiku 4.5 on Amazon Bedrock, through an Australian inference profile (Sydney and Melbourne only), suggests category and priority behind the same interface as a rules baseline. Two approved, capped live runs on 73 synthetic cases cost about USD 0.14 each. Paid calls are locked off in code between runs, and the public demo runs the rules baseline so it stays free and repeatable |
 | Stack | Python 3.12, FastAPI, SQLite, React 19 and TypeScript, Amazon Bedrock (Claude), a Power BI project, Docker, Azure Container Apps and GitHub Actions |
-| Evidence | 231 automated tests, a frozen 59-case adversarial evaluation, SAST, dependency and container-image scanning gates, 19 source-quality checks, five synthetic recovery exercises, a 316-event synthetic ledger and a live Azure deployment |
+| Evidence | 254 automated tests, a frozen 59-case adversarial evaluation, SAST, dependency and container-image scanning gates, 19 source-quality checks, five synthetic recovery exercises, a 316-event synthetic ledger and a live Azure deployment |
 | Data | Real public reference data (kept in the private repository) and requests that are clearly labelled synthetic; this repository holds synthetic samples only |
-| Status | Release v0.11.1. A portfolio prototype. It has not been validated with a council and is not production-ready |
+| Status | Release v0.12.0. A portfolio prototype. It has not been validated with a council and is not production-ready |
 
 ## The problem
 
@@ -137,16 +137,18 @@ flowchart LR
 
 The web console is shown at the top of this page. A phone-width capture of a denied path is kept in [`evidence/F24`](evidence/F24/2026-10-10/README.md).
 
-## What works today: v0.11.1
+## What works today: v0.12.0
 
 | Capability | Implemented evidence |
 |---|---|
 | Explainable diagnosis | Eight operational categories, general fallback, priority rule, confidence, matched terms and missing-information list |
 | Public asset context | Nearest-bin matching against a 727-feature City of Hobart public ArcGIS snapshot |
-| Policy Gate | Versioned synthetic policy (v0.4.0, live since 19 Nov 2026); deterministic `pass`, `reject` and `escalate`; eleven rule-level reasons and policy hash |
+| Policy Gate | Versioned synthetic policy (v0.5.0, live since 20 Nov 2026); deterministic `pass`, `reject` and `escalate`; twelve rule-level reasons and policy hash |
 | Untrusted-input control | `POL-INPUT-001` escalates instruction override, role impersonation, addressing the model, decision manipulation, tool names, data-exfiltration requests, hidden or bidirectional characters, mixed-script homoglyphs, encoded payloads, keyword stuffing, negated scope terms and competing service phrases; it reports signal codes only and never echoes the text |
 | Location and jurisdiction control | `POL-JURISDICTION-001` checks the point against official Tasmanian municipal boundaries: a point in another municipality is rejected with a referral to that council, and a point outside Tasmania goes to a person. `POL-PLACE-001` sends the request to a person when an official place named in the text lies in another municipality more than 2 km from the point |
-| One request, one issue | `POL-SINGLE-ISSUE-001` sends a request whose text reports problems for two or more council services to a person, who splits it into one request per issue, as NYC 311 and FixMyStreet councils require. It reads problem wording (an overflowing bin, a pothole, a blocked drain), not place nouns such as road, park or drain, and names the services in its reason |
+| Address check | `POL-ADDRESS-001` compares a Hobart street or street address named in the text with the point, using 27,967 official LIST address points: an address more than 200 m away, or a street more than 300 m away, sends the request to a person. Only real Hobart street names followed by a street type count, so ordinary words are never read as streets |
+| One request, one issue | `POL-SINGLE-ISSUE-001` sends a request whose text reports problems for two or more council services to a person, who splits it into one request per issue, as NYC 311 and FixMyStreet councils require. It reads problem wording (an overflowing bin, a pothole, a blocked drain), not place nouns such as road, park or drain, and names the services in its reason. Policy v0.5.0 widens that wording: on a second blind set it found 11 of 20 multi-issue requests, up from 5 of 20, and still flagged none of the 20 single-issue ones |
+| Priority wording | The emergency and urgent wording sits in the policy pack, so a council changes what counts as urgent by approving a new version. v0.5.0 makes water across a road and a dog at large urgent and leaves night-time construction noise routine, following published council service standards |
 | Action boundary | Only `create_draft_work_order` can pass; no connector or external write exists |
 | Decision ledger | SQLite append-only events with request, policy and event hashes; provider/evidence/owner/time metadata |
 | Human control | Pending queue; separate owner and reviewer; append-only accept/override/escalate history |
@@ -155,8 +157,8 @@ The web console is shown at the top of this page. A phone-width capture of a den
 | Bounded agent control | Server-selected `case-agent`, hash-bound capability registry, five-minute grant, four-call budget, tool/data/resource allowlists, pre-execution provider binding and auditable failure paths |
 | Application support | Component health, correlation/request IDs, redacted bounded logs, checksum-protected Support Bundle, internal support page and five runbooks |
 | Recovery evidence | APP-001/003/004/005 synthetic recovery passes; APP-002 local mismatch detection plus a hosted Azure rollback drill pass, with the first failed drill retained |
-| Verification | 231 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F28 priority, F31 single issue, F22 container, F23 live Azure and APP-001–005 evidence |
-| Adversarial evaluation | A frozen 59-case set committed before the fix: unsafe passes fall from 20 under policy v0.1.0 to 2 registered residuals under v0.2.0, 1 under v0.3.0 and none under v0.4.0, with no clean-control over-blocking; 16 capability-bypass variants are denied and 13 API negative probes hold |
+| Verification | 254 automated tests, dependency audits, a 12-case deterministic regression set, F18 capability, F25 adversarial, F26 security-gate, F27 location, F28 priority, F31 single issue, F32–F35 policy v0.5.0, F22 container, F23 live Azure and APP-001–005 evidence |
+| Adversarial evaluation | A frozen 59-case set committed before the fix: unsafe passes fall from 20 under policy v0.1.0 to 2 registered residuals under v0.2.0, 1 under v0.3.0 and none under v0.4.0 or v0.5.0, with no clean-control over-blocking; 16 capability-bypass variants are denied and 13 API negative probes hold |
 | Secure delivery gates | Bandit SAST, pip-audit over three lock files, npm audit and a Trivy image scan on every push; release images are scanned before they can be pushed; every gate has a canary that proves it can fail; third-party actions are pinned by commit |
 | Windows reliability | SQLite read connections are explicitly closed; a disposable review runner verifies cleanup after the full review story |
 | Public-source contracts | D1 Hobart assets and D2 Townsville monthly aggregate counts have publisher, URL, licence, retrieval, hash, schema, grain and limitation manifests |
@@ -197,7 +199,8 @@ final priority from the same recorded answers, and the product owner chose the f
 | D2 | Townsville City Council request-for-service counts, monthly aggregates, CC BY 4.0 | Real public reference. Context only, not Hobart demand |
 | D6 | 316 hash-chained events from a fixed seed: 180 decisions, 120 reviews, 8 manual fallbacks and 8 provider-control changes. All rights reserved (copies published before 13 Nov 2026 were labelled MIT and keep it) | Synthetic operations |
 | D7, D8 | Tasmanian municipal boundaries (29) and official localities (777) from the LIST, © State of Tasmania, CC BY 3.0 AU, snapshot on 5 Nov 2026 | Real public reference |
-| Policy | Four versioned waste and litter policies written for the demonstration: v0.1.0 generates the D6 fixture; v0.2.0 adds the untrusted-input rule; v0.3.0 adds the location rules; v0.4.0 adds the one-issue rule and runs the console | Synthetic. Not a council policy |
+| D9 | City of Hobart address points (27,967) from the LIST, © State of Tasmania, CC BY 3.0 AU, snapshot on 20 Nov 2026 | Real public reference |
+| Policy | Five versioned waste and litter policies written for the demonstration: v0.1.0 generates the D6 fixture; v0.2.0 adds the untrusted-input rule; v0.3.0 adds the location rules; v0.4.0 adds the one-issue rule; v0.5.0 widens it, holds the priority wording and adds the address check, and runs the console | Synthetic. Not a council policy |
 
 Each public source has a manifest with its publisher, URL, licence, retrieval date, hash, schema, grain and limitations; the datasets themselves stay in the private repository. Rates calculated from D6 exercise the calculations. They say nothing about council performance or model accuracy.
 
@@ -217,6 +220,7 @@ Each public source has a manifest with its publisher, URL, licence, retrieval da
 | v0.10.0 | 13 Nov 2026 | Location and jurisdiction rules on official LIST boundaries (policy v0.3.0), the policy priority floor, a locked Australian Bedrock model provider, the always-on replay page, a copyright footer and terms page with third-party notices and data credits, and security updates in the container image |
 | v0.11.0 | 19 Nov 2026 | One request, one issue (policy v0.4.0). Its image did not contain the new policy file and failed to start on Azure; the deployment workflow rolled back to v0.10.0 automatically |
 | v0.11.1 | 19 Nov 2026 | The fix, a test that the image carries every data file the demo reads, and a local container check before deployment |
+| v0.12.0 | 20 Nov 2026 | Policy v0.5.0: wider multi-issue wording, priority wording in the policy and a street-address check on LIST address points; `robots.txt` now blocks AI training crawlers only |
 
 The order was deliberate: the controls came before any model, and each sprint ended with a review against recorded evidence. See [Sprint Evidence](docs/SPRINT_EVIDENCE.md).
 
@@ -235,6 +239,7 @@ The order was deliberate: the controls came before any model, and each sprint en
 | The verification script rewrote dated recovery evidence once the version number changed | It now writes those regression runs to a temporary folder, so dated evidence stays as recorded |
 | A request reporting an overflowing bin and a pothole became one waste draft, and the road hazard was silently dropped (registered residual AMB-007) | F31 sends requests with problems for two or more services to a person to split, following NYC 311 and FixMyStreet councils. The test set was frozen before the rule; a separate agent then wrote a blind set, where the rule found only 5 of 16 multi-issue requests. It is kept as a deterministic floor |
 | The v0.11.0 image failed to start on Azure because it lacked the new policy file | The workflow rolled back to v0.10.0 on its own; v0.11.1 adds a test that the image carries every data file the demo reads, and images are now started locally before deployment |
+| A change that let problem wording, not place nouns, decide the category named the right service far more often, but on an unseen blind set it let 2 of 20 multi-issue requests pass as single drafts | Not adopted: v0.5.0 keeps the earlier classifier, and the measurement stays on record ([F33](evidence/F33/2026-11-20/README.md)) |
 
 ## Technology stack
 
@@ -285,7 +290,7 @@ execution under `POST /demo/v1/scenarios/{scenario_id}/run`, and static web asse
 Every release is checked by a local gate and by hosted CI, container and deployment workflows. Those runs, and
 the commands that reproduce them, live in the private repositories; the results are published here.
 
-- 231 automated tests and a 12-case deterministic regression set
+- 254 automated tests and a 12-case deterministic regression set
 - 19 source-quality checks (15 pass, 4 documented warnings, 0 fail) and 8 of 8 analytics reconciliations
 - Power BI project: 51 controlled files, 88 structural checks, Microsoft validator 0 errors / 0 warnings; 7 of 7 Desktop refreshes and 13 of 13 DAX reconciliations
 - F18 capability control: 12 of 12 checks
@@ -300,6 +305,7 @@ the commands that reproduce them, live in the private repositories; the results 
 - F28 priority floor (v0.10.0, one approved live run of 73 calls): regression priorities 8, 9 and 12 of 12 when the model decides, when the policy sets the floor, and when the policy decides with differences sent to a person; 25, 25 and 37 human-review flags; no unexpected unsafe pass in any mode. The policy floor is now the default
 - F29 hosting fallback (v0.10.0): the replay page builds from a recording that a test keeps identical to the code's output, and passed its live check for the page, security headers and recording; the free-grant guard read 0.36% of the monthly grant on its first check, and one approved live drill turned public access off and back on at the same address ([F29](evidence/F29/2026-11-05/README.md))
 - F31 one request, one issue (v0.11.1): a 30-case set frozen before the rule, dev 15 of 15 and test 15 of 15; on the frozen adversarial set only AMB-007 changes, leaving no registered residual. On a blind set of 32 requests written by a separate agent that never saw the lexicon, 0 of 16 single-issue requests were flagged but only 5 of 16 multi-issue requests were found; all 16 still reached a person through earlier rules ([F31](evidence/F31/2026-11-19/README.md))
+- F32–F35 policy v0.5.0 (v0.12.0): on a second blind set of 40 requests, written by a separate agent after the lexicon was frozen and run once, the multi-issue rule found 11 of 20 multi-issue requests (5 of 20 before) and flagged 0 of 20 single-issue ones; the address check passed 12 of 12 probes on real LIST addresses; no outcome changed on the frozen adversarial set; on the regression set only the two priorities set from council standards changed ([F32](evidence/F32/2026-11-20/README.md))
 
 Each experiment has its own folder under [`evidence`](evidence) with a README, the machine-readable result and,
 where relevant, screenshots. Start with [F25](evidence/F25/2026-11-03/README.md),
@@ -328,8 +334,9 @@ adversarial examples with their outcomes before and after the input-integrity ru
 - The operations endpoint is logically separate but runs in the same application process; it is not yet an out-of-band control plane.
 - No endpoint writes to a real business system.
 - `POL-INPUT-001` is a deterministic pattern screen. It reduces exposure to instruction-like or obfuscated text but cannot recognise every phrasing; a clean screen does not prove a request is benign, and every passing draft still waits for a person.
-- The location rules use official boundaries simplified to about 20-30 m and recognise only official locality and municipality names. They do not verify street addresses or route requests about state roads or utility assets.
-- `POL-SINGLE-ISSUE-001` reads a hand-written list of problem wording. On independent wording it found 5 of 16 multi-issue requests; the rest reached a person through other rules but without the reason that they need splitting.
+- The location rules use official boundaries simplified to about 20-30 m and recognise only official locality and municipality names. They do not route requests about state roads or utility assets.
+- `POL-ADDRESS-001` checks streets only inside Hobart, against a dated snapshot. It only ever escalates; on 10 of Hobart's 681 streets, long roads with few addresses, a correct point can still be sent to a person.
+- `POL-SINGLE-ISSUE-001` reads a hand-written list of problem wording. On independent wording it found 5 of 16 multi-issue requests, and 11 of 20 on a second blind set after v0.5.0 widened it; the rest reached a person through other rules but without the reason that they need splitting.
 - The security gates (run in the private repositories) cover Python code, pinned Python and npm dependencies and the container image, using advisories published on the run date. They are not a penetration test, and unfixed image vulnerabilities are reported but do not block.
 - Townsville data is monthly aggregate reference context, not Hobart demand or individual requests.
 - Every D6 decision, review, actor, time and operational metric is fixed-seed synthetic data. Its rates exercise calculations and are not council performance or model-accuracy evidence.
@@ -340,7 +347,7 @@ adversarial examples with their outcomes before and after the input-integrity ru
 
 Sprint 4 is complete, and no adversarial residual remains registered: the place name that contradicted the coordinates
 was closed by the F27 location layer, and the request that reported two issues by F31, which sends such requests to a
-person. F31 is a deterministic floor; recognising several issues in free wording (multi-intent extraction) is still to
+person. F31 is a deterministic floor (v0.5.0 widened it to 11 of 20 on unseen wording); recognising several issues in free wording (multi-intent extraction) is still to
 come. A model provider is wired in and has
 had two approved live runs (F17 and F28, Claude Haiku 4.5, synthetic cases only). Since F28 the written policy sets the
 priority floor and the model may only raise urgency; live calls stay locked off between approved runs. Authentication/RBAC, Windows enterprise lab integration and

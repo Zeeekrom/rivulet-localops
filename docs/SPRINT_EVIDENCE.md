@@ -2,8 +2,8 @@
 
 | Evidence field | Value |
 |---|---|
-| Date | 2026-11-19 |
-| Release | v0.11.1 |
+| Date | 2026-11-20 |
+| Release | v0.12.0 |
 | Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0; GitHub-hosted verification; Azure Container Apps in New Zealand North; Cloudflare Pages for the replay; Amazon Bedrock (Australian profiles) for approved model runs |
 
 This document records implemented results verified locally, by GitHub Actions and—only for the bounded public profile—on Azure. It does not claim real-user validation, production adoption or generative-model accuracy; the model runs below are small, approved runs on synthetic cases.
@@ -315,6 +315,22 @@ The F29 and F30 run records stay in the private repositories.
 Evidence is in [`evidence/F31`](../evidence/F31/2026-11-19/README.md). The self-authored set and the lexicon share an
 author; the blind set does not, and it is the fairer measure of how the rule handles unseen wording.
 
+## v0.12 — Policy v0.5.0: wider lexicon, priority wording and address check (20 November 2026)
+
+| Acceptance item | Result |
+|---|---|
+| F32 lexicon | Policy v0.5.0 (schema 1.4) uses issue lexicon 1.1.1. A second blind set of 40 requests, written by a separate agent after the lexicon was frozen and run once: 11 of 20 multi-issue requests found (lexicon 1.0.0: 5 of 20), all services named in 8; 0 of 20 single-issue requests flagged |
+| F33 category | A classifier that lets problem wording decide the category named the right service for 17 of 20 single-issue requests (11 before) but let 2 of 20 multi-issue requests pass as single drafts. Not adopted |
+| F34 priority | Emergency and urgent wording moved into the policy pack and set from published service standards: water across a road and a dog at large are urgent, construction noise at night stays routine. On the 12-case regression set exactly those two priorities change |
+| F35 address | `POL-ADDRESS-001` on 27,967 LIST address points for Hobart: 12 of 12 probes on real addresses; 10 of 681 streets could still send a correct point to a person |
+| Frozen adversarial set | No outcome changes from v0.4.0; 0 unsafe passes |
+| Crawlers | `robots.txt` blocks AI training crawlers only; search engines, AI search and assistants fetching a page for a person may read the pages |
+| v0.12.0 deployment | The locally built image passed 13 of 13 container checks before publication; the Azure deploy passed its smoke check without rollback, and an independent check saw v0.12.0, policy v0.5.0 and twelve rule results per scenario matching the recorded replay |
+
+Evidence is in [`evidence/F32`](../evidence/F32/2026-11-20/README.md), [`F33`](../evidence/F33/2026-11-20/README.md),
+[`F34`](../evidence/F34/2026-11-20/README.md) and [`F35`](../evidence/F35/2026-11-20/README.md). Both blind sets have
+now been seen; the next measurement needs a new one.
+
 ## Hosted CI evidence
 
 Run numbers below refer to GitHub Actions runs in the private release repository.
@@ -397,9 +413,10 @@ they produce are under [`evidence`](../evidence).
 | The hash chain detects tested in-place modification | Yes | Not an immutable external audit store |
 | Provider automation can be stopped and manually routed | Yes | Same-process local operations control |
 | The bounded agent rejects the tested unauthorized capabilities | Yes | Local synthetic-case contract and deterministic provider only |
-| Request text that tries to instruct the system is escalated | Yes | Deterministic pattern screen measured on a frozen self-authored set; no registered residual under policy v0.4.0 (one under v0.3.0, two under v0.2.0) |
+| Request text that tries to instruct the system is escalated | Yes | Deterministic pattern screen measured on a frozen self-authored set; no registered residual under policies v0.4.0 and v0.5.0 (one under v0.3.0, two under v0.2.0) |
 | A request reporting several issues is not turned into a single draft | Yes | `POL-SINGLE-ISSUE-001` and earlier rules sent every multi-issue case in the frozen, self-authored and blind sets to a person |
-| The system recognises several issues in free wording | No | The lexicon found 5 of 16 multi-issue requests on a blind set |
+| The system recognises several issues in free wording | No | The lexicon found 5 of 16 multi-issue requests on a first blind set and 11 of 20 on a second after v0.5.0 widened it |
+| A street address in the text is checked against the point | Yes | Hobart only, against a dated LIST snapshot; the rule only escalates |
 | The system resists unseen prompt-injection attacks | No | F25 is self-authored and the rule was designed after the baseline failures were seen |
 | Known-vulnerable dependencies and images are blocked before release | Yes | Advisories published on the run date; fixable HIGH/CRITICAL only for the image |
 | Model inference stays in Australia | Yes | Only Australian inference profiles (Sydney and Melbourne) are accepted; the hosted demo itself runs in New Zealand North |
@@ -409,10 +426,10 @@ they produce are under [`evidence`](../evidence).
 | Identities are authenticated and authorised | No | IDs are asserted fields only |
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
-| The bounded public profile is deployed to Azure | Yes | New Zealand North Container Apps, live v0.11.1 since 2026-11-19 (v0.10.0 from 2026-11-13, v0.9.0 from 2026-11-03); bounded portfolio evidence, not production readiness |
+| The bounded public profile is deployed to Azure | Yes | New Zealand North Container Apps, live v0.12.0 since 2026-11-20 (v0.11.1 from 2026-11-19, v0.10.0 from 2026-11-13, v0.9.0 from 2026-11-03); bounded portfolio evidence, not production readiness |
 | The system is deployed to an enterprise Windows environment | No | Windows lab remains a later slice |
-| The v0.7.2 interface is live on Azure | No | It was a temporary drill candidate in the v0.8.0 rollback drill; v0.11.1 is live now |
-| The public profile excludes tested internal routes | Yes | Live v0.11.1 endpoint (checked 2026-11-19); six named negative routes, not a general penetration test |
+| The v0.7.2 interface is live on Azure | No | It was a temporary drill candidate in the v0.8.0 rollback drill; v0.12.0 is live now |
+| The public profile excludes tested internal routes | Yes | Live v0.12.0 endpoint (checked 2026-11-20); six named negative routes, not a general penetration test |
 | Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
 
 ## Known verification warning

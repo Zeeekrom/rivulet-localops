@@ -1,0 +1,813 @@
+{
+  "experiment_id": "F31",
+  "set": {
+    "path": "eval/multi_issue_blind_v2.json",
+    "set_id": "rivulet.multi_issue_blind",
+    "version": "2.0.0",
+    "sha256_lf": "2f5dafb5b93f64e84557d114468b5b5306f2197b6945d146d49f395495cd4632"
+  },
+  "policy": {
+    "version": "0.5.0",
+    "content_hash": "ddae9e99216527b1f8be3960a52891425f98f8f3db97f1962d036e7b57de868c"
+  },
+  "lexicon_version": "1.1.1",
+  "summary": {
+    "blind": {
+      "cases": 40,
+      "correct": 28,
+      "multi_sent_to_person": 11,
+      "multi_cases": 20,
+      "multi_with_all_expected_categories": 8,
+      "single_wrongly_flagged": 0,
+      "single_cases": 20,
+      "multi_that_passed_under_v0_4_0": 0,
+      "single_category_right": 11,
+      "wrong_ids": [
+        "MC-03",
+        "MC-07",
+        "MC-16",
+        "MC-20",
+        "MC-21",
+        "MC-24",
+        "MC-25",
+        "MC-30",
+        "MC-31",
+        "MC-34",
+        "MC-38",
+        "MC-40"
+      ]
+    }
+  },
+  "cases": [
+    {
+      "id": "MC-01",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "stormwater_drainage",
+        "roads_footpaths",
+        "facilities"
+      ],
+      "found_categories": {
+        "facilities": [
+          "street or path light out"
+        ],
+        "roads_footpaths": [
+          "trip hazard"
+        ],
+        "stormwater_drainage": [
+          "blocked drain",
+          "flooding"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "stormwater_drainage",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-02",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "waste_litter"
+      ],
+      "found_categories": {
+        "waste_litter": [
+          "overflowing bin",
+          "litter"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "waste_litter",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-03",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "animals",
+        "noise_nuisance"
+      ],
+      "found_categories": {
+        "noise_nuisance": [
+          "loud music or party"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "animals",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-04",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "animals"
+      ],
+      "found_categories": {
+        "noise_nuisance": [
+          "noise"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "animals",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-05",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "roads_footpaths"
+      ],
+      "found_categories": {
+        "roads_footpaths": [
+          "trip hazard"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-06",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "parks_trees",
+        "roads_footpaths"
+      ],
+      "found_categories": {
+        "parks_trees": [
+          "broken branch"
+        ],
+        "roads_footpaths": [
+          "damaged footpath or road"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "parks_trees",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-07",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "facilities",
+        "waste_litter"
+      ],
+      "found_categories": {
+        "waste_litter": [
+          "overflowing bin"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "general_enquiry",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-08",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "facilities"
+      ],
+      "found_categories": {
+        "facilities": [
+          "street or path light out"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-09",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "parks_trees",
+        "facilities",
+        "waste_litter"
+      ],
+      "found_categories": {
+        "facilities": [
+          "broken toilet or public amenity"
+        ],
+        "parks_trees": [
+          "broken playground"
+        ],
+        "waste_litter": [
+          "overflowing bin"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "waste_litter",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-10",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "parks_trees"
+      ],
+      "found_categories": {
+        "parks_trees": [
+          "broken playground"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parks_trees",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-11",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "parks_trees"
+      ],
+      "found_categories": {},
+      "rule_outcome": "pass",
+      "diagnosed_category": "parks_trees",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-12",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "facilities",
+        "roads_footpaths"
+      ],
+      "found_categories": {
+        "facilities": [
+          "street or path light out"
+        ],
+        "roads_footpaths": [
+          "pothole"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-13",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "waste_litter",
+        "animals"
+      ],
+      "found_categories": {
+        "animals": [
+          "dead animal"
+        ],
+        "waste_litter": [
+          "overflowing bin",
+          "litter"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "waste_litter",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-14",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "animals"
+      ],
+      "found_categories": {
+        "animals": [
+          "dead animal"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "stormwater_drainage",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-15",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "parking"
+      ],
+      "found_categories": {},
+      "rule_outcome": "pass",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-16",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "parking",
+        "roads_footpaths"
+      ],
+      "found_categories": {
+        "roads_footpaths": [
+          "damaged footpath or road"
+        ],
+        "waste_litter": [
+          "illegal dumping"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-17",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "stormwater_drainage",
+        "parks_trees"
+      ],
+      "found_categories": {
+        "parks_trees": [
+          "broken branch"
+        ],
+        "stormwater_drainage": [
+          "blocked drain",
+          "flooding"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "parks_trees",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-18",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "stormwater_drainage"
+      ],
+      "found_categories": {
+        "stormwater_drainage": [
+          "blocked drain",
+          "flooding"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-19",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "stormwater_drainage"
+      ],
+      "found_categories": {
+        "stormwater_drainage": [
+          "blocked drain",
+          "flooding"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "stormwater_drainage",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-20",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "parking",
+        "waste_litter"
+      ],
+      "found_categories": {
+        "waste_litter": [
+          "overflowing bin"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parking",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-21",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "parks_trees",
+        "facilities"
+      ],
+      "found_categories": {},
+      "rule_outcome": "pass",
+      "diagnosed_category": "general_enquiry",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-22",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "waste_litter"
+      ],
+      "found_categories": {
+        "waste_litter": [
+          "broken glass"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parking",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-23",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "waste_litter"
+      ],
+      "found_categories": {},
+      "rule_outcome": "pass",
+      "diagnosed_category": "waste_litter",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-24",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "animals",
+        "parks_trees"
+      ],
+      "found_categories": {
+        "animals": [
+          "stray or roaming animal"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parks_trees",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-25",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "roads_footpaths",
+        "parking",
+        "animals"
+      ],
+      "found_categories": {
+        "animals": [
+          "dead animal"
+        ],
+        "roads_footpaths": [
+          "pothole"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-26",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "roads_footpaths"
+      ],
+      "found_categories": {
+        "roads_footpaths": [
+          "pothole"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-27",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "noise_nuisance",
+        "facilities"
+      ],
+      "found_categories": {
+        "facilities": [
+          "street or path light out"
+        ],
+        "noise_nuisance": [
+          "noise"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-28",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "noise_nuisance"
+      ],
+      "found_categories": {},
+      "rule_outcome": "pass",
+      "diagnosed_category": "general_enquiry",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-29",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "noise_nuisance"
+      ],
+      "found_categories": {
+        "noise_nuisance": [
+          "smoke nuisance"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-30",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "parking",
+        "noise_nuisance"
+      ],
+      "found_categories": {
+        "noise_nuisance": [
+          "loud music or party"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-31",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "parking",
+        "facilities"
+      ],
+      "found_categories": {
+        "facilities": [
+          "damaged building or shelter"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parking",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-32",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "parking"
+      ],
+      "found_categories": {
+        "parking": [
+          "blocked driveway"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parking",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-33",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "parks_trees"
+      ],
+      "found_categories": {
+        "parks_trees": [
+          "overgrown"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parks_trees",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-34",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "noise_nuisance",
+        "waste_litter"
+      ],
+      "found_categories": {
+        "waste_litter": [
+          "overflowing bin"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "roads_footpaths",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-35",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "stormwater_drainage",
+        "animals"
+      ],
+      "found_categories": {
+        "animals": [
+          "stray or roaming animal"
+        ],
+        "stormwater_drainage": [
+          "blocked drain"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "stormwater_drainage",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-36",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "animals"
+      ],
+      "found_categories": {
+        "animals": [
+          "stray or roaming animal"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "general_enquiry",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-37",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "facilities"
+      ],
+      "found_categories": {
+        "facilities": [
+          "broken toilet or public amenity"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "facilities",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-38",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "waste_litter",
+        "stormwater_drainage",
+        "parks_trees"
+      ],
+      "found_categories": {
+        "parking": [
+          "abandoned vehicle"
+        ],
+        "stormwater_drainage": [
+          "blocked drain"
+        ]
+      },
+      "rule_outcome": "fail",
+      "diagnosed_category": "waste_litter",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    },
+    {
+      "id": "MC-39",
+      "split": "blind",
+      "expected": "single",
+      "expected_categories": [
+        "roads_footpaths"
+      ],
+      "found_categories": {
+        "roads_footpaths": [
+          "pothole"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parks_trees",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": true
+    },
+    {
+      "id": "MC-40",
+      "split": "blind",
+      "expected": "multi",
+      "expected_categories": [
+        "parks_trees",
+        "parking"
+      ],
+      "found_categories": {
+        "parks_trees": [
+          "overgrown"
+        ]
+      },
+      "rule_outcome": "pass",
+      "diagnosed_category": "parks_trees",
+      "gate_v0_4_0": "escalate",
+      "gate_v0_5_0": "escalate",
+      "correct": false
+    }
+  ],
+  "claim_boundary": "Written by a separate agent that was given only the labelling rule and the eight service descriptions; it saw no rule code, lexicon, earlier cases or the first blind set, and its labels are kept unchanged (it flagged MC-05, MC-19 and MC-29 as debatable). Frozen after issue lexicon 1.1.0 and rules classifier 0.2.0 were committed and before either was run on this set; run once. Synthetic, so it says nothing about real request volumes."
+}
