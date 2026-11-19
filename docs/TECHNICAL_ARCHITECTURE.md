@@ -1,7 +1,7 @@
 # Technical Architecture
 
-Status: release v0.10.0 (13 November 2026) is locally and hosted verified, and the bounded Azure portfolio demo serves
-it. v0.10.0 adds the location and jurisdiction rules (policy v0.3.0), a locked Australian model provider with the
+Status: release v0.11.1 (19 November 2026) is locally and hosted verified, and the bounded Azure portfolio demo serves
+it. v0.11 adds the one-request-one-issue rule (policy v0.4.0, section 3). v0.10.0 added the location and jurisdiction rules (policy v0.3.0), a locked Australian model provider with the
 policy priority floor, a static replay page with a free-grant guard, and the copyright footer, terms page and
 third-party notices. The deployment workflow's rollback path was verified with v0.8.0 (section 13).
 
@@ -91,8 +91,8 @@ sequenceDiagram
 
 ## 3. Policy and deterministic Gate
 
-The active pack is `data/policies/waste_litter_demo_v0.3.0.json` (schema 1.2), live since v0.10.0 on 13 November
-2026; v0.2.0 (schema 1.1) ran the live demo before that. `v0.1.0` (schema 1.0) is kept unchanged because the D6 synthetic ledger
+The active pack is `data/policies/waste_litter_demo_v0.4.0.json` (schema 1.3), live since v0.11.1 on 19 November
+2026; v0.3.0 (schema 1.2) ran from 13 November and v0.2.0 (schema 1.1) before that. `v0.1.0` (schema 1.0) is kept unchanged because the D6 synthetic ledger
 is generated against it. Earlier packs keep their content hashes. The schema requires:
 
 - explicit `approved_for_demo` state;
@@ -102,9 +102,12 @@ is generated against it. Earlier packs keep their content hashes. The schema req
 - category scope, permitted actions, evidence rules and thresholds;
 - from schema 1.1, an `input_integrity` section listing the signals that escalate and the stuffing thresholds;
 - from schema 1.2, a `location_integrity` section naming the council's own municipality and how far a named place may
-  lie from the point.
+  lie from the point;
+- from schema 1.3, an `issue_integrity` section with the number of services whose problem wording sends a request to a
+  person (two) and the lexicon version.
 
-The Gate evaluates ten visible rules under v0.3.0 (eight under v0.2.0, the first seven under v0.1.0):
+The Gate evaluates eleven visible rules under v0.4.0 (ten under v0.3.0, eight under v0.2.0, the first seven under
+v0.1.0):
 
 | Rule | Check | Failure effect |
 |---|---|---|
@@ -118,6 +121,15 @@ The Gate evaluates ten visible rules under v0.3.0 (eight under v0.2.0, the first
 | `POL-INPUT-001` | Request text raises no input-integrity signal | Escalate |
 | `POL-JURISDICTION-001` | The point lies in the council's municipality (official LIST boundaries) | Reject with a referral to the responsible council; escalate if the point is outside every Tasmanian municipality |
 | `POL-PLACE-001` | No official place named in the text lies in another municipality more than 2 km from the point | Escalate |
+| `POL-SINGLE-ISSUE-001` | The text reports problems for at most one council service | Escalate, naming the services so a person can split the request |
+
+`POL-SINGLE-ISSUE-001` follows the one-issue-per-request rule of real intake systems: NYC 311 defines a request as a
+report about one issue at a specific location, and FixMyStreet councils such as Bromley ask for separate issues on
+separate reports because each report sits in one category. The rule reads the raw text, independent of the provider,
+against a hand-written lexicon of problem wording for each of the eight services; place nouns (road, footpath, park,
+drain, toilet, car park, parking meter) are not in it, and several items of the same kind count as one issue. It
+reports lexicon labels only. On a blind set written by a separate agent it flagged none of 16 single-issue requests
+but found only 5 of 16 multi-issue requests, so it is a deterministic floor rather than full multi-intent extraction.
 
 The two location rules follow how working intake systems treat location: council forms that accept only suburbs in the
 municipality and refer the rest, FixMyStreet's boundary lookup (MapIt) that picks the responsible body, and Open311's
@@ -305,7 +317,10 @@ with a read-only registry token held as a Container App secret. GitHub Actions o
 through a user-assigned managed identity federated to the `azure-demo` environment, scoped as Contributor only to the
 dedicated resource group and without an Azure client secret. Since v0.10.0 the image applies Debian security updates
 at build time, after Trivy flagged two zlib CVEs that Debian had fixed before the base image did; v0.10.0 was deployed
-on 13 November 2026 and passed the post-deploy smoke check without rollback. The workflow (since v0.8.0) captures pre-deploy health, verifies exact
+on 13 November 2026 and passed the post-deploy smoke check without rollback. On 19 November the v0.11.0 image lacked
+the new policy file and never became healthy; the workflow rolled back to v0.10.0 and verified recovery on its own.
+v0.11.1 copies the file, a test checks that the image carries every data file the demo reads, and the image is started
+locally before deployment. The workflow (since v0.8.0) captures pre-deploy health, verifies exact
 release, security headers, six negative routes and capability denial, and—on failure—redeploys the previously observed
 image/release through the same Bicep template before verifying recovery. Run `38206163289` exercises that full rollback
 path; failed run `38205693603` is retained because it exposed an unsupported CLI argument. F23 records the earlier
@@ -372,7 +387,7 @@ no request logs from the live demo and keeps only a one-minute, in-memory rate-l
 | Data | Contracted Hobart GeoJSON + Townsville aggregate CSV + fixed-seed synthetic JSONL + LIST municipal boundaries and localities | LIST address points; additional sources only when a report field requires them |
 | Analytics | Reproducible 14-table SQLite/CSV mart, quality checks, metric dictionary and a two-page Power BI Import project with local refresh/reconciliation evidence | Power BI Service/Fabric, gateway and scheduled refresh |
 | Identity | Server-selected agent identity plus validated asserted human IDs | Caller authentication, RBAC and service identities |
-| Security | Gate with untrusted-input rule, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, Bandit/pip-audit/npm audit/Trivy gates with canaries, commit-pinned third-party actions, frozen adversarial evaluation, location and jurisdiction rules and negative tests | Signed audit checkpoints, TypeScript SAST, multi-intent splitting and street-address verification |
+| Security | Gate with untrusted-input rule, hash chain, agent capability allowlists, provider binding, route isolation, browser headers, non-root container, kill switch, Bandit/pip-audit/npm audit/Trivy gates with canaries, commit-pinned third-party actions, frozen adversarial evaluation, location and jurisdiction rules, one-issue-per-request rule and negative tests | Signed audit checkpoints, TypeScript SAST, multi-intent extraction beyond the lexicon and street-address verification |
 | Delivery | Exact lockfiles, verification, multi-stage image, private GHCR image with SBOM attestation, Bicep, resource-group-scoped OIDC, deployment smoke, verified hosted rollback, static replay page on Cloudflare Pages and a scheduled free-grant guard | Production observability, automated expiry/teardown and multi-environment promotion |
 | Application support | Component health, redacted structured logs, Support Bundle, internal support UI, five runbooks and local synthetic recovery evidence | External alerting/SLA system and physically separate support control plane |
 
@@ -380,7 +395,8 @@ no request logs from the live demo and keeps only a one-minute, in-memory rate-l
 
 - The schema can require a `synthetic` label but cannot determine whether prose contains real personal information.
 - Self-authored regression cases do not establish real-world accuracy.
-- The untrusted-input rule is a pattern screen designed after seeing its own test set's failures; it cannot recognise every phrasing, and one known case (a request reporting two issues) still passes.
+- The untrusted-input rule is a pattern screen designed after seeing its own test set's failures; it cannot recognise every phrasing.
+- The one-issue rule reads a hand-written lexicon: on independent wording it found 5 of 16 multi-issue requests. The others still reached a person through earlier rules, but without the reason that they need splitting.
 - SQLite is suitable for the current local demonstrator, not a multi-node production service.
 - Asserted identity fields do not prevent impersonation.
 - Agent capability checks are local contract controls, not authorization against a multi-user case store; the registry is hashed but not signed.

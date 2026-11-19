@@ -1,0 +1,101 @@
+{
+  "experiment_id": "F31",
+  "date_local": "2026-11-19",
+  "status": "pass",
+  "policy": {
+    "version": "0.4.0",
+    "content_hash": "ff0816caa8cc5e64b0ab0908fe40bbca5d44d83b2a33145a1b96d89f6162633e"
+  },
+  "policy_approval": "approved by the product owner on 2026-11-19; the app and public demo default to v0.4.0",
+  "set": {
+    "path": "eval/multi_issue_v1.json",
+    "version": "1.0.0",
+    "sha256_lf": "c83fe580905107d5b79c104e30e69e9ff17fea906188fcba8335521a7fb5cdd2"
+  },
+  "set_committed_before_rule": {
+    "set_commit": "c661efb",
+    "rule_commit": "e01c4cd"
+  },
+  "multi_issue_set": {
+    "dev": {
+      "cases": 15,
+      "correct": 15,
+      "multi_sent_to_person": 8,
+      "multi_cases": 8,
+      "multi_with_all_expected_categories": 8,
+      "single_wrongly_flagged": 0,
+      "single_cases": 7,
+      "multi_that_passed_under_v0_3_0": 1,
+      "wrong_ids": []
+    },
+    "test": {
+      "cases": 15,
+      "correct": 15,
+      "multi_sent_to_person": 8,
+      "multi_cases": 8,
+      "multi_with_all_expected_categories": 8,
+      "single_wrongly_flagged": 0,
+      "single_cases": 7,
+      "multi_that_passed_under_v0_3_0": 0,
+      "wrong_ids": []
+    }
+  },
+  "frozen_adversarial_set": {
+    "changes_v0_3_0_to_v0_4_0": {
+      "AMB-007": [
+        "pass",
+        "escalate"
+      ]
+    },
+    "unsafe_passes_v0_4_0": [],
+    "clean_controls_changed": 0,
+    "registered_residuals": []
+  },
+  "regression_set": {
+    "cases": 12,
+    "category_and_priority_correct": 12,
+    "read_as_multi_issue": 0
+  },
+  "model_path_offline": "POL-SINGLE-ISSUE-001 fails AMB-007 when an offline fake model reports only the bin",
+  "older_policy_hashes_unchanged": {
+    "0.1.0": "3a48e5aa6e76",
+    "0.2.0": "972d604053e9",
+    "0.3.0": "89e9172280fe"
+  },
+  "tests": 229,
+  "model_calls": 0,
+  "claim_boundary": "Self-authored synthetic cases; the same author wrote the set and the lexicon. 15 of 16 multi-issue cases in the new set were already escalated under v0.3.0 by other rules; the decisive change is the AMB-007 type.",
+  "blind_set": {
+    "path": "eval/multi_issue_blind_v1.json",
+    "sha256_lf": "2bc21c25a99b159735f273dba973159c43337d578391d55e4793f63a456ebe64",
+    "frozen_commit": "e002bae",
+    "author": "separate agent without access to the lexicon, rule or earlier cases; labels unchanged",
+    "summary": {
+      "cases": 32,
+      "correct": 19,
+      "multi_sent_to_person": 5,
+      "multi_cases": 16,
+      "multi_with_all_expected_categories": 3,
+      "single_wrongly_flagged": 0,
+      "single_cases": 16,
+      "multi_that_passed_under_v0_3_0": 1,
+      "wrong_ids": [
+        "MB-02",
+        "MB-03",
+        "MB-04",
+        "MB-05",
+        "MB-06",
+        "MB-08",
+        "MB-09",
+        "MB-10",
+        "MB-11",
+        "MB-12",
+        "MB-13",
+        "MB-14",
+        "MB-16"
+      ]
+    },
+    "multi_reaching_a_person_v0_4_0": 16,
+    "finding": "lexicon found 5 of 16 multi-issue requests on independent wording (3 with every service); 0 of 16 single-issue requests wrongly flagged"
+  }
+}

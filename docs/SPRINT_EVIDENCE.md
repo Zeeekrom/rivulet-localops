@@ -2,8 +2,8 @@
 
 | Evidence field | Value |
 |---|---|
-| Date | 2026-11-13 |
-| Release | v0.10.0 |
+| Date | 2026-11-19 |
+| Release | v0.11.1 |
 | Environment | Python 3.12 and Node 24 locally; Docker Desktop 4.91.0 / Engine 29.8.0; GitHub-hosted verification; Azure Container Apps in New Zealand North; Cloudflare Pages for the replay; Amazon Bedrock (Australian profiles) for approved model runs |
 
 This document records implemented results verified locally, by GitHub Actions and—only for the bounded public profile—on Azure. It does not claim real-user validation, production adoption or generative-model accuracy; the model runs below are small, approved runs on synthetic cases.
@@ -300,6 +300,21 @@ Goal: priority is a policy decision, so the model may raise urgency but never lo
 The F17 and F28 figures come from self-authored synthetic cases and say nothing about model accuracy on real requests.
 The F29 and F30 run records stay in the private repositories.
 
+## v0.11 — One request, one issue (19 November 2026)
+
+| Acceptance item | Result |
+|---|---|
+| Rule | Policy v0.4.0 (schema 1.3) adds `POL-SINGLE-ISSUE-001`: problem wording for two or more council services in one request sends it to a person to split, as NYC 311 and FixMyStreet councils require |
+| Frozen adversarial set | Only AMB-007 changes (pass to escalate); 0 unsafe passes under v0.4.0; no registered residual remains |
+| New set, frozen before the rule | 30 self-authored cases: dev 15 of 15, test 15 of 15 (test run once, after the rule was committed) |
+| Blind set | 32 requests written by a separate agent that never saw the lexicon: 0 of 16 single-issue requests flagged; 5 of 16 multi-issue requests found (all services named in 3); all 16 multi-issue requests still reached a person through earlier rules |
+| Acceptance | Accepted by the product owner as a deterministic floor; recognising several issues in free wording is a later slice |
+| v0.11.0 deployment | Failed: the image lacked the v0.4.0 policy file, the new revision never became healthy, and the workflow rolled back to v0.10.0 and verified recovery. The v0.11.0 tag is kept unchanged |
+| v0.11.1 deployment | The image copies the policy file and a test checks it carries every data file the demo reads; the locally built image passed 13 of 13 container checks before publication; the Azure deploy passed its smoke check without rollback, and an independent check saw v0.11.1, policy v0.4.0 and eleven rule results per scenario |
+
+Evidence is in [`evidence/F31`](../evidence/F31/2026-11-19/README.md). The self-authored set and the lexicon share an
+author; the blind set does not, and it is the fairer measure of how the rule handles unseen wording.
+
 ## Hosted CI evidence
 
 Run numbers below refer to GitHub Actions runs in the private release repository.
@@ -382,7 +397,9 @@ they produce are under [`evidence`](../evidence).
 | The hash chain detects tested in-place modification | Yes | Not an immutable external audit store |
 | Provider automation can be stopped and manually routed | Yes | Same-process local operations control |
 | The bounded agent rejects the tested unauthorized capabilities | Yes | Local synthetic-case contract and deterministic provider only |
-| Request text that tries to instruct the system is escalated | Yes | Deterministic pattern screen measured on a frozen self-authored set; one registered residual under policy v0.3.0 (two under v0.2.0) |
+| Request text that tries to instruct the system is escalated | Yes | Deterministic pattern screen measured on a frozen self-authored set; no registered residual under policy v0.4.0 (one under v0.3.0, two under v0.2.0) |
+| A request reporting several issues is not turned into a single draft | Yes | `POL-SINGLE-ISSUE-001` and earlier rules sent every multi-issue case in the frozen, self-authored and blind sets to a person |
+| The system recognises several issues in free wording | No | The lexicon found 5 of 16 multi-issue requests on a blind set |
 | The system resists unseen prompt-injection attacks | No | F25 is self-authored and the rule was designed after the baseline failures were seen |
 | Known-vulnerable dependencies and images are blocked before release | Yes | Advisories published on the run date; fixable HIGH/CRITICAL only for the image |
 | Model inference stays in Australia | Yes | Only Australian inference profiles (Sydney and Melbourne) are accepted; the hosted demo itself runs in New Zealand North |
@@ -392,10 +409,10 @@ they produce are under [`evidence`](../evidence).
 | Identities are authenticated and authorised | No | IDs are asserted fields only |
 | The classifier is effective on real council requests | No | No real requests or independent labels |
 | The system is production-ready or council-approved | No | Independent portfolio prototype |
-| The bounded public profile is deployed to Azure | Yes | New Zealand North Container Apps, live v0.10.0 since 2026-11-13 (v0.9.0 from 2026-11-03); bounded portfolio evidence, not production readiness |
+| The bounded public profile is deployed to Azure | Yes | New Zealand North Container Apps, live v0.11.1 since 2026-11-19 (v0.10.0 from 2026-11-13, v0.9.0 from 2026-11-03); bounded portfolio evidence, not production readiness |
 | The system is deployed to an enterprise Windows environment | No | Windows lab remains a later slice |
-| The v0.7.2 interface is live on Azure | No | It was a temporary drill candidate in the v0.8.0 rollback drill; v0.10.0 is live now |
-| The public profile excludes tested internal routes | Yes | Live v0.10.0 endpoint (checked 2026-11-13); six named negative routes, not a general penetration test |
+| The v0.7.2 interface is live on Azure | No | It was a temporary drill candidate in the v0.8.0 rollback drill; v0.11.1 is live now |
+| The public profile excludes tested internal routes | Yes | Live v0.11.1 endpoint (checked 2026-11-19); six named negative routes, not a general penetration test |
 | Synthetic D6 rates describe council performance | No | Fixed scenario mix validates calculations and control-path coverage only |
 
 ## Known verification warning
