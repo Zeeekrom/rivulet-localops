@@ -1,0 +1,209 @@
+{
+  "experiment_id": "F29",
+  "experiment_date_local": "2026-11-05",
+  "scope": "Hosting that outlives student credits: static replay page, free-grant guard, move-to-pay-as-you-go runbook",
+  "replay": {
+    "recording_meta": {
+      "truth_class": "synthetic",
+      "recorded_at": "2026-11-05T06:35:01+00:00",
+      "release": "v0.9.0",
+      "policy_versions": [
+        "0.3.0"
+      ],
+      "source": "code 0.9.0 at commit 5f971ce",
+      "note": "Recorded from the real public demo profile. The replay page runs nothing; it shows these results."
+    },
+    "scenarios": {
+      "bin-near-asset": "pass",
+      "bin-missing-location": "reject",
+      "safety-escalation": "escalate",
+      "instruction-in-request": "escalate",
+      "blocked-shell": "deny",
+      "cross-case-read": "deny"
+    },
+    "all_outcomes_match_fixture": true,
+    "volatile_fields_excluded_from_comparison": 18,
+    "local_build": {
+      "ordinary_build_contains_recording": false,
+      "replay_build_files": [
+        "index.html",
+        "_headers",
+        "favicon.svg",
+        "assets/index-*.js",
+        "assets/index-*.css",
+        "assets/recording-*.js"
+      ],
+      "recording_chunk_kib": 35.4,
+      "replay_bundle_contains_demo_api_paths": false
+    },
+    "browser_check": {
+      "scenarios_shown": 6,
+      "banner_present": true,
+      "network_requests": [
+        "assets/index-*.js",
+        "assets/index-*.css",
+        "assets/recording-*.js"
+      ],
+      "api_requests": 0,
+      "console_errors": 0,
+      "mobile_375px_checked": true
+    },
+    "verify_replay_site_local": {
+      "passed": true,
+      "headers_checked": false,
+      "reason": "plain local file server has no _headers"
+    },
+    "hosting": {
+      "provider": "Cloudflare Pages, free plan",
+      "url": "https://rivulet-localops-replay.pages.dev",
+      "published_by": "deploy-replay.yml with the product owner's Pages-only token",
+      "first_successful_run": 41992909717,
+      "verification": {
+        "passed": true,
+        "headers_checked": true,
+        "headers": [
+          "content-security-policy",
+          "x-content-type-options",
+          "x-frame-options",
+          "referrer-policy"
+        ],
+        "recording_chunk_served": true
+      },
+      "earlier_failed_runs": {
+        "41989810856": "token secret stored empty (paste into the hidden prompt did not register)",
+        "41991191641": "same empty token",
+        "41992344935": "upload succeeded; checker got HTTP 403 because Cloudflare blocks the default Python-urllib user agent; fixed by naming the client"
+      }
+    }
+  },
+  "guard": {
+    "free_grant_per_subscription_month": {
+      "vcpu_seconds": 180000,
+      "gib_seconds": 360000,
+      "requests": 2000000
+    },
+    "demo_shape": {
+      "vcpu": 0.25,
+      "memory_gib": 0.5,
+      "min_replicas": 0,
+      "max_replicas": 1
+    },
+    "grant_in_replica_hours": 200,
+    "thresholds": {
+      "warn": 0.7,
+      "stop": 0.9,
+      "resume": "first run in a new month, only if the guard stopped it"
+    },
+    "local_check_run": {
+      "checked_at": "2026-11-05T06:44:19+00:00",
+      "cost_management": {
+        "available": true,
+        "vcpu_seconds": 641.7,
+        "gib_seconds": 1283.5,
+        "requests": 0,
+        "estimated_cost_aud": 0.042
+      },
+      "azure_monitor": {
+        "available": false,
+        "note": "no usage reported"
+      },
+      "grant_fraction": 0.003565,
+      "decision": "ok"
+    },
+    "findings": [
+      "Azure Monitor Replicas and Requests metrics for the demo in New Zealand North were zero or empty for every day since 2026-10-05, including minutes when a replica was running (checked 2026-11-05 06:33-06:50 UTC through the CLI and the REST API).",
+      "Cost Management query at resource-group scope returned month-to-date usage quantities on the Azure for Students subscription, although Microsoft lists that offer as unsupported for Cost Management budgets.",
+      "Open-month Cost Management amounts price usage at the paid rate and leave the free grant out (AUD 0.042 for usage that is 0.36% of the grant), so the guard compares quantities, not amounts.",
+      "Cost Management throttles quickly (HTTP 429 after a few queries); the guard retries four times with backoff and otherwise reports the signal as unavailable."
+    ],
+    "github_actions_check": {
+      "run_id": 41983336561,
+      "mode": "check",
+      "identity": "existing deploy identity (Contributor on the demo resource group only)",
+      "cost_management_available": true,
+      "azure_monitor_available": false,
+      "grant_fraction": 0.003565,
+      "decision": "ok",
+      "conclusion": "success"
+    },
+    "live_drill": {
+      "approved_by": "product owner in chat, 2026-11-05",
+      "run_id": 41983929963,
+      "run_window_utc": "2026-11-05T06:58:01Z/2026-11-05T06:58:57Z",
+      "steps": [
+        "before: /healthz 200",
+        "ingress disabled; tagged freeGrantGuard=stopped-2026-11",
+        "after stop: /healthz unreachable",
+        "ingress enabled (external, port 8000, HTTPS only); tag removed",
+        "after resume: /healthz 200 at the same address"
+      ],
+      "passed": true,
+      "after_drill_independent_check": {
+        "ingress": {
+          "external": true,
+          "targetPort": 8000,
+          "transport": "Http",
+          "allowInsecure": false
+        },
+        "tags_back_to_bicep_set": true,
+        "revision_unchanged": "rivulet-demo--latest",
+        "image": "ghcr.io/zeeekrom/rivulet-localops-release:v0.9.0",
+        "replicas": {
+          "min": 0,
+          "max": 1
+        },
+        "verify_public_deployment": {
+          "passed": true,
+          "checked_at": "2026-11-05T06:59:24+00:00"
+        }
+      }
+    },
+    "schedule": {
+      "turned_on_by": "product owner in chat, 2026-11-05",
+      "variable": "FREE_GRANT_GUARD_SCHEDULE=on (set 2026-11-05T07:01:47Z)",
+      "cron_utc": "41 3,15 * * *",
+      "mode": "enforce",
+      "first_scheduled_run": "not yet observed when this file was written"
+    }
+  },
+  "prices_australia_east_usd_2026_11_05": {
+    "vcpu_active_per_second": 3.4e-05,
+    "vcpu_idle_per_second": 4e-06,
+    "memory_per_gib_second": 4e-06,
+    "requests_per_million": 0.4,
+    "source": "Azure Retail Prices API, serviceName 'Azure Container Apps', armRegionName 'australiaeast'",
+    "worst_case_one_replica_all_month_usd": 20.04,
+    "full_grant_as_open_month_estimate_aud": 11.8
+  },
+  "migration": {
+    "main_bicep_build": "pass",
+    "australiaeast_bicepparam_build": "pass",
+    "budget_bicep_build": "pass",
+    "budget_default": {
+      "amount_aud": 15,
+      "actual_thresholds_percent": [
+        50,
+        80,
+        100
+      ],
+      "forecast_threshold_percent": 100
+    },
+    "deploy_identity": "existing user-assigned identity, Contributor on the demo resource group only; no new role needed"
+  },
+  "checks": {
+    "pytest": "202 passed",
+    "verify_ps1": "exit 0",
+    "security_gates": "pass (bandit 0 findings, dependency audit pass)",
+    "release_ci": {
+      "run_id": 41983325465,
+      "test": "success (202 passed)",
+      "security": "success"
+    }
+  },
+  "status": "build_check_pass_pending_owner_steps",
+  "claim_boundary": "The replay page shows recorded results and runs nothing. Prices and grants are from 2026-11-05 official pages; the bill is authoritative. The guard sees only the demo's resource group, while the grant is per subscription.",
+  "pending_owner_steps": [
+    "student subscription end date and remaining credit from Azure Education hub",
+    "showcase update with the replay link"
+  ]
+}
