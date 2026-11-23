@@ -60,9 +60,11 @@ A reference scenario: a council handling waste and litter requests. No council o
 
 ## How it is kept honest
 
-- **The policy sits outside the model.** Whichever model is used, the written rules decide, and the model may only raise urgency.
+- **The policy sits outside the model.** Whichever model is used, the written rules decide, and the model may only raise urgency. Without a model the triage still runs on rules alone, as the public demo does, so the model can be swapped.
 - **Request text is data, not instructions.** Wording that tries to steer the system, hidden characters or stuffed keywords send the request to a person.
-- **Australia only, and capped.** Model calls go only to Sydney and Melbourne, need a switch only the live site sets, and have a call and dollar cap on every run. To keep costs down the public demo runs in New Zealand North with no model at all; a council deployment would run in an Australian region, and its data would stay in Australia.
+- **Australia only, and capped.** Model calls go only to Sydney and Melbourne, need a switch only the live site sets, and have a call and dollar cap on every run. To keep costs down the public demo runs in New Zealand North with no model at all; a council deployment would run in an Australian region.
+- **Automation under control.** Every change passes automated tests and security scans before release, deployments are written as code and run only when a person starts one, and the public demo rolls back on its own if a new version fails to start. The live site keeps no long-lived keys — it uses short-lived credentials from its own cloud identity — and it switches itself off as it nears its monthly budget, until a person turns it back on.
+- **Locked down by default.** Only invited people can reach the live site, and its server refuses any request that did not come through that sign-in. The code, its dependencies and the container image are scanned on every change, and the pages run under a strict content policy, with no cookies and no scripts from other sites.
 - **Failures stay on record.** The attack set was frozen before the fix, and what it still missed was kept, not hidden.
 
 Three problems that became rules:
